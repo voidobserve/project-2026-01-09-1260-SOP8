@@ -1,0 +1,33 @@
+C51 COMPILER V9.60.0.0   GPIO                                                              12/23/2024 10:00:26 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE GPIO
+OBJECT MODULE PLACED IN .\Release\Objects\gpio.obj
+COMPILER INVOKED BY: D:\C51\C51\BIN\C51.EXE ..\..\Hardware\gpio.c OPTIMIZE(8,SPEED) BROWSE INTVECTOR(0X000C) INCDIR(..\.
+                    -.\Libraries\Include;..\..\User;..\..\Hardware) INTERVAL(3) DEBUG OBJECTEXTEND PRINT(.\Release\Listings\gpio.lst) OBJECT(
+                    -.\Release\Objects\gpio.obj)
+
+line level    source
+
+   1          #include "gpio.h"
+   2          
+   3          
+   4          void ZD_GPIO_Init(void)
+   5          {
+   6   1      
+   7   1          P2_MD0   &= ~(GPIO_P21_MODE_SEL(0x03) | GPIO_P22_MODE_SEL(0x03));
+*** WARNING C206 IN LINE 7 OF ..\..\Hardware\gpio.c: 'GPIO_P21_MODE_SEL': missing function-prototype
+*** ERROR C267 IN LINE 7 OF ..\..\Hardware\gpio.c: 'GPIO_P21_MODE_SEL': requires ANSI-style prototype
+   8   1          P2_MD0   |=   GPIO_P21_MODE_SEL(0x01) | GPIO_P22_MODE_SEL(0x01);
+   9   1      
+  10   1          P0_MD1   &= ~(GPIO_P06_MODE_SEL(0x03));
+  11   1          P0_MD1   |=   GPIO_P06_MODE_SEL(0x00);  
+  12   1      
+  13   1      
+  14   1          motor_pin1 = 0;
+  15   1          motor_pin2 = 0;
+  16   1      
+  17   1      }
+  18          
+
+C51 COMPILATION COMPLETE.  1 WARNING(S),  1 ERROR(S)

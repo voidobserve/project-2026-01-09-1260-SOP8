@@ -1,0 +1,51 @@
+C51 COMPILER V9.60.0.0   MAIN                                                              03/06/2025 10:39:44 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Release\Objects\main.obj
+COMPILER INVOKED BY: D:\C51\C51\BIN\C51.EXE ..\..\User\main.c LARGE OPTIMIZE(8,SPEED) BROWSE INTVECTOR(0X000C) INCDIR(..
+                    -\..\Libraries\Include;..\..\User;..\..\Hardware) INTERVAL(3) DEBUG OBJECTEXTEND PRINT(.\Release\Listings\main.lst) OBJEC
+                    -T(.\Release\Objects\main.obj)
+
+line level    source
+
+   1          #include "include.h"
+   2          
+   3          void main(void)
+   4          {
+   5   1      
+   6   1        system_init();
+   7   1        // debug_init();
+   8   1      
+   9   1        ZD_TIMER_Init();
+  10   1        ZD_GPIO_Init();
+  11   1        // ZD_ADC_Init();
+  12   1      
+  13   1        // printf("start code \n");
+  14   1      
+  15   1        while(1) {
+  16   2      
+  17   2          WDT_KEY = WDT_KEY_VAL(0xAA);        // ??
+  18   2            
+  19   2          TaskHandler();
+  20   2      
+  21   2      
+  22   2        }
+  23   1      }
+  24          
+  25          
+  26          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     17    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =      5    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

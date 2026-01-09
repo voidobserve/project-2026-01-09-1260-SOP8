@@ -1,0 +1,1 @@
+"..\..\Hardware\gpio_config.c" LARGE OPTIMIZE (8,SPEED) BROWSE INTVECTOR(0x000C) INCDIR(..\..\Libraries\Include;..\..\User;..\..\Hardware) interval(3) DEBUG OBJECTEXTEND PRINT(.\Release\Listings\gpio_config.lst) OBJECT(.\Release\Objects\gpio_config.obj)
