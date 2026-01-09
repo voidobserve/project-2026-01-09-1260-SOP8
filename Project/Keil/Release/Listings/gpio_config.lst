@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   GPIO_CONFIG                                                       01/09/2026 11:34:46 PAGE 1   
+C51 COMPILER V9.60.7.0   GPIO_CONFIG                                                       01/09/2026 17:04:20 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE GPIO_CONFIG
@@ -11,424 +11,351 @@ line level    source
 
    1          #include "gpio_config.h"
    2          
-   3          
-   4          
-   5          volatile u8 motorState = MOTOR_STOP;
-   6          #define STMR0_PEROID_VAL               (SYSCLK/1/20000 - 1)                  // 周期值=系统时钟/分
-             -频/频率 - 1
-   7          #define STMR1_PEROID_VAL               (SYSCLK/1/20000 - 1)                  // 周期值=系统时钟/分
-             -频/频率 - 1
+   3          volatile u8 motorState = MOTOR_STOP;
+   4          #define STMR0_PEROID_VAL (SYSCLK / 1 / 20000 - 1) // 周期值=系统时钟/分频/频率 - 1
+   5          #define STMR1_PEROID_VAL (SYSCLK / 1 / 20000 - 1) // 周期值=系统时钟/分频/频率 - 1
+   6          
+   7          #define no_pwm_fun 0
    8          
-   9          
-  10          
-  11          #define no_pwm_fun 0
-  12          
-  13          
-  14          
-  15          void ZD_GPIO_Init(void)
-  16          {
-  17   1      
-  18   1      
-  19   1      #if (no_pwm_fun )
-                  P2_MD0   &= ~(GPIO_P21_MODE_SEL(0x03) | GPIO_P22_MODE_SEL(0x03));
-                  P2_MD0   |=   GPIO_P21_MODE_SEL(0x01) | GPIO_P22_MODE_SEL(0x00);
+   9          void ZD_GPIO_Init(void)
+  10          {
+  11   1      
+  12   1      #if (no_pwm_fun)
+                  P2_MD0 &= ~(GPIO_P21_MODE_SEL(0x03) | GPIO_P22_MODE_SEL(0x03));
+                  P2_MD0 |= GPIO_P21_MODE_SEL(0x01) | GPIO_P22_MODE_SEL(0x00);
               
-              
-                  P0_MD1   &= ~(GPIO_P06_MODE_SEL(0x03) | GPIO_P05_MODE_SEL(0x03));
-                  P0_MD1   |=   GPIO_P06_MODE_SEL(0x01) | GPIO_P05_MODE_SEL(0x00);  
+                  P0_MD1 &= ~(GPIO_P06_MODE_SEL(0x03) | GPIO_P05_MODE_SEL(0x03));
+                  P0_MD1 |= GPIO_P06_MODE_SEL(0x01) | GPIO_P05_MODE_SEL(0x00);
               
                   motor_forward_pin = 0;
                   motor_backward_pin = 0;
               #else
-  30   1      
-  31   1      // 配置STIMER0的PWM端口：P21--STMR0_PWM
-  32   1          P2_MD0   &= ~GPIO_P21_MODE_SEL(0x03);
-  33   1          P2_MD0   |=  GPIO_P21_MODE_SEL(0x01);
-  34   1          FOUT_S21  =  GPIO_FOUT_STMR0_PWMOUT;                                    // 选择stmr0_pwmout
-  35   1          // STIMER0配置1kHz PWM
-  36   1          STMR0_PSC     =  STMR_PRESCALE_VAL(0x00);                               // 不分频
-  37   1          STMR0_PRH     =  STMR_PRD_VAL_H((STMR0_PEROID_VAL >> 8) & 0xFF);        // 周期高八位寄存器
-  38   1          STMR0_PRL     =  STMR_PRD_VAL_L((STMR0_PEROID_VAL >> 0) & 0xFF);        // 周期低八位寄存器
-  39   1          STMR0_CMPAH   =  STMR_CMPA_VAL_H(((0) >> 8) & 0xFF);   // 比较值A点高八位寄存器
-  40   1          STMR0_CMPAL   =  STMR_CMPA_VAL_L(((0) >> 0) & 0xFF);   // 比较值A点低八位寄存器
-  41   1          STMR_PWMVALA &= ~STMR_0_PWMVALA(0x1);                                   // 计数CNT小于比较值A,P
-             -WM输出1,大于等于输出0
-  42   1          STMR_PWMEN   |=  STMR_0_PWM_EN(0x1);                                    // PWM输出使能
-  43   1          STMR_CNTMD   |=  STMR_0_CNT_MODE(0x1);                                  // 选择连续计数模式
-  44   1          STMR_LOADEN  |=  STMR_0_LOAD_EN(0x1);                                   // 自动装载使能
-  45   1          STMR_CNTCLR  |=  STMR_0_CNT_CLR(0x1);                                   // 计数清零
-  46   1          STMR_CNTEN   |=  STMR_0_CNT_EN(0x1);                                    // 计数使能
-  47   1          
-  48   1          // 配置STIMER1的PWM端口：P22--STMR1_PWM
-  49   1          P0_MD1   &= ~GPIO_P06_MODE_SEL(0x03);
-  50   1          P0_MD1   |=  GPIO_P06_MODE_SEL(0x01);
-C51 COMPILER V9.60.7.0   GPIO_CONFIG                                                       01/09/2026 11:34:46 PAGE 2   
+  22   1      
+  23   1          // 配置 STIMER0 的PWM端口：P21--STMR0_PWM
+  24   1          P2_MD0 &= ~GPIO_P21_MODE_SEL(0x03);
+  25   1          P2_MD0 |= GPIO_P21_MODE_SEL(0x01);
+  26   1          FOUT_S21 = GPIO_FOUT_STMR0_PWMOUT; // 选择 stmr0_pwmout
+  27   1          // STIMER0 配置 1kHz PWM
+  28   1          STMR0_PSC = STMR_PRESCALE_VAL(0x00);                        // 不分频
+  29   1          STMR0_PRH = STMR_PRD_VAL_H((STMR0_PEROID_VAL >> 8) & 0xFF); // 周期高八位寄存器
+  30   1          STMR0_PRL = STMR_PRD_VAL_L((STMR0_PEROID_VAL >> 0) & 0xFF); // 周期低八位寄存器
+  31   1          STMR0_CMPAH = STMR_CMPA_VAL_H(((0) >> 8) & 0xFF);           // 比较值A点高八位寄存器
+  32   1          STMR0_CMPAL = STMR_CMPA_VAL_L(((0) >> 0) & 0xFF);           // 比较值A点低八位寄存器
+  33   1          STMR_PWMVALA &= ~STMR_0_PWMVALA(0x1);                       // 计数CNT小于比较值A,PWM输出1,�
+             -�于等于输出0
+  34   1          STMR_PWMEN |= STMR_0_PWM_EN(0x1);                           // PWM输出使能
+  35   1          STMR_CNTMD |= STMR_0_CNT_MODE(0x1);                         // 选择连续计数模式
+  36   1          STMR_LOADEN |= STMR_0_LOAD_EN(0x1);                         // 自动装载使能
+  37   1          STMR_CNTCLR |= STMR_0_CNT_CLR(0x1);                         // 计数清零
+  38   1          STMR_CNTEN |= STMR_0_CNT_EN(0x1);                           // 计数使能
+  39   1      
+  40   1          // 配置 STIMER1 的PWM端口：P22--STMR1_PWM
+  41   1          P0_MD1 &= ~GPIO_P06_MODE_SEL(0x03);
+  42   1          P0_MD1 |= GPIO_P06_MODE_SEL(0x01);
+  43   1          FOUT_S06 = GPIO_FOUT_STMR1_PWMOUT; // 选择 stmr1_pwmout
+  44   1          // STIMER1 配置 1kHz PWM
+  45   1          STMR1_PSC = STMR_PRESCALE_VAL(0x00);                        // 不分频
+  46   1          STMR1_PRH = STMR_PRD_VAL_H((STMR1_PEROID_VAL >> 8) & 0xFF); // 周期高八位寄存器
+  47   1          STMR1_PRL = STMR_PRD_VAL_L((STMR1_PEROID_VAL >> 0) & 0xFF); // 周期低八位寄存器
+  48   1          STMR1_CMPAH = STMR_CMPA_VAL_H(((0) >> 8) & 0xFF);           // 比较值A点高八位寄存器
+  49   1          STMR1_CMPAL = STMR_CMPA_VAL_L(((0) >> 0) & 0xFF);           // 比较值A点低八位寄存器
+  50   1          STMR_PWMVALA &= ~STMR_1_PWMVALA(0x1);                       // 计数CNT小于比较值A,PWM输出1,�
+             -�于等于输出0
+  51   1          STMR_PWMEN |= STMR_1_PWM_EN(0x1);                           // PWM输出使能
+C51 COMPILER V9.60.7.0   GPIO_CONFIG                                                       01/09/2026 17:04:20 PAGE 2   
 
-  51   1          FOUT_S06  =  GPIO_FOUT_STMR1_PWMOUT;                                    // 选择stmr1_pwmout 
-  52   1          // STIMER1配置1kHz PWM
-  53   1          STMR1_PSC     =  STMR_PRESCALE_VAL(0x00);                               // 不分频
-  54   1          STMR1_PRH     =  STMR_PRD_VAL_H((STMR1_PEROID_VAL >> 8) & 0xFF);        // 周期高八位寄存器
-  55   1          STMR1_PRL     =  STMR_PRD_VAL_L((STMR1_PEROID_VAL >> 0) & 0xFF);        // 周期低八位寄存器
-  56   1          STMR1_CMPAH   =  STMR_CMPA_VAL_H(((0) >> 8) & 0xFF);   // 比较值A点高八位寄存器
-  57   1          STMR1_CMPAL   =  STMR_CMPA_VAL_L(((0) >> 0) & 0xFF);   // 比较值A点低八位寄存器
-  58   1          STMR_PWMVALA &= ~STMR_1_PWMVALA(0x1);                                   // 计数CNT小于比较值A,P
-             -WM输出1,大于等于输出0
-  59   1          STMR_PWMEN   |=  STMR_1_PWM_EN(0x1);                                    // PWM输出使能
-  60   1          STMR_CNTMD   |=  STMR_1_CNT_MODE(0x1);                                  // 选择连续计数模式
-  61   1          STMR_LOADEN  |=  STMR_1_LOAD_EN(0x1);                                   // 自动装载使能
-  62   1          STMR_CNTCLR  |=  STMR_1_CNT_CLR(0x1);                                   // 计数清零
-  63   1          STMR_CNTEN   |=  STMR_1_CNT_EN(0x1);                                    // 计数使能
-  64   1      
-  65   1      
+  52   1          STMR_CNTMD |= STMR_1_CNT_MODE(0x1);                         // 选择连续计数模式
+  53   1          STMR_LOADEN |= STMR_1_LOAD_EN(0x1);                         // 自动装载使能
+  54   1          STMR_CNTCLR |= STMR_1_CNT_CLR(0x1);                         // 计数清零
+  55   1          STMR_CNTEN |= STMR_1_CNT_EN(0x1);                           // 计数使能
+  56   1      
+  57   1          P2_MD0 &= ~(GPIO_P22_MODE_SEL(0x03));
+  58   1          P2_MD0 |= GPIO_P22_MODE_SEL(0x00);
+  59   1          P0_MD1 &= ~(GPIO_P05_MODE_SEL(0x03));
+  60   1          P0_MD1 |= GPIO_P05_MODE_SEL(0x00);
+  61   1      #endif
+  62   1      
+  63   1          /* 自锁开关 */
+  64   1          P3_MD0 &= ~(GPIO_P31_MODE_SEL(0x03));
+  65   1          P3_PU |= GPIO_P31_PULL_UP(0x01);
   66   1      
-  67   1      
-  68   1      P2_MD0   &= ~( GPIO_P22_MODE_SEL(0x03));
-  69   1      P2_MD0   |=    GPIO_P22_MODE_SEL(0x00);
-  70   1      P0_MD1   &= ~(GPIO_P05_MODE_SEL(0x03));
-  71   1      P0_MD1   |=   GPIO_P05_MODE_SEL(0x00);  
-  72   1      #endif
+  67   1          // ad按键  电量检测  充电检测
+  68   1          P0_MD1 &= ~GPIO_P05_MODE_SEL(0x03);
+  69   1          P0_MD1 |= GPIO_P05_MODE_SEL(0x3); // 设为模拟模式
+  70   1      
+  71   1          P2_MD0 &= ~GPIO_P22_MODE_SEL(0x03);
+  72   1          P2_MD0 |= GPIO_P22_MODE_SEL(0x3); // 设为模拟模式
   73   1      
-  74   1      
-  75   1      
-  76   1          /* 自锁开关 */
-  77   1          P3_MD0   &= ~(GPIO_P31_MODE_SEL(0x03));
-  78   1          P3_PU |= GPIO_P31_PULL_UP(0x01);
-  79   1      
-  80   1          //ad按键  电量检测  充电检测
-  81   1          P0_MD1 &= ~GPIO_P05_MODE_SEL(0x03);
-  82   1          P0_MD1 |=  GPIO_P05_MODE_SEL(0x3);                       // P02设为模拟模式
-  83   1      
-  84   1          P2_MD0 &= ~GPIO_P22_MODE_SEL(0x03);
-  85   1          P2_MD0 |=  GPIO_P22_MODE_SEL(0x3);                       // P05设为模拟模式
-  86   1      
+  74   1          // ADC配置
+  75   1          ADC_ACON1 &= ~(ADC_VREF_SEL(0x7) | ADC_EXREF_SEL(0x1)); // 关闭外部参考电压
+  76   1          ADC_ACON1 |= ADC_VREF_SEL(0x5) |                        // 选择内部参考电压VCC
+  77   1                       ADC_TEN_SEL(0x3);
+  78   1      
+  79   1          ADC_ACON0 = ADC_CMP_EN(0x1) |  // 打开ADC中的CMP使能信号
+  80   1                      ADC_BIAS_EN(0x1) | // 打开ADC偏置电流能使信号
+  81   1                      ADC_BIAS_SEL(0x1);
+  82   1      
+  83   1          ADC_CHS0 = ADC_ANALOG_CHAN(0x05) | // P02通路     选择对应的引脚配置
+  84   1                     ADC_EXT_SEL(0x0);       // 选择外部通路
+  85   1          ADC_CFG0 |= ADC_CHAN0_EN(0x1) |    // 使能通道0转换
+  86   1                      ADC_EN(0x1);           // 使能A/D转换
   87   1      
-  88   1          //ADC配置
-  89   1          ADC_ACON1 &= ~(ADC_VREF_SEL(0x7) | ADC_EXREF_SEL(0x1));   // 关闭外部参考电压
-  90   1          ADC_ACON1 |= ADC_VREF_SEL(0x5) |                          // 选择内部参考电压VCC
-  91   1                       ADC_TEN_SEL(0x3);
+  88   1          ADC_CHS1 = ADC_ANALOG_CHAN(0x12) | // P05通路     选择对应的引脚配置
+  89   1                     ADC_EXT_SEL(0x0);       // 选择外部通路
+  90   1          ADC_CFG0 |= ADC_CHAN1_EN(0x1) |    // 使能通道1转换
+  91   1                      ADC_EN(0x1);           // 使能A/D转换
   92   1      
-  93   1          ADC_ACON0  = ADC_CMP_EN(0x1)  |                           // 打开ADC中的CMP使能信号
-  94   1                      ADC_BIAS_EN(0x1) |                            // 打开ADC偏置电流能使信号
-  95   1                      ADC_BIAS_SEL(0x1);
-  96   1         
-  97   1          ADC_CHS0   = ADC_ANALOG_CHAN(0x05) |                      // P02通路     选择对应的引脚配置
-  98   1                      ADC_EXT_SEL(0x0);                             // 选择外部通路
-  99   1          ADC_CFG0  |= ADC_CHAN0_EN(0x1) |                          // 使能通道0转换
- 100   1                      ADC_EN(0x1);                                  // 使能A/D转换
- 101   1          
- 102   1        
- 103   1          ADC_CHS1   = ADC_ANALOG_CHAN(0x12) |                      // P05通路     选择对应的引脚配置
- 104   1                      ADC_EXT_SEL(0x0);                             // 选择外部通路
- 105   1          ADC_CFG0  |= ADC_CHAN1_EN(0x1) |                          // 使能通道1转换
- 106   1                      ADC_EN(0x1);                                  // 使能A/D转换
- 107   1      
- 108   1         
- 109   1          delay_ms(1);                                              // 等待ADC模块配置稳定，需要等�
-             -�20us以上
- 110   1      
-C51 COMPILER V9.60.7.0   GPIO_CONFIG                                                       01/09/2026 11:34:46 PAGE 3   
+  93   1          delay_ms(1); // 等待ADC模块配置稳定，需要等待20us以上
+  94   1      
+  95   1          P2_DRV1 = GPIO_P21_DRV_SEL(0x1F); // 驱动电流配置
+  96   1          P2_DRV2 = GPIO_P22_DRV_SEL(0x1F); // 驱动电流配置
+  97   1          P1_DRV7 = GPIO_P17_DRV_SEL(0x1F); // 驱动电流配置
+  98   1      }
+  99          
+ 100          void forward_pwm(u16 val)
+ 101          {
+ 102   1          STMR0_CMPAH = STMR_CMPA_VAL_H((((val)) >> 8) & 0xFF); // 比较值A点高八位寄存器
+ 103   1          STMR0_CMPAL = STMR_CMPA_VAL_L((((val)) >> 0) & 0xFF); // 比较值A点低八位寄存器
+ 104   1          STMR_LOADEN |= STMR_0_LOAD_EN(0x1);                   // 自动装载使能
+ 105   1      }
+ 106          
+ 107          void backward_pwm(u16 val)
+ 108          {
+ 109   1          STMR1_CMPAH = STMR_CMPA_VAL_H((((val)) >> 8) & 0xFF); // 比较值A点高八位寄存器
+ 110   1          STMR1_CMPAL = STMR_CMPA_VAL_L((((val)) >> 0) & 0xFF); // 比较值A点低八位寄存器
+ 111   1          STMR_LOADEN |= STMR_1_LOAD_EN(0x1);                   // 自动装载使能
+ 112   1      }
+ 113          
+C51 COMPILER V9.60.7.0   GPIO_CONFIG                                                       01/09/2026 17:04:20 PAGE 3   
 
- 111   1          P2_DRV1  = GPIO_P21_DRV_SEL(0x1F);
- 112   1          P2_DRV2  = GPIO_P22_DRV_SEL(0x1F);
- 113   1          P1_DRV7  = GPIO_P17_DRV_SEL(0x1F);
- 114   1      
- 115   1      } 
- 116          
- 117          void forward_pwm(u16 val)
- 118          {
- 119   1          STMR0_CMPAH   =  STMR_CMPA_VAL_H((((val)) >> 8) & 0xFF);   // 比较值A点高八位寄存器
- 120   1          STMR0_CMPAL   =  STMR_CMPA_VAL_L((((val)) >> 0) & 0xFF);   // 比较值A点低八位寄存器
- 121   1          STMR_LOADEN  |=  STMR_0_LOAD_EN(0x1);                                   // 自动装载使能
- 122   1      
- 123   1      
- 124   1      }
- 125          
- 126          
- 127          void backward_pwm(u16 val)
- 128          {
- 129   1          STMR1_CMPAH   =  STMR_CMPA_VAL_H((((val)) >> 8) & 0xFF);   // 比较值A点高八位寄存器
- 130   1          STMR1_CMPAL   =  STMR_CMPA_VAL_L((((val)) >> 0) & 0xFF);   // 比较值A点低八位寄存器
- 131   1          STMR_LOADEN  |=  STMR_1_LOAD_EN(0x1);                                   // 自动装载使能
- 132   1      
- 133   1          
- 134   1      }
- 135          
- 136          
- 137          
- 138          u16 g_delay_change = 0;
- 139          u8 allow_change = 0;
- 140          u8 allow_check = 0;
- 141          u16 check_overCurrent_time = 0;
- 142          
- 143          #define change_delay_time 300
- 144          #define overCurrent      (1657) // 1.7v
- 145          #define  qudongDuty (2040)  //20k 85  
- 146          #define  work_deadline  (2500) 
- 147          
- 148          
- 149          void keyHandler(void)
- 150          {
- 151   1      
- 152   1          //使用边沿检测
- 153   1          u8 curr = P31;
- 154   1          static u8 last = (u8)-1;
- 155   1      
- 156   1          if (curr != last)
- 157   1          {
- 158   2              if (last != (u8)-1)
- 159   2              {
- 160   3                  if (curr)
- 161   3                  {
- 162   4                      // 上升沿
- 163   4      
- 164   4      
- 165   4      
- 166   4                      motorState = MOTOR_FORWARD;
- 167   4                      g_delay_change = change_delay_time;
- 168   4                     
- 169   4                      #if (no_pwm_fun )
+ 114          u16 g_delay_change = 0;
+ 115          u8 allow_change = 0;
+ 116          u8 allow_check = 0;
+ 117          u16 check_overCurrent_time = 0;
+ 118          
+ 119          #define change_delay_time 300
+ 120          #define overCurrent (1657) // 1.7v
+ 121          #define qudongDuty (2040)  // 20k 85
+ 122          #define work_deadline (2500)
+ 123          
+ 124          void keyHandler(void)
+ 125          {
+ 126   1      
+ 127   1          // 使用边沿检测
+ 128   1          u8 curr = P31;
+ 129   1          static u8 last = (u8)-1;
+ 130   1      
+ 131   1          if (curr != last)
+ 132   1          {
+ 133   2              if (last != (u8)-1)
+ 134   2              {
+ 135   3                  if (curr)
+ 136   3                  {
+ 137   4                      // 上升沿
+ 138   4      
+ 139   4                      motorState = MOTOR_FORWARD;
+ 140   4                      g_delay_change = change_delay_time;
+ 141   4      
+ 142   4      #if (no_pwm_fun)
                               motor_forward_pin = 0;
                               motor_backward_pin = 0;
-                              #else 
-C51 COMPILER V9.60.7.0   GPIO_CONFIG                                                       01/09/2026 11:34:46 PAGE 4   
+              #else
+ 146   4                      forward_pwm(0);
+ 147   4                      backward_pwm(0);
+ 148   4      #endif
+ 149   4      
+ 150   4                      allow_change = 1;
+ 151   4                      allow_check = 0;
+ 152   4                  }
+ 153   3                  else
+ 154   3                  {
+ 155   4                      // 下降沿
+ 156   4      
+ 157   4                      // 电机不转
+ 158   4                  }
+ 159   3              }
+ 160   2              else
+ 161   2              {
+ 162   3                  // 第一次上电，忽略
+ 163   3                  motorState = MOTOR_STOP;
+ 164   3              }
+ 165   2      
+ 166   2              last = curr;
+ 167   2          }
+ 168   1      }
+ 169          
+ 170          u16 get_adc_value(void)
+ 171          {
+ 172   1          u16 adc0_val;
+ 173   1      
+ 174   1          ADC_CFG0 |= ADC_CHAN0_TRG(0x1); // 触发ADC0转换
+ 175   1          if (!(ADC_STA & ADC_CHAN0_DONE(0x1)))
+C51 COMPILER V9.60.7.0   GPIO_CONFIG                                                       01/09/2026 17:04:20 PAGE 4   
 
- 173   4                      forward_pwm(0);
- 174   4                      backward_pwm(0);
- 175   4                      #endif
- 176   4      
- 177   4      
- 178   4                      allow_change = 1;
- 179   4                      allow_check = 0;
- 180   4      
- 181   4                  }
- 182   3                  else
- 183   3                  {
- 184   4                      // 下降沿
- 185   4      
- 186   4      //电机不转
- 187   4      
- 188   4                    
- 189   4      
- 190   4      
- 191   4      
- 192   4      
- 193   4                  }
- 194   3              }
- 195   2              else
- 196   2              {
- 197   3                  // 第一次上电，忽略
- 198   3                  motorState = MOTOR_STOP;
- 199   3              }
- 200   2      
- 201   2              last = curr;
- 202   2            
- 203   2          }
- 204   1      
+ 176   1              return 0;
+ 177   1          ADC_STA = ADC_CHAN0_DONE(0x1);                    // 清除ADC0转换完成标志位
+ 178   1          adc0_val = (ADC_DATAH0 << 4) | (ADC_DATAL0 >> 4); // 读取ADC0的值
+ 179   1      
+ 180   1          return adc0_val;
+ 181   1      }
+ 182          
+ 183          u16 get_adc_value1(void)
+ 184          {
+ 185   1          u16 adc1_val;
+ 186   1      
+ 187   1          ADC_CFG0 |= ADC_CHAN1_TRG(0x1); // 触发ADC0转换
+ 188   1          if (!(ADC_STA & ADC_CHAN1_DONE(0x1)))
+ 189   1              return 0;
+ 190   1          ADC_STA = ADC_CHAN1_DONE(0x1);                    // 清除 转换完成标志位
+ 191   1          adc1_val = (ADC_DATAH1 << 4) | (ADC_DATAL1 >> 4); // 读取ADC0的值
+ 192   1      
+ 193   1          return adc1_val;
+ 194   1      }
+ 195          
+ 196          u8 qiangzhi_back = 0;
+ 197          u16 qiangzhi_cnt = 0;
+ 198          void MotorHadnler(void)
+ 199          {
+ 200   1          static u16 ad1 = 0;
+ 201   1          static u16 ad2 = 0;
+ 202   1          static u16 working_timing = 0;
+ 203   1      
+ 204   1          P14 = ~P14;
  205   1      
- 206   1      }
- 207          
- 208          
- 209          
- 210          u16  get_adc_value(void) 
- 211          {
- 212   1      
- 213   1      
- 214   1          u16 adc0_val;
- 215   1       
- 216   1          ADC_CFG0 |= ADC_CHAN0_TRG(0x1);                       // 触发ADC0转换
- 217   1          if(!(ADC_STA & ADC_CHAN0_DONE(0x1)))return;
-*** WARNING C173 IN LINE 217 OF ..\..\Hardware\gpio_config.c: missing return-expression
- 218   1          ADC_STA  = ADC_CHAN0_DONE(0x1);                       // 清除ADC0转换完成标志位
- 219   1          adc0_val = (ADC_DATAH0 << 4) | (ADC_DATAL0 >> 4);     // 读取ADC0的值
- 220   1          
- 221   1          return adc0_val;
- 222   1      
- 223   1      }
- 224          
- 225          u16  get_adc_value1(void) 
- 226          {
- 227   1      
- 228   1      
- 229   1          u16 adc1_val;
- 230   1       
- 231   1          ADC_CFG0 |= ADC_CHAN1_TRG(0x1);                       // 触发ADC0转换
- 232   1          if(!(ADC_STA & ADC_CHAN1_DONE(0x1)))return;
-*** WARNING C173 IN LINE 232 OF ..\..\Hardware\gpio_config.c: missing return-expression
-C51 COMPILER V9.60.7.0   GPIO_CONFIG                                                       01/09/2026 11:34:46 PAGE 5   
-
- 233   1          ADC_STA  = ADC_CHAN1_DONE(0x1);                       // 清除ADC0转换完成标志位
- 234   1          adc1_val = (ADC_DATAH1 << 4) | (ADC_DATAL1 >> 4);     // 读取ADC0的值
- 235   1          
- 236   1          return adc1_val;
- 237   1      
- 238   1      }
- 239          
- 240          u8  qiangzhi_back = 0;
- 241          u16  qiangzhi_cnt = 0;
- 242          void MotorHadnler(void)
- 243          {
- 244   1      
- 245   1              
- 246   1          static u16 ad1 = 0;
- 247   1          static u16 ad2 = 0;
- 248   1          static u16 working_timing = 0;
- 249   1      
- 250   1      
- 251   1      
- 252   1      
- 253   1          //  ====================  延时切换电机方向  ========================
- 254   1          //  ====================  需求电机停止几百ms再启动  ========================
- 255   1          if(g_delay_change > 0) {
- 256   2              g_delay_change--;
- 257   2      
- 258   2          } else {
- 259   2      
- 260   2              if(allow_change){
- 261   3      
- 262   3                  allow_change = 0;
- 263   3                  if(motorState == MOTOR_FORWARD ) {
- 264   4      
- 265   4                      #if (no_pwm_fun )
+ 206   1          //  ====================  延时切换电机方向  ========================
+ 207   1          //  ====================  需求电机停止几百ms再启动  ========================
+ 208   1          if (g_delay_change > 0)
+ 209   1          {
+ 210   2              g_delay_change--;
+ 211   2          }
+ 212   1          else
+ 213   1          {
+ 214   2      
+ 215   2              if (allow_change)
+ 216   2              {
+ 217   3      
+ 218   3                  allow_change = 0;
+ 219   3                  if (motorState == MOTOR_FORWARD)
+ 220   3                  {
+ 221   4      
+ 222   4      #if (no_pwm_fun)
                               motor_forward_pin = 1;
-                              motor_backward_pin = 0; 
+                              motor_backward_pin = 0;
               
-                              #else
- 270   4                      forward_pwm(qudongDuty);
- 271   4                      backward_pwm(0);
- 272   4                      #endif
- 273   4      
- 274   4                      working_timing = 0;
- 275   4                      allow_check = 1;
- 276   4                      check_overCurrent_time = 0;
- 277   4      
- 278   4                  } else if(motorState == MOTOR_BACKWARD ) {
- 279   4                     
- 280   4      
- 281   4                      #if (no_pwm_fun )      
+              #else
+ 227   4                      forward_pwm(qudongDuty);
+ 228   4                      backward_pwm(0);
+ 229   4      #endif
+ 230   4      
+ 231   4                      working_timing = 0;
+ 232   4                      allow_check = 1;
+ 233   4                      check_overCurrent_time = 0;
+ 234   4                  }
+ 235   3                  else if (motorState == MOTOR_BACKWARD)
+ 236   3                  {
+ 237   4      
+C51 COMPILER V9.60.7.0   GPIO_CONFIG                                                       01/09/2026 17:04:20 PAGE 5   
+
+ 238   4      #if (no_pwm_fun)
                               motor_forward_pin = 0;
                               motor_backward_pin = 1;
-                              #else 
- 285   4      
- 286   4                      forward_pwm(0);
- 287   4                      backward_pwm(qudongDuty);
- 288   4                      #endif
- 289   4      
+              #else
+ 242   4      
+ 243   4                      forward_pwm(0);
+ 244   4                      backward_pwm(qudongDuty);
+ 245   4      #endif
+ 246   4      
+ 247   4                      working_timing = 0;
+ 248   4                      allow_check = 1;
+ 249   4                      check_overCurrent_time = 0;
+ 250   4      
+ 251   4                      qiangzhi_back = 0;
+ 252   4                  }
+ 253   3              }
+ 254   2          }
+ 255   1      
+ 256   1          // =================== ADC检测  ========================
+ 257   1          ad1 = get_adc_value();
+ 258   1          ad2 = get_adc_value1(); // 向前时，碰到过流检测
+ 259   1      
+ 260   1          // =================== 电机工作过程  ========================
+ 261   1          // 当电机工作时，检测是否有过流
+ 262   1          if (allow_check)
+ 263   1          {
+ 264   2      
+ 265   2              // 向前过流，需要反向
+ 266   2              if (ad2 > overCurrent)
+ 267   2              {
+ 268   3      
+ 269   3                  check_overCurrent_time++;
+ 270   3                  if (check_overCurrent_time > 200)
+ 271   3                  {
+ 272   4      
+ 273   4                      // 反向
+ 274   4                      motorState = MOTOR_BACKWARD;
+ 275   4                      g_delay_change = change_delay_time;
+ 276   4                      allow_check = 0; // 停止电机流程
+ 277   4                      allow_change = 1;
+ 278   4      
+ 279   4                      // 反向结束
+ 280   4                  }
+ 281   3              }
+ 282   2      
+ 283   2              // 回来原始位置停止工作
+ 284   2              if (ad1 > overCurrent)
+ 285   2              {
+ 286   3      
+ 287   3                  check_overCurrent_time++;
+ 288   3                  if (check_overCurrent_time > 200)
+ 289   3                  {
  290   4      
- 291   4                      working_timing = 0;
- 292   4                      allow_check = 1;
- 293   4                      check_overCurrent_time = 0;
- 294   4      
-C51 COMPILER V9.60.7.0   GPIO_CONFIG                                                       01/09/2026 11:34:46 PAGE 6   
-
- 295   4      
- 296   4                      qiangzhi_back = 0;
- 297   4                  }
+ 291   4                      motorState = MOTOR_STOP;
+ 292   4                  }
+ 293   3              }
+ 294   2      
+ 295   2              // 工作过程中，防止检测不到过流。够时间就强制复位
+ 296   2              if (working_timing < work_deadline)
+ 297   2              {
  298   3      
- 299   3              }
- 300   2      
- 301   2          }
- 302   1          
- 303   1          
- 304   1          
- 305   1          
- 306   1          // =================== ADC检测  ========================
- 307   1          ad1 = get_adc_value();
- 308   1          ad2 = get_adc_value1();  //向前时，碰到过流检测
- 309   1      
- 310   1      
- 311   1      
- 312   1      
- 313   1          // =================== 电机工作过程  ========================
- 314   1          //当电机工作时，检测是否有过流
- 315   1          if(allow_check) {
- 316   2      
- 317   2         
- 318   2              //向前过流，需要反向
- 319   2              if(ad2 > overCurrent ){
- 320   3                  
- 321   3                  check_overCurrent_time++;
- 322   3                  if(check_overCurrent_time > 200) {
- 323   4      
- 324   4                      //反向
- 325   4                      motorState = MOTOR_BACKWARD;
- 326   4                      g_delay_change = change_delay_time;
- 327   4                      allow_check = 0;  //停止电机流程
- 328   4                      allow_change = 1;
- 329   4                      
- 330   4                      //反向结束
- 331   4      
- 332   4      
- 333   4                      
- 334   4                  }
- 335   3              }
- 336   2      
- 337   2              //回来原始位置停止工作
- 338   2              if(ad1 > overCurrent) {
- 339   3      
- 340   3                  
- 341   3                  check_overCurrent_time++;
- 342   3                  if(check_overCurrent_time > 200) {
- 343   4      
- 344   4                      motorState = MOTOR_STOP;
- 345   4                      
- 346   4                  }
- 347   3              }
- 348   2      
- 349   2          
- 350   2        
- 351   2      
- 352   2              // 工作过程中，防止检测不到过流。够时间就强制复位
- 353   2              if( working_timing < work_deadline) {
- 354   3      
- 355   3                  working_timing++;
- 356   3      
-C51 COMPILER V9.60.7.0   GPIO_CONFIG                                                       01/09/2026 11:34:46 PAGE 7   
+ 299   3                  working_timing++;
+C51 COMPILER V9.60.7.0   GPIO_CONFIG                                                       01/09/2026 17:04:20 PAGE 6   
 
- 357   3              } else {
- 358   3      
- 359   3      
- 360   3                  //反向
- 361   3                  motorState = MOTOR_BACKWARD;
- 362   3                  g_delay_change = change_delay_time;
- 363   3                  allow_check = 0;  //停止电机流程
- 364   3                  allow_change = 1;
- 365   3                  //反向结束
- 366   3                  
- 367   3              }
- 368   2      
- 369   2      
- 370   2          }  //allow_check
- 371   1      
- 372   1          
- 373   1      
- 374   1      
- 375   1          // =================== 过流后，全部拉低，停止工作  ========================
- 376   1          
- 377   1          if(motorState == MOTOR_STOP) {
- 378   2      
- 379   2              allow_check = 0;  
- 380   2              
- 381   2              
- 382   2              #if (no_pwm_fun )
-                          motor_forward_pin = 0;
-                          motor_backward_pin = 0;
-                      #else 
- 386   2      
- 387   2                  forward_pwm(0);
- 388   2                  backward_pwm(0);
- 389   2      
- 390   2              #endif
- 391   2          }
- 392   1      
- 393   1              
- 394   1      }
- 395          
-*** WARNING C291 IN LINE 223 OF ..\..\Hardware\gpio_config.c: not every exit path returns a value
-*** WARNING C291 IN LINE 238 OF ..\..\Hardware\gpio_config.c: not every exit path returns a value
+ 300   3              }
+ 301   2              else
+ 302   2              {
+ 303   3      
+ 304   3                  // 反向
+ 305   3                  motorState = MOTOR_BACKWARD;
+ 306   3                  g_delay_change = change_delay_time;
+ 307   3                  allow_check = 0; // 停止电机流程
+ 308   3                  allow_change = 1;
+ 309   3                  // 反向结束
+ 310   3              }
+ 311   2      
+ 312   2          } // allow_check
+ 313   1      
+ 314   1          // =================== 过流后，全部拉低，停止工作  ========================
+ 315   1      
+ 316   1          if (motorState == MOTOR_STOP)
+ 317   1          {
+ 318   2      
+ 319   2              allow_check = 0;
+ 320   2      
+ 321   2      #if (no_pwm_fun)
+                      motor_forward_pin = 0;
+                      motor_backward_pin = 0;
+              #else
+ 325   2      
+ 326   2              forward_pwm(0);
+ 327   2              backward_pwm(0);
+ 328   2      
+ 329   2      #endif
+ 330   2          }
+ 331   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    747    ----
+   CODE SIZE        =    761    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =     22    ----
    PDATA SIZE       =   ----    ----
@@ -438,4 +365,4 @@ MODULE INFORMATION:   STATIC OVERLAYABLE
 END OF MODULE INFORMATION.
 
 
-C51 COMPILATION COMPLETE.  4 WARNING(S),  0 ERROR(S)
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

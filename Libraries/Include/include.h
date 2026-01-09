@@ -25,7 +25,6 @@
 #include "typedef.h"
 #include "tx8C126x.h"
 #include "system.h"
-#include "intrins.h"
 #include "tx8C126x_adc.h"
 #include "tx8C126x_cmp.h"
 #include "tx8C126x_crc.h"

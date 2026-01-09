@@ -33,7 +33,7 @@
           <SFDFile></SFDFile>
           <bCustSvd>0</bCustSvd>
           <UseEnv>0</UseEnv>
-          <BinPath></BinPath>
+          <BinPath>C:\Keil_v5\C51\BIN\</BinPath>
           <IncludePath></IncludePath>
           <LibPath></LibPath>
           <RegisterFilePath></RegisterFilePath>
@@ -425,6 +425,11 @@
               <FileName>gpio_config.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Hardware\gpio_config.c</FilePath>
+            </File>
+            <File>
+              <FileName>pwm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Hardware\pwm.c</FilePath>
             </File>
           </Files>
         </Group>

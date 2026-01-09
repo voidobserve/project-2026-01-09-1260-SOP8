@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   MAIN                                                              01/09/2026 11:34:46 PAGE 1   
+C51 COMPILER V9.60.7.0   MAIN                                                              01/09/2026 17:02:30 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
@@ -10,36 +10,49 @@ COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE ..\..\User\main.c LARGE OPTIMIZE
 line level    source
 
    1          #include "include.h"
-   2          
-   3          void main(void)
-   4          {
-   5   1      
-   6   1        system_init();
-   7   1        // debug_init();
+   2          #include "user_config.h"
+   3          
+   4          #include "pwm.h"
+   5          
+   6          void main(void)
+   7          {
    8   1      
-   9   1        ZD_TIMER_Init();
-  10   1        ZD_GPIO_Init();
-  11   1        // ZD_ADC_Init();
-  12   1      
-  13   1        // printf("start code \n");
+   9   1          system_init();
+  10   1          
+  11   1          pwm_init();
+  12   1          
+  13   1          // ZD_GPIO_Init();
   14   1      
-  15   1        while(1) {
-  16   2      
-  17   2          WDT_KEY = WDT_KEY_VAL(0xAA);        // ??
-  18   2            
-  19   2          TaskHandler();
-  20   2      
-  21   2      
-  22   2        }
-  23   1      }
-  24          
-  25          
-  26          
+  15   1      #if USER_DEBUG_ENABLE
+  16   1          debug_init();
+  17   1      
+  18   1          P1_MD1 &= ~GPIO_P14_MODE_SEL(0x03);
+  19   1          P1_MD1 |= GPIO_P14_MODE_SEL(0x01);
+  20   1          FOUT_S14 = GPIO_FOUT_AF_FUNC;
+  21   1      
+  22   1          printf("sys init\n");
+  23   1      #endif
+  24   1      
+  25   1          timer0_init(); // 系统定时器初始化
+  26   1      
+  27   1          pwm_channel_0_set_duty(PWM_DUTY_VAL_85_PERCENT);
+  28   1          pwm_channel_1_set_duty(PWM_DUTY_VAL_85_PERCENT);
+  29   1          pwm_channel_2_set_duty(PWM_DUTY_VAL_85_PERCENT);
+  30   1          pwm_channel_3_set_duty(PWM_DUTY_VAL_85_PERCENT);
+  31   1      
+  32   1          while (1)
+  33   1          {
+  34   2      
+  35   2              WDT_KEY = WDT_KEY_VAL(0xAA); // 关闭看门狗
+  36   2      
+  37   2              task_handle();
+  38   2          }
+  39   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =     17    ----
-   CONSTANT SIZE    =   ----    ----
+   CODE SIZE        =     72    ----
+   CONSTANT SIZE    =     10    ----
    XDATA SIZE       =      5    ----
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----

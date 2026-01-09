@@ -20,11 +20,11 @@ void ZD_GPIO_Init(void)
     motor_backward_pin = 0;
 #else
 
-    // 配置STIMER0的PWM端口：P21--STMR0_PWM
+    // 配置 STIMER0 的PWM端口：P21--STMR0_PWM
     P2_MD0 &= ~GPIO_P21_MODE_SEL(0x03);
     P2_MD0 |= GPIO_P21_MODE_SEL(0x01);
-    FOUT_S21 = GPIO_FOUT_STMR0_PWMOUT; // 选择stmr0_pwmout
-    // STIMER0配置1kHz PWM
+    FOUT_S21 = GPIO_FOUT_STMR0_PWMOUT; // 选择 stmr0_pwmout
+    // STIMER0 配置 1kHz PWM
     STMR0_PSC = STMR_PRESCALE_VAL(0x00);                        // 不分频
     STMR0_PRH = STMR_PRD_VAL_H((STMR0_PEROID_VAL >> 8) & 0xFF); // 周期高八位寄存器
     STMR0_PRL = STMR_PRD_VAL_L((STMR0_PEROID_VAL >> 0) & 0xFF); // 周期低八位寄存器
@@ -37,11 +37,11 @@ void ZD_GPIO_Init(void)
     STMR_CNTCLR |= STMR_0_CNT_CLR(0x1);                         // 计数清零
     STMR_CNTEN |= STMR_0_CNT_EN(0x1);                           // 计数使能
 
-    // 配置STIMER1的PWM端口：P22--STMR1_PWM
+    // 配置 STIMER1 的PWM端口：P22--STMR1_PWM
     P0_MD1 &= ~GPIO_P06_MODE_SEL(0x03);
     P0_MD1 |= GPIO_P06_MODE_SEL(0x01);
-    FOUT_S06 = GPIO_FOUT_STMR1_PWMOUT; // 选择stmr1_pwmout
-    // STIMER1配置1kHz PWM
+    FOUT_S06 = GPIO_FOUT_STMR1_PWMOUT; // 选择 stmr1_pwmout
+    // STIMER1 配置 1kHz PWM
     STMR1_PSC = STMR_PRESCALE_VAL(0x00);                        // 不分频
     STMR1_PRH = STMR_PRD_VAL_H((STMR1_PEROID_VAL >> 8) & 0xFF); // 周期高八位寄存器
     STMR1_PRL = STMR_PRD_VAL_L((STMR1_PEROID_VAL >> 0) & 0xFF); // 周期低八位寄存器
@@ -66,10 +66,10 @@ void ZD_GPIO_Init(void)
 
     // ad按键  电量检测  充电检测
     P0_MD1 &= ~GPIO_P05_MODE_SEL(0x03);
-    P0_MD1 |= GPIO_P05_MODE_SEL(0x3); // P02设为模拟模式
+    P0_MD1 |= GPIO_P05_MODE_SEL(0x3); // 设为模拟模式
 
     P2_MD0 &= ~GPIO_P22_MODE_SEL(0x03);
-    P2_MD0 |= GPIO_P22_MODE_SEL(0x3); // P05设为模拟模式
+    P2_MD0 |= GPIO_P22_MODE_SEL(0x3); // 设为模拟模式
 
     // ADC配置
     ADC_ACON1 &= ~(ADC_VREF_SEL(0x7) | ADC_EXREF_SEL(0x1)); // 关闭外部参考电压
@@ -92,9 +92,9 @@ void ZD_GPIO_Init(void)
 
     delay_ms(1); // 等待ADC模块配置稳定，需要等待20us以上
 
-    P2_DRV1 = GPIO_P21_DRV_SEL(0x1F);
-    P2_DRV2 = GPIO_P22_DRV_SEL(0x1F);
-    P1_DRV7 = GPIO_P17_DRV_SEL(0x1F);
+    P2_DRV1 = GPIO_P21_DRV_SEL(0x1F); // 驱动电流配置
+    P2_DRV2 = GPIO_P22_DRV_SEL(0x1F); // 驱动电流配置
+    P1_DRV7 = GPIO_P17_DRV_SEL(0x1F); // 驱动电流配置
 }
 
 void forward_pwm(u16 val)
@@ -169,12 +169,11 @@ void keyHandler(void)
 
 u16 get_adc_value(void)
 {
-
     u16 adc0_val;
 
     ADC_CFG0 |= ADC_CHAN0_TRG(0x1); // 触发ADC0转换
     if (!(ADC_STA & ADC_CHAN0_DONE(0x1)))
-        return;
+        return 0;
     ADC_STA = ADC_CHAN0_DONE(0x1);                    // 清除ADC0转换完成标志位
     adc0_val = (ADC_DATAH0 << 4) | (ADC_DATAL0 >> 4); // 读取ADC0的值
 
@@ -183,13 +182,12 @@ u16 get_adc_value(void)
 
 u16 get_adc_value1(void)
 {
-
     u16 adc1_val;
 
     ADC_CFG0 |= ADC_CHAN1_TRG(0x1); // 触发ADC0转换
     if (!(ADC_STA & ADC_CHAN1_DONE(0x1)))
-        return;
-    ADC_STA = ADC_CHAN1_DONE(0x1);                    // 清除ADC0转换完成标志位
+        return 0;
+    ADC_STA = ADC_CHAN1_DONE(0x1);                    // 清除 转换完成标志位
     adc1_val = (ADC_DATAH1 << 4) | (ADC_DATAL1 >> 4); // 读取ADC0的值
 
     return adc1_val;
@@ -197,9 +195,8 @@ u16 get_adc_value1(void)
 
 u8 qiangzhi_back = 0;
 u16 qiangzhi_cnt = 0;
-void MotorHadnler(void)
+void MotorHadnler(void) // 旧版的工程，是1ms调用一次，检测过流累计时间200ms
 {
-
     static u16 ad1 = 0;
     static u16 ad2 = 0;
     static u16 working_timing = 0;
