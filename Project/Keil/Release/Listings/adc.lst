@@ -1,0 +1,110 @@
+C51 COMPILER V9.60.7.0   ADC                                                               01/09/2026 11:34:46 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE ADC
+OBJECT MODULE PLACED IN .\Release\Objects\adc.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE ..\..\Hardware\adc.c LARGE OPTIMIZE(8,SPEED) BROWSE INTVECTOR(0X000C) IN
+                    -CDIR(..\..\Libraries\Include;..\..\User;..\..\Hardware) INTERVAL(3) DEBUG OBJECTEXTEND PRINT(.\Release\Listings\adc.lst)
+                    - OBJECT(.\Release\Objects\adc.obj)
+
+line level    source
+
+   1          #include "adc.h"
+   2          
+   3          
+   4          void ZD_ADC_Init(void)
+   5          {
+   6   1          // 配置P04为模拟输入模式
+   7   1          P0_MD1   |= GPIO_P05_MODE_SEL(0x3);                       // P21设为模拟模式
+   8   1      
+   9   1          //ADC配置
+  10   1          ADC_ACON1 &= ~(ADC_VREF_SEL(0x7) | ADC_EXREF_SEL(0x1));   // 关闭外部参考电压
+  11   1          ADC_ACON1 |= ADC_VREF_SEL(0x5) |                          // 选择内部参考电压4.2v
+  12   1                       ADC_TEN_SEL(0x3);
+  13   1      
+  14   1      
+  15   1          ADC_ACON0  = ADC_CMP_EN(0x1)  |                           // 打开ADC中的CMP使能信号
+  16   1                       ADC_BIAS_EN(0x1) |                           // 打开ADC偏置电流能使信号
+  17   1                       ADC_BIAS_SEL(0x1);
+  18   1          ADC_CHS0   = ADC_ANALOG_CHAN(0x05) |                      // P04通路     选择对应的引脚配置
+  19   1                       ADC_EXT_SEL(0x0);                            // 选择外部通路
+  20   1      
+  21   1      
+  22   1      
+  23   1          ADC_CFG0  |= ADC_CHAN0_EN(0x1) |                          // 使能通道0转换
+  24   1                       ADC_EN(0x1);                                 // 使能A/D转换
+  25   1          delay_ms(1);       
+  26   1      
+  27   1      
+  28   1      
+  29   1      }
+  30          
+  31          
+  32          u16 current_arr[16] = {0};
+  33          u8 current_index = 0;
+  34          u32 current_sum = 0;
+  35          u16 current_average = 0;
+  36          void CheckCurrentFunc(void)
+  37          {
+  38   1      
+  39   1        static u16 adc0_val = 0;
+  40   1        u8 i = 0;
+  41   1        ADC_CFG0 |= ADC_CHAN0_TRG(0x1);                       // 触发ADC0转换
+  42   1        if(ADC_STA & ADC_CHAN0_DONE(0x1)){
+  43   2      
+  44   2          ADC_STA  = ADC_CHAN0_DONE(0x1);                       // 清除ADC0转换完成标志位
+  45   2          adc0_val = (ADC_DATAH0 << 4) | (ADC_DATAL0 >> 4);     // 读取ADC0的值
+  46   2      
+  47   2        }
+  48   1          current_arr[current_index] = adc0_val;
+  49   1      
+  50   1      #if 0
+              
+              /*  这个滤波，波形不行  */
+                  if(++current_index >= 16){
+C51 COMPILER V9.60.7.0   ADC                                                               01/09/2026 11:34:46 PAGE 2   
+
+                      current_index = 15;
+                      for(i = 0; i < 15; i++){
+              
+                          current_arr[i] = current_arr[i+1];
+              
+              
+                      }
+              
+              
+                  }
+              
+              #else
+  66   1          if(++current_index >= 16)current_index = 0;
+  67   1       #endif   
+  68   1          current_sum = 0;
+  69   1          for( i = 0; i < 16; i++)
+  70   1          {
+  71   2              current_sum += current_arr[i];
+  72   2          }
+  73   1          current_average = current_sum >> 4;
+  74   1      
+  75   1      
+  76   1          printf("a=%d,",adc0_val);
+  77   1          printf("v=%d,",current_average);
+  78   1       
+  79   1      
+  80   1      }
+  81          
+  82          
+  83          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    277    ----
+   CONSTANT SIZE    =     12    ----
+   XDATA SIZE       =     46       1
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

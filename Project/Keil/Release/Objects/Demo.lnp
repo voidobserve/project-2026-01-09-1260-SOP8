@@ -1,0 +1,12 @@
+".\Release\Objects\STARTUP.obj",
+".\Release\Objects\system.obj",
+".\Release\Objects\main.obj",
+".\Release\Objects\debug.obj",
+".\Release\Objects\adc.obj",
+".\Release\Objects\timer.obj",
+".\Release\Objects\task.obj",
+".\Release\Objects\gpio_config.obj" 
+TO ".\Release\Objects\Demo" 
+PRINT(".\Release\Listings\Demo.m51") RAMSIZE(256) 
+CODE( 0X0000-0X3EEF )
+XDATA( 0X6000-0X66FF )

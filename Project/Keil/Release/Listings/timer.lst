@@ -1,0 +1,78 @@
+C51 COMPILER V9.60.7.0   TIMER                                                             01/09/2026 11:34:46 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE TIMER
+OBJECT MODULE PLACED IN .\Release\Objects\timer.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE ..\..\Hardware\timer.c LARGE OPTIMIZE(8,SPEED) BROWSE INTVECTOR(0X000C) 
+                    -INCDIR(..\..\Libraries\Include;..\..\User;..\..\Hardware) INTERVAL(3) DEBUG OBJECTEXTEND PRINT(.\Release\Listings\timer.
+                    -lst) OBJECT(.\Release\Objects\timer.obj)
+
+line level    source
+
+   1          #include "timer.h"
+   2          
+   3          
+   4          
+   5          
+   6          
+   7          void  ZD_TIMER_Init(void)
+   8          {
+   9   1      
+  10   1      
+  11   1              __EnableIRQ(TMR0_IRQn); // 使能timer0中断
+  12   1              IE_EA = 1;              // 使能总中断
+  13   1      
+  14   1              // 设置timer0的计数功能，配置一个频率为的中断
+  15   1              TMR_ALLCON = TMR0_CNT_CLR(0x1);                                                 // 清除计数值
+  16   1              TMR0_PRH   = TMR_PERIOD_VAL_H((TIMER0_PEROID_VAL >> 8) & 0xFF);                 // 周期值
+  17   1              TMR0_PRL   = TMR_PERIOD_VAL_L((TIMER0_PEROID_VAL >> 0) & 0xFF);
+  18   1              TMR0_CONH  = TMR_PRD_PND(0x1) | TMR_PRD_IRQ_EN(0x1);                            // 计数等于周期时�
+             -��许发生中断
+  19   1              TMR0_CONL  = TMR_SOURCE_SEL(0x7) | TMR_PRESCALE_SEL(0x0) | TMR_MODE_SEL(0x1);   // 选择系统时钟，1
+             -28分频，计数模式
+  20   1      
+  21   1      
+  22   1      
+  23   1      }
+  24          
+  25          
+  26          
+  27          
+  28          
+  29          /*  ---------------------  定时中断服务函数 ---------------------- */
+  30          
+  31          void TIMR0_IRQHandler(void) interrupt TMR0_IRQn
+  32          {
+  33   1              // 进入中断设置IP，不可删除
+  34   1              __IRQnIPnPush(TMR0_IRQn);
+  35   1      
+  36   1              // ---------------- 用户函数处理 -------------------
+  37   1      
+  38   1              // 周期中断
+  39   1              if (TMR0_CONH & TMR_PRD_PND(0x1))
+  40   1              {
+  41   2                      TMR0_CONH |= TMR_PRD_PND(0x1);          // 清除pending 
+  42   2      
+  43   2              TaskSchedule();
+  44   2      
+  45   2              }
+  46   1      
+  47   1              // 退出中断设置IP，不可删除
+  48   1              __IRQnIPnPop(TMR0_IRQn);
+  49   1      }
+
+
+C51 COMPILER V9.60.7.0   TIMER                                                             01/09/2026 11:34:46 PAGE 2   
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    156    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =      5    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
