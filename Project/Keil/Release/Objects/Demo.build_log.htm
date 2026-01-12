@@ -26,19 +26,22 @@ Project File Date:  01/09/2026
 
 <h2>Output:</h2>
 Build target 'Target 1'
-compiling gpio_config.c...
 linking...
 *** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
     SEGMENT: ?PR?_USER_PRINTF?DEBUG
 *** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
     SEGMENT: ?PR?ADC_INIT?ADC
 *** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
-    SEGMENT: ?PR?ADC_VAL_UPDATE?ADC
+    SEGMENT: ?PR?ADC_SCAN?ADC
 *** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
     SEGMENT: ?PR?ZD_GPIO_INIT?GPIO_CONFIG
-Program Size: data=15.1 xdata=116 code=3508
+*** WARNING L15: MULTIPLE CALL TO SEGMENT
+    SEGMENT: ?PR?PRINTF?PRINTF
+    CALLER1: ?C_C51STARTUP
+    CALLER2: ?PR?ADC_IRQHANDLER?ADC
+Program Size: data=21.2 xdata=138 code=3989
 creating hex file from ".\Release\Objects\Demo"...
-".\Release\Objects\Demo" - 0 Error(s), 4 Warning(s).
+".\Release\Objects\Demo" - 0 Error(s), 5 Warning(s).
 Build Time Elapsed:  00:00:00
 </pre>
 </body>

@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   DEBUG                                                             01/09/2026 16:43:51 PAGE 1   
+C51 COMPILER V9.60.7.0   DEBUG                                                             01/12/2026 09:07:13 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE DEBUG
@@ -62,7 +62,7 @@ line level    source
   51   1          while (!(UART1_STA & UART_TX_DONE(0x01)))
   52   1              ;
   53   1          UART1_DATA = uart_data;
-C51 COMPILER V9.60.7.0   DEBUG                                                             01/09/2026 16:43:51 PAGE 2   
+C51 COMPILER V9.60.7.0   DEBUG                                                             01/12/2026 09:07:13 PAGE 2   
 
   54   1          while (!(UART1_STA & UART_TX_DONE(0x01)))
   55   1              ;
@@ -109,7 +109,7 @@ line level    source
 MODULE INFORMATION:   STATIC OVERLAYABLE
    CODE SIZE        =    103    ----
    CONSTANT SIZE    =   ----    ----
-   XDATA SIZE       =      5       4
+   XDATA SIZE       =   ----       4
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----

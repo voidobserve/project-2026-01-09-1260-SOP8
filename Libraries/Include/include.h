@@ -40,11 +40,11 @@
 
 
 /* ----------   include ------------*/
-#include "adc.h"
-#include "gpio_config.h"
-#include "timer.h"
+// #include "adc.h"
+// #include "gpio_config.h"
+// #include "timer.h"
 #include <stdio.h>
-#include "task.h"
+// #include "task.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/

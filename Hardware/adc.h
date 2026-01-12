@@ -22,6 +22,32 @@ enum
     ADC_STATUS_SEL_GET_REVERSE,
 };
 
+// adc0 切换到 检测正转的通道
+#define ADC0_SEL_FORWARD_CHANNEL() \
+    do                             \
+    {                              \
+    } while (0)
+
+// adc0 切换到 检测反转的通道
+#define ADC0_SEL_REVERSE_CHANNEL() \
+    do                             \
+    {                              \
+        /* code */                 \
+    } while (0)
+
+// adc1 切换到 检测正转的通道
+#define ADC1_SEL_FORWARD_CHANNEL() \
+    do                             \
+    {                              \
+    } while (0)
+
+// adc1 切换到 检测反转的通道
+#define ADC1_SEL_REVERSE_CHANNEL() \
+    do                             \
+    {                              \
+        /* code */                 \
+    } while (0)
+
 void adc_scan(void);
 
 #endif

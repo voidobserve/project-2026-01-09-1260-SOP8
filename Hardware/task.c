@@ -1,5 +1,7 @@
 #include "task.h"
 
+#include "gpio_config.h"
+
 #define TASK_NUM_MAX 2 // 任务数量
 
 /*

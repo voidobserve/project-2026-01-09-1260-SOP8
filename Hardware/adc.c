@@ -1,4 +1,5 @@
 #include "adc.h"
+#include "user_config.h"
 
 // 存放采集到的ad值
 volatile u16 adc_val_forward_0; // 电机0 正转 ad值
@@ -6,6 +7,9 @@ volatile u16 adc_val_reverse_0; // 电机0 反转 ad值
 volatile u16 adc_val_forward_1; // 电机1 正转 ad值
 volatile u16 adc_val_reverse_1; // 电机1 反转 ad值
 
+// adc0 、 adc1 的状态机
+volatile u8 adc0_status;
+volatile u8 adc1_status;
 void adc_init(void)
 {
     // ADC配置
@@ -17,24 +21,16 @@ void adc_init(void)
                 ADC_BIAS_EN(0x1) | // 打开ADC偏置电流能使信号
                 ADC_BIAS_SEL(0x1); // 打开 ADC偏置电流
 
-#if 0                
-    ADC_CHS0 = ADC_ANALOG_CHAN(0x05) | // P02通路     选择对应的引脚配置
-               ADC_EXT_SEL(0x0);       // 选择外部通路
-    ADC_CFG0 |= ADC_CHAN0_EN(0x1) |    // 使能通道0转换
-                ADC_EN(0x1);           // 使能A/D转换
-
-    ADC_CHS1 = ADC_ANALOG_CHAN(0x12) | // P05通路     选择对应的引脚配置
-               ADC_EXT_SEL(0x0);       // 选择外部通路
-    ADC_CFG0 |= ADC_CHAN1_EN(0x1) |    // 使能通道1转换
-                ADC_EN(0x1);           // 使能A/D转换
-#endif
-
     __EnableIRQ(ADC_IRQn); // 使能ADC中断
-    IE_EA = 1;             // 使能总中断
-    // MARK: - USER_TO_DO
-    // 需要检查一下对应的寄存器配置 ADC_CFG1
-    ADC_CFG1 |= (0x0F << 3) | // ADC时钟分频为16分频，为系统时钟/16
+    IE_EA = 1;             // 使能总中断 
+
+    ADC_CFG1 |= (0x0F << 3) | // ADC时钟分频为16分频，为系统时钟/16（相当于把adc时钟设置为最慢，）
+                (0x01 << 1) | // ADC1 通道中断使能
                 (0x01 << 0);  // ADC0 通道中断使能
+
+    ADC_CFG0 |= ADC_CHAN0_EN(0x1) | // 使能 通道0
+                ADC_CHAN1_EN(0x1) | // 使能 通道1
+                ADC_EN(0x1);        // 使能adc
 
     delay_ms(1); // 等待ADC模块配置稳定，需要等待20us以上
 }
@@ -55,11 +51,13 @@ static void adc0_sel_channel(u8 adc_channel)
     {
     case ADC_CHANNEL_FORWARD:
     {
+        ADC0_SEL_FORWARD_CHANNEL();
     }
     break;
     // =======================================================
     case ADC_CHANNEL_REVERSE:
     {
+        ADC0_SEL_REVERSE_CHANNEL();
     }
     break;
     // =======================================================
@@ -68,9 +66,6 @@ static void adc0_sel_channel(u8 adc_channel)
     }
     break;
     }
-
-    ADC_CFG0 |= ADC_CHAN0_EN(0x1) | // 使能通道0
-                ADC_EN(0x1);        // 使能adc
 }
 
 /**
@@ -89,11 +84,13 @@ static void adc1_sel_channel(u8 adc_channel)
     {
     case ADC_CHANNEL_FORWARD:
     {
+        ADC1_SEL_FORWARD_CHANNEL();
     }
     break;
     // =======================================================
     case ADC_CHANNEL_REVERSE:
     {
+        ADC1_SEL_REVERSE_CHANNEL();
     }
     break;
     // =======================================================
@@ -102,9 +99,6 @@ static void adc1_sel_channel(u8 adc_channel)
     }
     break;
     }
-
-    ADC_CFG0 |= ADC_CHAN1_EN(0x1) | // 使能通道0
-                ADC_EN(0x1);        // 使能adc
 }
 
 /**
@@ -115,8 +109,6 @@ static void adc1_sel_channel(u8 adc_channel)
  */
 void adc_scan(void)
 {
-    static volatile u8 adc0_status;
-    static volatile u8 adc1_status;
 
     if (adc0_status == ADC_STATUS_NONE || adc0_status == ADC_STATUS_SEL_GET_REVERSE)
     {
@@ -173,12 +165,14 @@ void adc_scan(void)
 
 void ADC_IRQHandler(void) interrupt ADC_IRQn
 {
+    volatile u16 adc_val = 0;
+
     // 进入中断设置IP，不可删除
     __IRQnIPnPush(ADC_IRQn);
 
     // ---------------- 用户函数处理 -------------------
 
-#if 0
+#if 0 // 参考程序
 
     if (ADC_STA & ADC_CHAN0_DONE(0x01))
     {
@@ -244,12 +238,55 @@ void ADC_IRQHandler(void) interrupt ADC_IRQn
         }
     }
 
+#endif
 
+    // adc0 转换完成：
+    if (ADC_STA & ADC_CHAN0_DONE(0x01))
+    {
+        adc_val = (ADC_DATAH0 << 4) | (ADC_DATAL0 >> 4); // 先接收ad值
+        ADC_STA |= ADC_CHAN0_DONE(0x01);                 // 清除 ADC0 转换完成标志位
+
+        if (adc0_status == ADC_STATUS_SEL_GET_FORWARD)
+        {
+            // 获取ad值
+            adc_val_forward_0 = adc_val;
+#if USER_DEBUG_ENABLE
+            printf("adc0 forward: %u\n", adc_val_forward_0);
+#endif
+        }
+        else if (adc0_status == ADC_STATUS_SEL_GET_REVERSE)
+        {
+            // 获取ad值
+            adc_val_reverse_0 = adc_val;
+#if USER_DEBUG_ENABLE
+            printf("adc0 reverse: %u\n", adc_val_reverse_0);
+#endif
+        }
+    }
+
+    // adc1 转换完成：
     if (ADC_STA & ADC_CHAN1_DONE(0x01))
     {
+        adc_val = (ADC_DATAH1 << 4) | (ADC_DATAL1 >> 4); // 先接收ad值
+        ADC_STA |= ADC_CHAN1_DONE(0x01);                 // 清除 ADC1 转换完成标志位
 
-    }
+        if (adc1_status == ADC_STATUS_SEL_GET_FORWARD)
+        {
+            // 获取ad值
+            adc_val_forward_1 = adc_val;
+#if USER_DEBUG_ENABLE
+            printf("adc1 forward: %u\n", adc_val_forward_1);
 #endif
+        }
+        else if (adc1_status == ADC_STATUS_SEL_GET_REVERSE)
+        {
+            // 获取ad值
+            adc_val_reverse_1 = adc_val;
+#if USER_DEBUG_ENABLE
+            printf("adc1 reverse: %u\n", adc_val_reverse_1);
+#endif
+        }
+    }
 
     // 退出中断设置IP，不可删除
     __IRQnIPnPop(ADC_IRQn);

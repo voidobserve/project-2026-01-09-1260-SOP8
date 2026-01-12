@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   ADC                                                               01/09/2026 16:58:55 PAGE 1   
+C51 COMPILER V9.60.7.0   ADC                                                               01/12/2026 09:43:12 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE ADC
@@ -10,49 +10,316 @@ COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE ..\..\Hardware\adc.c LARGE OPTIM
 line level    source
 
    1          #include "adc.h"
-   2          
-   3          void adc_init(void)
-   4          {
-   5   1          // ADC配置
-   6   1          ADC_ACON1 &= ~(ADC_VREF_SEL(0x7) | ADC_EXREF_SEL(0x1)); // 关闭外部参考电压
-   7   1          ADC_ACON1 |= ADC_VREF_SEL(0x5) |                        // 选择 4.2V 作为参考电压
-   8   1                       ADC_TEN_SEL(0x3); // 关闭测试信号
-   9   1      
-  10   1          ADC_ACON0 = ADC_CMP_EN(0x1) |  // 打开ADC中的CMP使能信号
-  11   1                      ADC_BIAS_EN(0x1) | // 打开ADC偏置电流能使信号
-  12   1                      ADC_BIAS_SEL(0x1); // 打开 ADC偏置电流
-  13   1      
-  14   1      #if 0                
-                  ADC_CHS0 = ADC_ANALOG_CHAN(0x05) | // P02通路     选择对应的引脚配置
-                             ADC_EXT_SEL(0x0);       // 选择外部通路
-                  ADC_CFG0 |= ADC_CHAN0_EN(0x1) |    // 使能通道0转换
-                              ADC_EN(0x1);           // 使能A/D转换
+   2          #include "user_config.h"
+   3          
+   4          // 存放采集到的ad值
+   5          volatile u16 adc_val_forward_0; // 电机0 正转 ad值
+   6          volatile u16 adc_val_reverse_0; // 电机0 反转 ad值
+   7          volatile u16 adc_val_forward_1; // 电机1 正转 ad值
+   8          volatile u16 adc_val_reverse_1; // 电机1 反转 ad值
+   9          
+  10          // adc0 、 adc1 的状态机
+  11          volatile u8 adc0_status;
+  12          volatile u8 adc1_status;
+  13          void adc_init(void)
+  14          {
+  15   1          // ADC配置
+  16   1          ADC_ACON1 &= ~(ADC_VREF_SEL(0x7) | ADC_EXREF_SEL(0x1)); // 关闭外部参考电压
+  17   1          ADC_ACON1 |= ADC_VREF_SEL(0x5) |                        // 选择 4.2V 作为参考电压
+  18   1                       ADC_TEN_SEL(0x3);                          // 关闭测试信号
+  19   1      
+  20   1          ADC_ACON0 = ADC_CMP_EN(0x1) |  // 打开ADC中的CMP使能信号
+  21   1                      ADC_BIAS_EN(0x1) | // 打开ADC偏置电流能使信号
+  22   1                      ADC_BIAS_SEL(0x1); // 打开 ADC偏置电流
+  23   1      
+  24   1          __EnableIRQ(ADC_IRQn); // 使能ADC中断
+  25   1          IE_EA = 1;             // 使能总中断 
+  26   1      
+  27   1          ADC_CFG1 |= (0x0F << 3) | // ADC时钟分频为16分频，为系统时钟/16（相当于把adc时钟�
+             -�置为最慢，）
+  28   1                      (0x01 << 1) | // ADC1 通道中断使能
+  29   1                      (0x01 << 0);  // ADC0 通道中断使能
+  30   1      
+  31   1          ADC_CFG0 |= ADC_CHAN0_EN(0x1) | // 使能 通道0
+  32   1                      ADC_CHAN1_EN(0x1) | // 使能 通道1
+  33   1                      ADC_EN(0x1);        // 使能adc
+  34   1      
+  35   1          delay_ms(1); // 等待ADC模块配置稳定，需要等待20us以上
+  36   1      }
+  37          
+  38          /**
+  39           * @brief 切换 adc0 的通道
+  40           * @attention 函数内部没有延时等待adc稳定，调用时需要注意
+  41           *
+  42           * @param adc_channel
+  43           */
+  44          /*
+  45              MARK: - USER_TO_DO
+  46              需要补充对应的引脚配置
+  47          */
+  48          static void adc0_sel_channel(u8 adc_channel)
+  49          {
+  50   1          switch (adc_channel)
+  51   1          {
+  52   2          case ADC_CHANNEL_FORWARD:
+C51 COMPILER V9.60.7.0   ADC                                                               01/12/2026 09:43:12 PAGE 2   
+
+  53   2          {
+  54   3              ADC0_SEL_FORWARD_CHANNEL();
+  55   3          }
+  56   2          break;
+  57   2          // =======================================================
+  58   2          case ADC_CHANNEL_REVERSE:
+  59   2          {
+  60   3              ADC0_SEL_REVERSE_CHANNEL();
+  61   3          }
+  62   2          break;
+  63   2          // =======================================================
+  64   2          default:
+  65   2          {
+  66   3          }
+  67   2          break;
+  68   2          }
+  69   1      }
+  70          
+  71          /**
+  72           * @brief 切换 adc1 的通道
+  73           * @attention 函数内部没有延时等待adc稳定，调用时需要注意
+  74           *
+  75           * @param adc_channel
+  76           */
+  77          /*
+  78              MARK: - USER_TO_DO
+  79              需要补充对应的引脚配置
+  80          */
+  81          static void adc1_sel_channel(u8 adc_channel)
+  82          {
+  83   1          switch (adc_channel)
+  84   1          {
+  85   2          case ADC_CHANNEL_FORWARD:
+  86   2          {
+  87   3              ADC1_SEL_FORWARD_CHANNEL();
+  88   3          }
+  89   2          break;
+  90   2          // =======================================================
+  91   2          case ADC_CHANNEL_REVERSE:
+  92   2          {
+  93   3              ADC1_SEL_REVERSE_CHANNEL();
+  94   3          }
+  95   2          break;
+  96   2          // =======================================================
+  97   2          default:
+  98   2          {
+  99   3          }
+ 100   2          break;
+ 101   2          }
+ 102   1      }
+ 103          
+ 104          /**
+ 105           * @brief adc扫描函数，包含轮询、顺序切换通道和启动转换
+ 106           * @note 在adc中断服务函数中接收adc值
+ 107           * @attention 函数内部没有延时等待adc稳定，调用该函数的时间间隔至少要20us，一�
+             -��是用1ms
+ 108           *
+ 109           */
+ 110          void adc_scan(void)
+ 111          {
+ 112   1      
+ 113   1          if (adc0_status == ADC_STATUS_NONE || adc0_status == ADC_STATUS_SEL_GET_REVERSE)
+C51 COMPILER V9.60.7.0   ADC                                                               01/12/2026 09:43:12 PAGE 3   
+
+ 114   1          {
+ 115   2              // 切换ad通道
+ 116   2              adc0_sel_channel(ADC_CHANNEL_FORWARD);
+ 117   2              adc0_status = ADC_STATUS_SEL_GET_FORWARD_WAITING;
+ 118   2          }
+ 119   1          else if (adc0_status == ADC_STATUS_SEL_GET_FORWARD_WAITING)
+ 120   1          {
+ 121   2              // 开启转换，之后在ad中断获取ad值
+ 122   2              ADC_CFG0 |= 0x01 << 0; // 开启 adc0 转换
+ 123   2              adc0_status = ADC_STATUS_SEL_GET_FORWARD;
+ 124   2          }
+ 125   1          else if (adc0_status == ADC_STATUS_SEL_GET_FORWARD)
+ 126   1          {
+ 127   2              // 切换ad通道
+ 128   2              adc0_sel_channel(ADC_CHANNEL_REVERSE);
+ 129   2              adc0_status = ADC_STATUS_SEL_GET_REVERSE_WAITING;
+ 130   2          }
+ 131   1          else if (adc0_status == ADC_STATUS_SEL_GET_REVERSE_WAITING)
+ 132   1          {
+ 133   2              // 开启转换，之后在ad中断获取ad值
+ 134   2              ADC_CFG0 |= 0x01 << 0; // 开启 adc0 转换
+ 135   2              adc0_status = ADC_STATUS_SEL_GET_REVERSE;
+ 136   2          }
+ 137   1      
+ 138   1          // ===========================================================
+ 139   1      
+ 140   1          if (adc1_status == ADC_STATUS_NONE || adc1_status == ADC_STATUS_SEL_GET_REVERSE)
+ 141   1          {
+ 142   2              // 切换ad通道
+ 143   2              adc1_sel_channel(ADC_CHANNEL_FORWARD);
+ 144   2              adc1_status = ADC_STATUS_SEL_GET_FORWARD_WAITING;
+ 145   2          }
+ 146   1          else if (adc1_status == ADC_STATUS_SEL_GET_FORWARD_WAITING)
+ 147   1          {
+ 148   2              // 开启转换，之后在ad中断获取ad值
+ 149   2              ADC_CFG0 |= 0x01 << 1; // 开启 adc1 转换
+ 150   2              adc1_status = ADC_STATUS_SEL_GET_FORWARD;
+ 151   2          }
+ 152   1          else if (adc1_status == ADC_STATUS_SEL_GET_FORWARD)
+ 153   1          {
+ 154   2              // 切换ad通道
+ 155   2              adc1_sel_channel(ADC_CHANNEL_REVERSE);
+ 156   2              adc1_status = ADC_STATUS_SEL_GET_REVERSE_WAITING;
+ 157   2          }
+ 158   1          else if (adc1_status == ADC_STATUS_SEL_GET_REVERSE_WAITING)
+ 159   1          {
+ 160   2              // 开启转换，之后在ad中断获取ad值
+ 161   2              ADC_CFG0 |= 0x01 << 1; // 开启 adc1 转换
+ 162   2              adc1_status = ADC_STATUS_SEL_GET_REVERSE;
+ 163   2          }
+ 164   1      }
+ 165          
+ 166          void ADC_IRQHandler(void) interrupt ADC_IRQn
+ 167          {
+ 168   1          volatile u16 adc_val = 0;
+ 169   1      
+ 170   1          // 进入中断设置IP，不可删除
+ 171   1          __IRQnIPnPush(ADC_IRQn);
+ 172   1      
+ 173   1          // ---------------- 用户函数处理 -------------------
+ 174   1      
+ 175   1      #if 0 // 参考程序
+C51 COMPILER V9.60.7.0   ADC                                                               01/12/2026 09:43:12 PAGE 4   
+
               
-                  ADC_CHS1 = ADC_ANALOG_CHAN(0x12) | // P05通路     选择对应的引脚配置
-                             ADC_EXT_SEL(0x0);       // 选择外部通路
-                  ADC_CFG0 |= ADC_CHAN1_EN(0x1) |    // 使能通道1转换
-                              ADC_EN(0x1);           // 使能A/D转换
+                  if (ADC_STA & ADC_CHAN0_DONE(0x01))
+                  {
+                      volatile u16 adc_val = (ADC_DATAH0 << 4) | (ADC_DATAL0 >> 4); // 先接收ad值
+                      ADC_STA |= ADC_CHAN0_DONE(0x01);                              // 清除ADC0转换完成标志位
+              
+                      if (ADC_STATUS_SEL_ENGINE == cur_adc_status)
+                      {
+                          // 更新发动机检测一端的ad值
+              
+                          static u8 i = 0; // adc采集次数的计数
+                          static volatile u32 g_tmpbuff = 0;
+                          static volatile u16 g_adcmax = 0;
+                          static volatile u16 g_adcmin = 0xFFFF;
+              
+                          if (i < 20)
+                          {
+                              i++;
+              
+                              if (i >= 2) // 丢弃前两次采样值
+                              {
+                                  if (adc_val > g_adcmax)
+                                      g_adcmax = adc_val; // 最大
+                                  if (adc_val < g_adcmin)
+                                      g_adcmin = adc_val; // 最小
+                                  g_tmpbuff += adc_val;
+                              }
+              
+                              if (i < 20)
+                                  ADC_CFG0 |= 0x01 << 0; // 开启adc0转换
+                          }
+              
+                          if (i >= 20)
+                          {
+                              adc_val_from_engine = (g_tmpbuff >> 4); // 除以16，取平均值
+                              cur_adc_status = ADC_STATUS_SEL_ENGINE_DONE;
+              
+                              // 重新初始化使用到的变量：
+                              i = 0;
+                              g_adcmax = 0;
+                              g_adcmin = 0xFFFF;
+                              g_tmpbuff = 0;
+                              // printf("1 engine scan done\n");
+                          }
+                      }
+                      else if (ADC_STATUS_SEL_KNOB == cur_adc_status)
+                      {
+                          // 更新旋钮检测一端的ad值
+                          adc_val_from_knob = adc_val;
+                          // printf("2 knob scan done\n");
+                      }
+                      else if (ADC_STATUS_SEL_GET_TEMP == cur_adc_status)
+                      {
+                          // 更新热敏电阻检测一端的ad值
+                          adc_val_from_temp = adc_val;
+                          // printf("3 temp scan done\n");
+                      }
+                      else if (ADC_STATUS_SEL_FAN_DETECT == cur_adc_status)
+                      {
+                          // 更新风扇检测一端的ad值
+                          adc_val_from_fan = adc_val;
+                          // printf("4 fan scan done\n");
+C51 COMPILER V9.60.7.0   ADC                                                               01/12/2026 09:43:12 PAGE 5   
+
+                      }
+                  }
+              
               #endif
-  25   1      
-  26   1          delay_ms(1); // 等待ADC模块配置稳定，需要等待20us以上
-  27   1      }
-  28           
-  29          
-  30          /**
-  31           * @brief 更新ad值
-  32           * 
-  33           */
-  34          void adc_val_update(void)
-  35          {
-  36   1      
-  37   1      }
-  38          
+ 242   1      
+ 243   1          // adc0 转换完成：
+ 244   1          if (ADC_STA & ADC_CHAN0_DONE(0x01))
+ 245   1          {
+ 246   2              adc_val = (ADC_DATAH0 << 4) | (ADC_DATAL0 >> 4); // 先接收ad值
+ 247   2              ADC_STA |= ADC_CHAN0_DONE(0x01);                 // 清除 ADC0 转换完成标志位
+ 248   2      
+ 249   2              if (adc0_status == ADC_STATUS_SEL_GET_FORWARD)
+ 250   2              {
+ 251   3                  // 获取ad值
+ 252   3                  adc_val_forward_0 = adc_val;
+ 253   3      #if USER_DEBUG_ENABLE
+ 254   3                  printf("adc0 forward: %u\n", adc_val_forward_0);
+ 255   3      #endif
+ 256   3              }
+ 257   2              else if (adc0_status == ADC_STATUS_SEL_GET_REVERSE)
+ 258   2              {
+ 259   3                  // 获取ad值
+ 260   3                  adc_val_reverse_0 = adc_val;
+ 261   3      #if USER_DEBUG_ENABLE
+ 262   3                  printf("adc0 reverse: %u\n", adc_val_reverse_0);
+ 263   3      #endif
+ 264   3              }
+ 265   2          }
+ 266   1      
+ 267   1          // adc1 转换完成：
+ 268   1          if (ADC_STA & ADC_CHAN1_DONE(0x01))
+ 269   1          {
+ 270   2              adc_val = (ADC_DATAH1 << 4) | (ADC_DATAL1 >> 4); // 先接收ad值
+ 271   2              ADC_STA |= ADC_CHAN1_DONE(0x01);                 // 清除 ADC1 转换完成标志位
+ 272   2      
+ 273   2              if (adc1_status == ADC_STATUS_SEL_GET_FORWARD)
+ 274   2              {
+ 275   3                  // 获取ad值
+ 276   3                  adc_val_forward_1 = adc_val;
+ 277   3      #if USER_DEBUG_ENABLE
+ 278   3                  printf("adc1 forward: %u\n", adc_val_forward_1);
+ 279   3      #endif
+ 280   3              }
+ 281   2              else if (adc1_status == ADC_STATUS_SEL_GET_REVERSE)
+ 282   2              {
+ 283   3                  // 获取ad值
+ 284   3                  adc_val_reverse_1 = adc_val;
+ 285   3      #if USER_DEBUG_ENABLE
+ 286   3                  printf("adc1 reverse: %u\n", adc_val_reverse_1);
+ 287   3      #endif
+ 288   3              }
+ 289   2          }
+ 290   1      
+ 291   1          // 退出中断设置IP，不可删除
+ 292   1          __IRQnIPnPop(ADC_IRQn);
+ 293   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =     25    ----
-   CONSTANT SIZE    =   ----    ----
-   XDATA SIZE       =      5    ----
+   CODE SIZE        =    481    ----
+   CONSTANT SIZE    =     72    ----
+   XDATA SIZE       =     10       2
+C51 COMPILER V9.60.7.0   ADC                                                               01/12/2026 09:43:12 PAGE 6   
+
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----

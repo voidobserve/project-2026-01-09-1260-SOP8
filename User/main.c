@@ -1,6 +1,8 @@
 #include "include.h"
 #include "user_config.h"
 
+#include "timer.h"
+#include "task.h"
 #include "pwm.h"
 
 void main(void)
