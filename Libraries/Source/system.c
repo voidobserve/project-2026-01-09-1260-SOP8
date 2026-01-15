@@ -78,9 +78,6 @@ void system_init(void)
     __LOADER_CHIP_TRIM;                         // 装载芯片各个模块校准值
 
 
-    WDT_KEY = 0x55;
-    IO_MAP &= ~0x01;
-    WDT_KEY = 0x00;
 
 }
 

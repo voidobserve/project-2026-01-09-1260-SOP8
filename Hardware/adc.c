@@ -2,14 +2,20 @@
 #include "user_config.h"
 
 // 存放采集到的ad值
-volatile u16 adc_val_forward_0; // 电机0 正转 ad值
-volatile u16 adc_val_reverse_0; // 电机0 反转 ad值
-volatile u16 adc_val_forward_1; // 电机1 正转 ad值
-volatile u16 adc_val_reverse_1; // 电机1 反转 ad值
+static volatile u16 adc_val_forward_0 = 0; // 电机0 正转 ad值
+static volatile u16 adc_val_reverse_0 = 0; // 电机0 反转 ad值
+static volatile u16 adc_val_forward_1 = 0; // 电机1 正转 ad值
+static volatile u16 adc_val_reverse_1 = 0; // 电机1 反转 ad值
+
+static volatile bit flag_is_adc_val_forward0_update = 0; // adc0 正转 ad值更新标志
+static volatile bit flag_is_adc_val_reverse0_update = 0;
+static volatile bit flag_is_adc_val_forward1_update = 0;
+static volatile bit flag_is_adc_val_reverse1_update = 0;
 
 // adc0 、 adc1 的状态机
-volatile u8 adc0_status;
-volatile u8 adc1_status;
+static volatile u8 adc0_status = 0; // 如果不赋值，有概率，初始值会不是0，进而导致adc异常工作
+static volatile u8 adc1_status = 0;
+
 void adc_init(void)
 {
     // ADC配置
@@ -22,7 +28,7 @@ void adc_init(void)
                 ADC_BIAS_SEL(0x1); // 打开 ADC偏置电流
 
     __EnableIRQ(ADC_IRQn); // 使能ADC中断
-    IE_EA = 1;             // 使能总中断 
+    IE_EA = 1;             // 使能总中断
 
     ADC_CFG1 |= (0x0F << 3) | // ADC时钟分频为16分频，为系统时钟/16（相当于把adc时钟设置为最慢，）
                 (0x01 << 1) | // ADC1 通道中断使能
@@ -35,16 +41,158 @@ void adc_init(void)
     delay_ms(1); // 等待ADC模块配置稳定，需要等待20us以上
 }
 
+// 置位 对应通道编号的 ad值更新标志
+void adc_set_update_flag(adc_channel_index_t adc_channel_index)
+{
+
+    switch (adc_channel_index)
+    {
+    case ADC_CHANNEL_INDEX_FORWARD_0:
+    {
+        flag_is_adc_val_forward0_update = 1;
+    }
+    break;
+        // =======================================================
+    case ADC_CHANNEL_INDEX_REVERSE_0:
+    {
+        flag_is_adc_val_reverse0_update = 1;
+    }
+    break;
+        // =======================================================
+    case ADC_CHANNEL_INDEX_FORWARD_1:
+    {
+        flag_is_adc_val_forward1_update = 1;
+    }
+    break;
+    // =======================================================
+    case ADC_CHANNEL_INDEX_REVERSE_1:
+    {
+        flag_is_adc_val_reverse1_update = 1;
+    }
+    break;
+        // =======================================================
+    }
+}
+
+// 清除 对应通道编号的 ad值更新标志
+void adc_clear_update_flag(adc_channel_index_t adc_channel_index)
+{
+    switch (adc_channel_index)
+    {
+    case ADC_CHANNEL_INDEX_FORWARD_0:
+    {
+        flag_is_adc_val_forward0_update = 0;
+    }
+    break;
+        // =======================================================
+    case ADC_CHANNEL_INDEX_REVERSE_0:
+    {
+        flag_is_adc_val_reverse0_update = 0;
+    }
+    break;
+        // =======================================================
+    case ADC_CHANNEL_INDEX_FORWARD_1:
+    {
+        flag_is_adc_val_forward1_update = 0;
+    }
+    break;
+    // =======================================================
+    case ADC_CHANNEL_INDEX_REVERSE_1:
+    {
+        flag_is_adc_val_reverse1_update = 0;
+    }
+    break;
+        // =======================================================
+    }
+}
+
+u8 adc_get_update_flag(adc_channel_index_t adc_channel_index)
+{
+    u8 ret = 0;
+
+    switch (adc_channel_index)
+    {
+    case ADC_CHANNEL_INDEX_FORWARD_0:
+    {
+        ret = flag_is_adc_val_forward0_update;
+    }
+    break;
+    // =======================================================
+    case ADC_CHANNEL_INDEX_REVERSE_0:
+    {
+        ret = flag_is_adc_val_reverse0_update;
+    }
+    break;
+    // =======================================================
+    case ADC_CHANNEL_INDEX_FORWARD_1:
+    {
+        ret = flag_is_adc_val_forward1_update;
+    }
+    break;
+    // =======================================================
+    case ADC_CHANNEL_INDEX_REVERSE_1:
+    {
+        ret = flag_is_adc_val_reverse1_update;
+    }
+    break;
+        // =======================================================
+    }
+
+    return ret;
+}
+
+/**
+ * @brief 获取adc通道编号对应的 ad值
+ *
+ * @attention 调用该函数前，应该先判断 对应通道编号的 ad值更新标志
+ *
+ * @param adc_channel_index
+ * @return u16
+ */
+u16 adc_get_val(adc_channel_index_t adc_channel_index)
+{
+    u16 ret = 0;
+
+    // 获取ad值之前，先屏蔽中断，因为ad值是在中断中更新
+    IE_EA = 0;
+    switch (adc_channel_index)
+    {
+    case ADC_CHANNEL_INDEX_FORWARD_0:
+    {
+        ret = adc_val_forward_0;
+    }
+    break;
+    // =======================================================
+    case ADC_CHANNEL_INDEX_REVERSE_0:
+    {
+        ret = adc_val_reverse_0;
+    }
+    break;
+        // =======================================================
+    case ADC_CHANNEL_INDEX_FORWARD_1:
+    {
+        ret = adc_val_forward_1;
+    }
+    break;
+    // =======================================================
+    case ADC_CHANNEL_INDEX_REVERSE_1:
+    {
+        ret = adc_val_reverse_1;
+    }
+    break;
+        // =======================================================
+    }
+    IE_EA = 1; // 使能总中断
+
+    return ret;
+}
+
 /**
  * @brief 切换 adc0 的通道
  * @attention 函数内部没有延时等待adc稳定，调用时需要注意
  *
  * @param adc_channel
  */
-/*
-    MARK: - USER_TO_DO
-    需要补充对应的引脚配置
-*/
 static void adc0_sel_channel(u8 adc_channel)
 {
     switch (adc_channel)
@@ -74,10 +222,6 @@ static void adc0_sel_channel(u8 adc_channel)
  *
  * @param adc_channel
  */
-/*
-    MARK: - USER_TO_DO
-    需要补充对应的引脚配置
-*/
 static void adc1_sel_channel(u8 adc_channel)
 {
     switch (adc_channel)
@@ -103,13 +247,12 @@ static void adc1_sel_channel(u8 adc_channel)
 
 /**
  * @brief adc扫描函数，包含轮询、顺序切换通道和启动转换
- * @note 在adc中断服务函数中接收adc值
+ * @note 该函数启动ad转换之后，在adc中断服务函数中接收adc值
  * @attention 函数内部没有延时等待adc稳定，调用该函数的时间间隔至少要20us，一般是用1ms
  *
  */
 void adc_scan(void)
 {
-
     if (adc0_status == ADC_STATUS_NONE || adc0_status == ADC_STATUS_SEL_GET_REVERSE)
     {
         // 切换ad通道
@@ -172,74 +315,6 @@ void ADC_IRQHandler(void) interrupt ADC_IRQn
 
     // ---------------- 用户函数处理 -------------------
 
-#if 0 // 参考程序
-
-    if (ADC_STA & ADC_CHAN0_DONE(0x01))
-    {
-        volatile u16 adc_val = (ADC_DATAH0 << 4) | (ADC_DATAL0 >> 4); // 先接收ad值
-        ADC_STA |= ADC_CHAN0_DONE(0x01);                              // 清除ADC0转换完成标志位
-
-        if (ADC_STATUS_SEL_ENGINE == cur_adc_status)
-        {
-            // 更新发动机检测一端的ad值
-
-            static u8 i = 0; // adc采集次数的计数
-            static volatile u32 g_tmpbuff = 0;
-            static volatile u16 g_adcmax = 0;
-            static volatile u16 g_adcmin = 0xFFFF;
-
-            if (i < 20)
-            {
-                i++;
-
-                if (i >= 2) // 丢弃前两次采样值
-                {
-                    if (adc_val > g_adcmax)
-                        g_adcmax = adc_val; // 最大
-                    if (adc_val < g_adcmin)
-                        g_adcmin = adc_val; // 最小
-                    g_tmpbuff += adc_val;
-                }
-
-                if (i < 20)
-                    ADC_CFG0 |= 0x01 << 0; // 开启adc0转换
-            }
-
-            if (i >= 20)
-            {
-                adc_val_from_engine = (g_tmpbuff >> 4); // 除以16，取平均值
-                cur_adc_status = ADC_STATUS_SEL_ENGINE_DONE;
-
-                // 重新初始化使用到的变量：
-                i = 0;
-                g_adcmax = 0;
-                g_adcmin = 0xFFFF;
-                g_tmpbuff = 0;
-                // printf("1 engine scan done\n");
-            }
-        }
-        else if (ADC_STATUS_SEL_KNOB == cur_adc_status)
-        {
-            // 更新旋钮检测一端的ad值
-            adc_val_from_knob = adc_val;
-            // printf("2 knob scan done\n");
-        }
-        else if (ADC_STATUS_SEL_GET_TEMP == cur_adc_status)
-        {
-            // 更新热敏电阻检测一端的ad值
-            adc_val_from_temp = adc_val;
-            // printf("3 temp scan done\n");
-        }
-        else if (ADC_STATUS_SEL_FAN_DETECT == cur_adc_status)
-        {
-            // 更新风扇检测一端的ad值
-            adc_val_from_fan = adc_val;
-            // printf("4 fan scan done\n");
-        }
-    }
-
-#endif
-
     // adc0 转换完成：
     if (ADC_STA & ADC_CHAN0_DONE(0x01))
     {
@@ -250,16 +325,18 @@ void ADC_IRQHandler(void) interrupt ADC_IRQn
         {
             // 获取ad值
             adc_val_forward_0 = adc_val;
+            adc_set_update_flag(ADC_CHANNEL_INDEX_FORWARD_0); 
 #if USER_DEBUG_ENABLE
-            printf("adc0 forward: %u\n", adc_val_forward_0);
+            // printf("adc0 forward: %u\n", adc_val_forward_0);
 #endif
         }
         else if (adc0_status == ADC_STATUS_SEL_GET_REVERSE)
         {
             // 获取ad值
             adc_val_reverse_0 = adc_val;
+            adc_set_update_flag(ADC_CHANNEL_INDEX_REVERSE_0);
 #if USER_DEBUG_ENABLE
-            printf("adc0 reverse: %u\n", adc_val_reverse_0);
+            // printf("adc0 reverse: %u\n", adc_val_reverse_0);
 #endif
         }
     }
@@ -274,16 +351,18 @@ void ADC_IRQHandler(void) interrupt ADC_IRQn
         {
             // 获取ad值
             adc_val_forward_1 = adc_val;
+            adc_set_update_flag(ADC_CHANNEL_INDEX_FORWARD_1);
 #if USER_DEBUG_ENABLE
-            printf("adc1 forward: %u\n", adc_val_forward_1);
+            // printf("adc1 forward: %u\n", adc_val_forward_1);
 #endif
         }
         else if (adc1_status == ADC_STATUS_SEL_GET_REVERSE)
         {
             // 获取ad值
             adc_val_reverse_1 = adc_val;
+            adc_set_update_flag(ADC_CHANNEL_INDEX_REVERSE_1);
 #if USER_DEBUG_ENABLE
-            printf("adc1 reverse: %u\n", adc_val_reverse_1);
+            // printf("adc1 reverse: %u\n", adc_val_reverse_1);
 #endif
         }
     }

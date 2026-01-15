@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   GPIO_CONFIG                                                       01/12/2026 09:37:09 PAGE 1   
+C51 COMPILER V9.60.7.0   GPIO_CONFIG                                                       01/15/2026 11:10:38 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE GPIO_CONFIG
@@ -62,7 +62,7 @@ line level    source
   50   1          STMR_PWMVALA &= ~STMR_1_PWMVALA(0x1);                       // 计数CNT小于比较值A,PWM输出1,�
              -�于等于输出0
   51   1          STMR_PWMEN |= STMR_1_PWM_EN(0x1);                           // PWM输出使能
-C51 COMPILER V9.60.7.0   GPIO_CONFIG                                                       01/12/2026 09:37:09 PAGE 2   
+C51 COMPILER V9.60.7.0   GPIO_CONFIG                                                       01/15/2026 11:10:38 PAGE 2   
 
   52   1          STMR_CNTMD |= STMR_1_CNT_MODE(0x1);                         // 选择连续计数模式
   53   1          STMR_LOADEN |= STMR_1_LOAD_EN(0x1);                         // 自动装载使能
@@ -126,7 +126,7 @@ line level    source
  111   1          STMR_LOADEN |= STMR_1_LOAD_EN(0x1);                   // 自动装载使能
  112   1      }
  113          
-C51 COMPILER V9.60.7.0   GPIO_CONFIG                                                       01/12/2026 09:37:09 PAGE 3   
+C51 COMPILER V9.60.7.0   GPIO_CONFIG                                                       01/15/2026 11:10:38 PAGE 3   
 
  114          u16 g_delay_change = 0;
  115          u8 allow_change = 0;
@@ -190,7 +190,7 @@ line level    source
  173   1      
  174   1          ADC_CFG0 |= ADC_CHAN0_TRG(0x1); // 触发ADC0转换
  175   1          if (!(ADC_STA & ADC_CHAN0_DONE(0x1)))
-C51 COMPILER V9.60.7.0   GPIO_CONFIG                                                       01/12/2026 09:37:09 PAGE 4   
+C51 COMPILER V9.60.7.0   GPIO_CONFIG                                                       01/15/2026 11:10:38 PAGE 4   
 
  176   1              return 0;
  177   1          ADC_STA = ADC_CHAN0_DONE(0x1);                    // 清除ADC0转换完成标志位
@@ -254,7 +254,7 @@ line level    source
  235   4      
  236   4      #if (no_pwm_fun)
                               motor_forward_pin = 0;
-C51 COMPILER V9.60.7.0   GPIO_CONFIG                                                       01/12/2026 09:37:09 PAGE 5   
+C51 COMPILER V9.60.7.0   GPIO_CONFIG                                                       01/15/2026 11:10:38 PAGE 5   
 
                               motor_backward_pin = 1;
               #else
@@ -318,7 +318,7 @@ line level    source
  297   3                  working_timing++;
  298   3              }
  299   2              else
-C51 COMPILER V9.60.7.0   GPIO_CONFIG                                                       01/12/2026 09:37:09 PAGE 6   
+C51 COMPILER V9.60.7.0   GPIO_CONFIG                                                       01/15/2026 11:10:38 PAGE 6   
 
  300   2              {
  301   3      

@@ -14,8 +14,8 @@
   */ 
   
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __TIMER_H__
-#define __TIMER_H__
+#ifndef __TX8C126X_TIMER_H__
+#define __TX8C126X_TIMER_H__
 
 #ifdef __cplusplus
  extern "C" {
@@ -613,7 +613,7 @@
 }
 #endif
 
-#endif // __TIMER_H__
+#endif //  __TX8C126X_TIMER_H__
 
 /**
   * @}

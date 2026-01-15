@@ -21,27 +21,35 @@ Target DLL:      TXLink_keil_C51.dll V1.00
 Dialog DLL:      TP51.DLL V2.60.1.0
  
 <h2>Project:</h2>
-D:\A_WorkSt\Aworkst\2026-01-09-车启-A29电动门-1260-SOP8\code\project-2026-01-09-1260-SOP8\Project\Keil\Project.uvproj
-Project File Date:  01/09/2026
+D:\A_WorkSt\Aworkst\2026-01-09-车启-电动车门控制-1260\code\project-2026-01-09-1260\Project\Keil\Project.uvproj
+Project File Date:  01/15/2026
 
 <h2>Output:</h2>
 Build target 'Target 1'
+compiling main.c...
+compiling adc.c...
+compiling task.c...
+compiling key.c...
 linking...
 *** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
-    SEGMENT: ?PR?_USER_PRINTF?DEBUG
+    SEGMENT: ?PR?_ADC_CLEAR_UPDATE_FLAG?ADC
 *** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
-    SEGMENT: ?PR?ADC_INIT?ADC
+    SEGMENT: ?PR?_ADC_GET_UPDATE_FLAG?ADC
 *** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
-    SEGMENT: ?PR?ADC_SCAN?ADC
+    SEGMENT: ?PR?_ADC_GET_VAL?ADC
 *** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
     SEGMENT: ?PR?ZD_GPIO_INIT?GPIO_CONFIG
-*** WARNING L15: MULTIPLE CALL TO SEGMENT
-    SEGMENT: ?PR?PRINTF?PRINTF
-    CALLER1: ?C_C51STARTUP
-    CALLER2: ?PR?ADC_IRQHANDLER?ADC
-Program Size: data=21.2 xdata=138 code=3989
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?KEYHANDLER?GPIO_CONFIG
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?MOTORHADNLER?GPIO_CONFIG
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?KEY_INIT?KEY
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?KEY_SCAN?KEY
+Program Size: data=15.5 xdata=87 code=3955
 creating hex file from ".\Release\Objects\Demo"...
-".\Release\Objects\Demo" - 0 Error(s), 5 Warning(s).
+".\Release\Objects\Demo" - 0 Error(s), 8 Warning(s).
 Build Time Elapsed:  00:00:00
 </pre>
 </body>

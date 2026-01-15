@@ -41,6 +41,7 @@ char putchar(char c)
 }
 #endif
 
+#if 0
 /**
  * @brief  Debug puchar function
  * @param  uart_data : Data that needs to be sent
@@ -54,6 +55,7 @@ void debug_putchar(u8 uart_data)
     while (!(UART1_STA & UART_TX_DONE(0x01)))
         ;
 }
+#endif
 
 /**
  * @brief  Debug initialization function
@@ -62,12 +64,12 @@ void debug_putchar(u8 uart_data)
  */
 void debug_init(void)
 {
-    u8 i = 0;
-
     // TX---P30(R16)
     // P3_MD0 &= ~GPIO_P30_MODE_SEL(0x03);
     // P3_MD0 |= GPIO_P30_MODE_SEL(0x01);
     // FOUT_S30 = GPIO_FOUT_UART1_TX;
+
+    // P27 
     P2_MD1 &= ~GPIO_P27_MODE_SEL(0x03); // 清空对应的寄存器配置
     P2_MD1 |= GPIO_P27_MODE_SEL(0x01); // 配置为 输出模式
     FOUT_S27 = GPIO_FOUT_UART1_TX; // 输出功能选择
@@ -77,6 +79,7 @@ void debug_init(void)
     UART1_CON0 = UART_EN(0x01); // UART使能
 }
 
+#if 0
 /**
  * @brief  Debug User printf function
  * @param  p_data : The string to send
@@ -89,5 +92,6 @@ void user_printf(char *p_data)
         debug_putchar(*p_data++);
     }
 }
+#endif
 
 /*************************** (C) COPYRIGHT 2021 HUGE-IC ***** END OF FILE *****/

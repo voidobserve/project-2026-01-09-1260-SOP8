@@ -1,18 +1,19 @@
 #include "task.h"
 
 #include "gpio_config.h"
+#include "adc.h"
 
-#define TASK_NUM_MAX 2 // 任务数量
+// #define TASK_NUM_MAX 2 // 任务数量
 
 /*
     定义任务列表，在这里注册任务
 */
 static volatile task_ctl_block_t task_table[] = {
-    {0, 1, 1, MotorHadnler},
+    // {0, 1, 1, MotorHadnler},
     // =======================================================
-    {0, 5, 5, keyHandler},
+    // {0, 5, 5, keyHandler},
     // =======================================================
-
+    {0, 0, 100, adc_scan},
 };
 
 // 任务处理，由主循环调用

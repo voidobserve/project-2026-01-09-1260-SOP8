@@ -1,5 +1,5 @@
-#ifndef _TIMER_H_
-#define _TIMER_H_
+#ifndef __TIMER_H__
+#define __TIMER_H__
 #include "include.h"
 
 // 常用的定时时间 [0]-->1ms,  [1]-->500us,  [2]-->125us, [3]-->100us, [4]-->10us

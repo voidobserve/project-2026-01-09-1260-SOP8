@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   DEBUG                                                             01/12/2026 09:07:13 PAGE 1   
+C51 COMPILER V9.60.7.0   DEBUG                                                             01/15/2026 13:41:34 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE DEBUG
@@ -52,64 +52,68 @@ line level    source
   41   1      }
   42          #endif
   43          
-  44          /**
-  45           * @brief  Debug puchar function
-  46           * @param  uart_data : Data that needs to be sent
-  47           * @retval None
-  48           */
-  49          void debug_putchar(u8 uart_data)
-  50          {
-  51   1          while (!(UART1_STA & UART_TX_DONE(0x01)))
-  52   1              ;
-  53   1          UART1_DATA = uart_data;
-C51 COMPILER V9.60.7.0   DEBUG                                                             01/12/2026 09:07:13 PAGE 2   
+  44          #if 0
+              /**
+               * @brief  Debug puchar function
+               * @param  uart_data : Data that needs to be sent
+               * @retval None
+               */
+              void debug_putchar(u8 uart_data)
+              {
+                  while (!(UART1_STA & UART_TX_DONE(0x01)))
+                      ;
+C51 COMPILER V9.60.7.0   DEBUG                                                             01/15/2026 13:41:34 PAGE 2   
 
-  54   1          while (!(UART1_STA & UART_TX_DONE(0x01)))
-  55   1              ;
-  56   1      }
-  57          
-  58          /**
-  59           * @brief  Debug initialization function
-  60           * @param  None
-  61           * @retval None
-  62           */
-  63          void debug_init(void)
-  64          {
-  65   1          u8 i = 0;
-  66   1      
+                  UART1_DATA = uart_data;
+                  while (!(UART1_STA & UART_TX_DONE(0x01)))
+                      ;
+              }
+              #endif
+  59          
+  60          /**
+  61           * @brief  Debug initialization function
+  62           * @param  None
+  63           * @retval None
+  64           */
+  65          void debug_init(void)
+  66          {
   67   1          // TX---P30(R16)
   68   1          // P3_MD0 &= ~GPIO_P30_MODE_SEL(0x03);
   69   1          // P3_MD0 |= GPIO_P30_MODE_SEL(0x01);
   70   1          // FOUT_S30 = GPIO_FOUT_UART1_TX;
-  71   1          P2_MD1 &= ~GPIO_P27_MODE_SEL(0x03); // 清空对应的寄存器配置
-  72   1          P2_MD1 |= GPIO_P27_MODE_SEL(0x01); // 配置为 输出模式
-  73   1          FOUT_S27 = GPIO_FOUT_UART1_TX; // 输出功能选择
-  74   1      
-  75   1          UART1_BAUD1 = (((SYSCLK - DEBUG_BAUD) / DEBUG_BAUD) >> 8) & 0xFF;
-  76   1          UART1_BAUD0 = ((SYSCLK - DEBUG_BAUD) / DEBUG_BAUD) & 0xFF;
-  77   1          UART1_CON0 = UART_EN(0x01); // UART使能
-  78   1      }
-  79          
-  80          /**
-  81           * @brief  Debug User printf function
-  82           * @param  p_data : The string to send
-  83           * @retval None
-  84           */
-  85          void user_printf(char *p_data)
-  86          {
-  87   1          while (*p_data != '\0')
-  88   1          {
-  89   2              debug_putchar(*p_data++);
-  90   2          }
-  91   1      }
-  92          
-  93          /*************************** (C) COPYRIGHT 2021 HUGE-IC ***** END OF FILE *****/
+  71   1      
+  72   1          // P27 
+  73   1          P2_MD1 &= ~GPIO_P27_MODE_SEL(0x03); // 清空对应的寄存器配置
+  74   1          P2_MD1 |= GPIO_P27_MODE_SEL(0x01); // 配置为 输出模式
+  75   1          FOUT_S27 = GPIO_FOUT_UART1_TX; // 输出功能选择
+  76   1      
+  77   1          UART1_BAUD1 = (((SYSCLK - DEBUG_BAUD) / DEBUG_BAUD) >> 8) & 0xFF;
+  78   1          UART1_BAUD0 = ((SYSCLK - DEBUG_BAUD) / DEBUG_BAUD) & 0xFF;
+  79   1          UART1_CON0 = UART_EN(0x01); // UART使能
+  80   1      }
+  81          
+  82          #if 0
+              /**
+               * @brief  Debug User printf function
+               * @param  p_data : The string to send
+               * @retval None
+               */
+              void user_printf(char *p_data)
+              {
+                  while (*p_data != '\0')
+                  {
+                      debug_putchar(*p_data++);
+                  }
+              }
+              #endif
+  96          
+  97          /*************************** (C) COPYRIGHT 2021 HUGE-IC ***** END OF FILE *****/
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    103    ----
+   CODE SIZE        =     34    ----
    CONSTANT SIZE    =   ----    ----
-   XDATA SIZE       =   ----       4
+   XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----

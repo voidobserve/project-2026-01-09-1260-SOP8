@@ -431,6 +431,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\Hardware\pwm.c</FilePath>
             </File>
+            <File>
+              <FileName>key.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Hardware\key.c</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>
