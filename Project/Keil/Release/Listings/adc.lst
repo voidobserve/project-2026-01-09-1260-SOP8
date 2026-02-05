@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   ADC                                                               01/15/2026 14:23:55 PAGE 1   
+C51 COMPILER V9.60.7.0   ADC                                                               02/05/2026 17:43:24 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE ADC
@@ -62,7 +62,7 @@ line level    source
   49   1          {
   50   2          case ADC_CHANNEL_INDEX_FORWARD_0:
   51   2          {
-C51 COMPILER V9.60.7.0   ADC                                                               01/15/2026 14:23:55 PAGE 2   
+C51 COMPILER V9.60.7.0   ADC                                                               02/05/2026 17:43:24 PAGE 2   
 
   52   3              flag_is_adc_val_forward0_update = 1;
   53   3          }
@@ -126,7 +126,7 @@ line level    source
  111   1          u8 ret = 0;
  112   1      
  113   1          switch (adc_channel_index)
-C51 COMPILER V9.60.7.0   ADC                                                               01/15/2026 14:23:55 PAGE 3   
+C51 COMPILER V9.60.7.0   ADC                                                               02/05/2026 17:43:24 PAGE 3   
 
  114   1          {
  115   2          case ADC_CHANNEL_INDEX_FORWARD_0:
@@ -190,7 +190,7 @@ line level    source
  173   2          {
  174   3              ret = adc_val_forward_1;
  175   3          }
-C51 COMPILER V9.60.7.0   ADC                                                               01/15/2026 14:23:55 PAGE 4   
+C51 COMPILER V9.60.7.0   ADC                                                               02/05/2026 17:43:24 PAGE 4   
 
  176   2          break;
  177   2          // =======================================================
@@ -254,7 +254,7 @@ line level    source
  235   2          case ADC_CHANNEL_REVERSE:
  236   2          {
  237   3              ADC1_SEL_REVERSE_CHANNEL();
-C51 COMPILER V9.60.7.0   ADC                                                               01/15/2026 14:23:55 PAGE 5   
+C51 COMPILER V9.60.7.0   ADC                                                               02/05/2026 17:43:24 PAGE 5   
 
  238   3          }
  239   2          break;
@@ -318,7 +318,7 @@ line level    source
  296   1          {
  297   2              // 切换ad通道
  298   2              adc1_sel_channel(ADC_CHANNEL_REVERSE);
-C51 COMPILER V9.60.7.0   ADC                                                               01/15/2026 14:23:55 PAGE 6   
+C51 COMPILER V9.60.7.0   ADC                                                               02/05/2026 17:43:24 PAGE 6   
 
  299   2              adc1_status = ADC_STATUS_SEL_GET_REVERSE_WAITING;
  300   2          }
@@ -382,7 +382,7 @@ line level    source
  358   3              }
  359   2              else if (adc1_status == ADC_STATUS_SEL_GET_REVERSE)
  360   2              {
-C51 COMPILER V9.60.7.0   ADC                                                               01/15/2026 14:23:55 PAGE 7   
+C51 COMPILER V9.60.7.0   ADC                                                               02/05/2026 17:43:24 PAGE 7   
 
  361   3                  // 获取ad值
  362   3                  adc_val_reverse_1 = adc_val;

@@ -436,6 +436,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\Hardware\key.c</FilePath>
             </File>
+            <File>
+              <FileName>uart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Hardware\uart.c</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>

@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   TASK                                                              01/15/2026 14:23:55 PAGE 1   
+C51 COMPILER V9.60.7.0   TASK                                                              02/05/2026 17:42:18 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE TASK
@@ -62,7 +62,7 @@ line level    source
 MODULE INFORMATION:   STATIC OVERLAYABLE
    CODE SIZE        =    191    ----
    CONSTANT SIZE    =   ----    ----
-C51 COMPILER V9.60.7.0   TASK                                                              01/15/2026 14:23:55 PAGE 2   
+C51 COMPILER V9.60.7.0   TASK                                                              02/05/2026 17:42:18 PAGE 2   
 
    XDATA SIZE       =      8       1
    PDATA SIZE       =   ----    ----

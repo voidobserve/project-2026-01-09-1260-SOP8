@@ -1,0 +1,59 @@
+C51 COMPILER V9.60.7.0   UART                                                              02/05/2026 17:44:11 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE UART
+OBJECT MODULE PLACED IN .\Release\Objects\uart.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE ..\..\Hardware\uart.c LARGE OPTIMIZE(8,SPEED) BROWSE INTVECTOR(0X000C) I
+                    -NCDIR(..\..\Libraries\Include;..\..\User;..\..\Hardware) INTERVAL(3) DEBUG OBJECTEXTEND PRINT(.\Release\Listings\uart.ls
+                    -t) OBJECT(.\Release\Objects\uart.obj)
+
+line level    source
+
+   1          #include "uart.h"
+   2          #include "user_config.h"
+   3          
+   4          #if USER_DEBUG_ENABLE
+   5          // 重写puchar()函数
+   6          char putchar(char c)
+   7          {
+   8   1          while (!(UART0_STA & UART_TX_DONE(0x01)))
+   9   1              ;
+  10   1          UART0_DATA = c;
+  11   1          return c;
+  12   1      }
+  13          #endif
+  14          
+  15          void uart0_init(void)
+  16          {
+  17   1          // P26 tx
+  18   1          P2_MD1 &= ~GPIO_P26_MODE_SEL(0x03); // 清空对应的寄存器配置
+  19   1          P2_MD1 |= GPIO_P26_MODE_SEL(0x01);  // 配置为 输出模式
+  20   1          FOUT_S26 = GPIO_FOUT_UART0_TX;      // 输出功能选择
+  21   1      
+  22   1          // P14 rx
+  23   1          P1_MD1 &= ~GPIO_P14_MODE_SEL(0x03); // 清空对应的寄存器配置，对应输入模式
+  24   1          FIN_S7 = GPIO_FIN_SEL_P14;          // 选择 uart0 rx 对应的引脚
+  25   1      
+  26   1          UART0_BAUD1 = (((SYSCLK - UART0_BAUD_RATE) / UART0_BAUD_RATE) >> 8) & 0xFF;
+  27   1          UART0_BAUD0 = ((SYSCLK - UART0_BAUD_RATE) / UART0_BAUD_RATE) & 0xFF;
+  28   1          UART0_CON0 = UART_STOP_BIT(0x00) |  // 0x00：一位停止位
+  29   1                       UART_RX_IRQ_EN(0x01) | // 0x01：rx中断使能
+  30   1                       UART_EN(0x01);         // UART 使能
+  31   1      
+  32   1          __EnableIRQ(UART0_IRQn); // 打开模块中断
+  33   1          IE_EA = 1;               // 打开总中断
+  34   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     51    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

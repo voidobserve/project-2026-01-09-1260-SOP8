@@ -22,21 +22,25 @@ Dialog DLL:      TP51.DLL V2.60.1.0
  
 <h2>Project:</h2>
 D:\A_WorkSt\Aworkst\2026-01-09-车启-电动车门控制-1260\code\project-2026-01-09-1260\Project\Keil\Project.uvproj
-Project File Date:  01/15/2026
+Project File Date:  02/05/2026
 
 <h2>Output:</h2>
 Build target 'Target 1'
 compiling main.c...
-compiling adc.c...
-compiling task.c...
-compiling key.c...
+compiling pwm.c...
 linking...
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?ADC_INIT?ADC
 *** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
     SEGMENT: ?PR?_ADC_CLEAR_UPDATE_FLAG?ADC
 *** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
     SEGMENT: ?PR?_ADC_GET_UPDATE_FLAG?ADC
 *** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
     SEGMENT: ?PR?_ADC_GET_VAL?ADC
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?TIMER0_INIT?TIMER
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?TASK_HANDLE?TASK
 *** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
     SEGMENT: ?PR?ZD_GPIO_INIT?GPIO_CONFIG
 *** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
@@ -47,10 +51,10 @@ linking...
     SEGMENT: ?PR?KEY_INIT?KEY
 *** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
     SEGMENT: ?PR?KEY_SCAN?KEY
-Program Size: data=15.5 xdata=87 code=3955
+Program Size: data=15.5 xdata=88 code=3976
 creating hex file from ".\Release\Objects\Demo"...
-".\Release\Objects\Demo" - 0 Error(s), 8 Warning(s).
-Build Time Elapsed:  00:00:00
+".\Release\Objects\Demo" - 0 Error(s), 11 Warning(s).
+Build Time Elapsed:  00:00:01
 </pre>
 </body>
 </html>

@@ -31,14 +31,15 @@
 // %bd--- 单个字节变量 ---- char
 // %ld--- 四个字节变量 ---- long int
 
-#define DBG_PRINTF_EN           (1)             // 0:禁用标准printf()函数, 1:使能标准printf()函数
+#define DBG_PRINTF_EN           (0)             // 0:禁用标准printf()函数, 1:使能标准printf()函数
 
 #define DEBUG_BAUD              (115200UL)
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
-     
+
+#if DBG_PRINTF_EN
 /** @addtogroup Template_Project
   * @{
   */
@@ -81,7 +82,7 @@ void debug_init(void);
   * @retval None
   */
 void user_printf(char *p_data);
-
+#endif
 
 /**
   * @}

@@ -17,6 +17,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "include.h"
+#include "user_config.h"
 
 /** @addtogroup Template_Project
  * @{
@@ -39,7 +40,6 @@ char putchar(char c)
 
     return c;
 }
-#endif
 
 #if 0
 /**
@@ -69,16 +69,17 @@ void debug_init(void)
     // P3_MD0 |= GPIO_P30_MODE_SEL(0x01);
     // FOUT_S30 = GPIO_FOUT_UART1_TX;
 
-    // P27 
-    P2_MD1 &= ~GPIO_P27_MODE_SEL(0x03); // 清空对应的寄存器配置
-    P2_MD1 |= GPIO_P27_MODE_SEL(0x01); // 配置为 输出模式
-    FOUT_S27 = GPIO_FOUT_UART1_TX; // 输出功能选择
+    // P26
+    P2_MD1 &= ~GPIO_P26_MODE_SEL(0x03); // 清空对应的寄存器配置
+    P2_MD1 |= GPIO_P26_MODE_SEL(0x01);  // 配置为 输出模式
+    FOUT_S26 = GPIO_FOUT_UART1_TX;      // 输出功能选择
 
     UART1_BAUD1 = (((SYSCLK - DEBUG_BAUD) / DEBUG_BAUD) >> 8) & 0xFF;
     UART1_BAUD0 = ((SYSCLK - DEBUG_BAUD) / DEBUG_BAUD) & 0xFF;
     UART1_CON0 = UART_EN(0x01); // UART使能
 }
 
+#endif
 #if 0
 /**
  * @brief  Debug User printf function

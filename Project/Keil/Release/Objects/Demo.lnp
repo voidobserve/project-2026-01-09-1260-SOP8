@@ -7,7 +7,8 @@
 ".\Release\Objects\task.obj",
 ".\Release\Objects\gpio_config.obj",
 ".\Release\Objects\pwm.obj",
-".\Release\Objects\key.obj" 
+".\Release\Objects\key.obj",
+".\Release\Objects\uart.obj" 
 TO ".\Release\Objects\Demo" 
 PRINT(".\Release\Listings\Demo.m51") RAMSIZE(256) 
 CODE( 0X0000-0X3EEF )

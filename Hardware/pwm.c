@@ -1,27 +1,34 @@
 #include "pwm.h"
 #include "include.h"
+#include "user_config.h"
 
 void pwm_init(void)
 {
-    P3_MD0 &= ~GPIO_P30_MODE_SEL(0x03);
-    P3_MD0 |= GPIO_P30_MODE_SEL(0x01);
-    FOUT_S30 = GPIO_FOUT_STMR0_PWMOUT;
+    // M+ ON 电机正转开关
+    P1_MD0 &= ~GPIO_P13_MODE_SEL(0x03);
+    P1_MD0 |= GPIO_P13_MODE_SEL(0x01);
+    FOUT_S13 = GPIO_FOUT_STMR0_PWMOUT;
 
-    // P3_MD0 &= ~GPIO_P31_MODE_SEL(0x03);
-    // P3_MD0 |= GPIO_P31_MODE_SEL(0x01);
-    // FOUT_S31 = GPIO_FOUT_STMR1_PWMOUT;
+// M- ON 电机反转开关
+#if USER_DEBUG_PIN_ENABLE
+    P0_MD1 &= ~GPIO_P06_MODE_SEL(0x03);
+    P0_MD1 |= GPIO_P06_MODE_SEL(0x01);
+    FOUT_S06 = GPIO_FOUT_STMR1_PWMOUT;
+#else
+#endif
 
-    P0_MD0 &= ~GPIO_P02_MODE_SEL(0x03);
-    P0_MD0 |= GPIO_P02_MODE_SEL(0x01);
-    FOUT_S02 = GPIO_FOUT_STMR1_PWMOUT;
+    // M2+ ON 电机正转开关
+    P2_MD1 &= ~GPIO_P27_MODE_SEL(0x03);
+    P2_MD1 |= GPIO_P27_MODE_SEL(0x01);
+    FOUT_S27 = GPIO_FOUT_STMR2_PWMOUT;
 
+// M2- ON 电机反转开关
+#if USER_DEBUG_PIN_ENABLE
     P0_MD0 &= ~GPIO_P01_MODE_SEL(0x03);
     P0_MD0 |= GPIO_P01_MODE_SEL(0x01);
-    FOUT_S01 = GPIO_FOUT_STMR2_PWMOUT;
-
-    P0_MD0 &= ~GPIO_P00_MODE_SEL(0x03);
-    P0_MD0 |= GPIO_P00_MODE_SEL(0x01);
-    FOUT_S00 = GPIO_FOUT_STMR3_PWMOUT;
+    FOUT_S01 = GPIO_FOUT_STMR3_PWMOUT;
+#else
+#endif
 
     // ===============================================================================
     // STIMER0 配置

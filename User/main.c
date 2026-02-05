@@ -1,10 +1,12 @@
 #include "include.h"
 #include "user_config.h"
-
+ 
 #include "timer.h"
 #include "task.h"
 #include "pwm.h"
 #include "adc.h"
+#include "key.h"
+#include "uart.h"
 
 void main(void)
 {
@@ -16,22 +18,19 @@ void main(void)
     WDT_KEY = 0xBB;
 
     // WDT_KEY = WDT_KEY_VAL(0xDD); //  关闭看门狗
+
+    pwm_init();
+    // adc_init();
+    // key_init();
+
+    // timer0_init(); // 系统定时器初始化，需要放在初始化的最后
+
+    uart0_init();
 #if USER_DEBUG_ENABLE
-    debug_init();
-
-    P1_MD1 &= ~GPIO_P14_MODE_SEL(0x03);
-    P1_MD1 |= GPIO_P14_MODE_SEL(0x01);
-    FOUT_S14 = GPIO_FOUT_AF_FUNC;
-
     printf("sys reset\n");
 #endif
 
-    pwm_init();
-    adc_init();
-    key_init();
-
-    timer0_init(); // 系统定时器初始化，需要放在初始化的最后
-
+    // USER_TO_DO 测试时使用
     pwm_channel_0_set_duty(PWM_DUTY_VAL_85_PERCENT);
     pwm_channel_1_set_duty(PWM_DUTY_VAL_85_PERCENT);
     pwm_channel_2_set_duty(PWM_DUTY_VAL_85_PERCENT);
@@ -41,7 +40,7 @@ void main(void)
     {
         WDT_KEY = WDT_KEY_VAL(0xAA); // 喂狗
 
-        task_handle();
+        // task_handle();
 
 #if 0
         if (adc_get_update_flag(ADC_CHANNEL_INDEX_FORWARD_0))
