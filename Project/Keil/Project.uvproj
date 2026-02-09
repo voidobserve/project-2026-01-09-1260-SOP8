@@ -422,11 +422,6 @@
               <FilePath>..\..\Hardware\task.c</FilePath>
             </File>
             <File>
-              <FileName>gpio_config.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Hardware\gpio_config.c</FilePath>
-            </File>
-            <File>
               <FileName>pwm.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Hardware\pwm.c</FilePath>
@@ -440,6 +435,11 @@
               <FileName>uart.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Hardware\uart.c</FilePath>
+            </File>
+            <File>
+              <FileName>motor_handle.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Hardware\motor_handle.c</FilePath>
             </File>
           </Files>
         </Group>

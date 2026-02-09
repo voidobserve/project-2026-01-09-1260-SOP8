@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   MAIN                                                              02/06/2026 15:26:37 PAGE 1   
+C51 COMPILER V9.60.7.0   MAIN                                                              02/09/2026 15:12:46 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
@@ -11,7 +11,7 @@ line level    source
 
    1          #include "include.h"
    2          #include "user_config.h"
-   3           
+   3          
    4          #include "timer.h"
    5          #include "task.h"
    6          #include "pwm.h"
@@ -30,76 +30,40 @@ line level    source
   18   1          WDT_KEY = 0xBB;
   19   1      
   20   1          // WDT_KEY = WDT_KEY_VAL(0xDD); //  关闭看门狗
-  21   1      
-  22   1          pwm_init();
-  23   1          adc_init();
-  24   1          key_init();
-  25   1      
-  26   1          timer0_init(); // 系统定时器初始化，需要放在初始化的最后
-  27   1      
-  28   1          uart0_init();
-  29   1      #if USER_DEBUG_ENABLE
-  30   1          printf("sys reset\n");
-  31   1      #endif
-  32   1      
-  33   1          // USER_TO_DO 测试时使用
-  34   1          pwm_channel_0_set_duty(PWM_DUTY_VAL_85_PERCENT);
-  35   1          pwm_channel_1_set_duty(PWM_DUTY_VAL_85_PERCENT);
-  36   1          pwm_channel_2_set_duty(PWM_DUTY_VAL_85_PERCENT);
-  37   1          pwm_channel_3_set_duty(PWM_DUTY_VAL_85_PERCENT);
-  38   1      
-  39   1          while (1)
-  40   1          {
-  41   2              WDT_KEY = WDT_KEY_VAL(0xAA); // 喂狗
-  42   2      
-  43   2              task_handle();
-  44   2      
-  45   2              // 测试adc功能：
-  46   2      #if 0
-                      // if (adc_get_update_flag(ADC_CHANNEL_INDEX_FORWARD_0))
-                      // {
-                      //     u16 adc_val = 0;
-                      //     adc_clear_update_flag(ADC_CHANNEL_INDEX_FORWARD_0);
-                      //     adc_val = adc_get_val(ADC_CHANNEL_INDEX_FORWARD_0);
-                      //     printf("adc forward 0 val: %u\n", adc_val);
-C51 COMPILER V9.60.7.0   MAIN                                                              02/06/2026 15:26:37 PAGE 2   
-
-                      // }
-              
-                      // if (adc_get_update_flag(ADC_CHANNEL_INDEX_REVERSE_0))
-                      // {
-                      //     u16 adc_val = 0;
-                      //     adc_clear_update_flag(ADC_CHANNEL_INDEX_REVERSE_0);
-                      //     adc_val = adc_get_val(ADC_CHANNEL_INDEX_REVERSE_0);
-                      //     printf("adc reverse 0 val: %u\n", adc_val);
-                      // }
-              
-                      // if (adc_get_update_flag(ADC_CHANNEL_INDEX_FORWARD_1))
-                      // {
-                      //     u16 adc_val = 0;
-                      //     adc_clear_update_flag(ADC_CHANNEL_INDEX_FORWARD_1);
-                      //     adc_val = adc_get_val(ADC_CHANNEL_INDEX_FORWARD_1);
-                      //     printf("adc forward 1 val: %u\n", adc_val);
-                      // }
-              
-                      // if (adc_get_update_flag(ADC_CHANNEL_INDEX_REVERSE_1))
-                      // {
-                      //     u16 adc_val = 0;
-                      //     adc_clear_update_flag(ADC_CHANNEL_INDEX_REVERSE_1);
-                      //     adc_val = adc_get_val(ADC_CHANNEL_INDEX_REVERSE_1);
-                      //     printf("adc reverse 1 val: %u\n", adc_val);
-                      // }
+  21   1          uart0_init();
+  22   1      
+  23   1          pwm_init();
+  24   1          adc_init();
+  25   1          key_init();
+  26   1      
+  27   1          timer0_init(); // 系统定时器初始化，需要放在初始化的最后
+  28   1      #if USER_DEBUG_ENABLE
+                  printf("sys reset\n");
               #endif
-  79   2      
-  80   2              // printf("main\n");
-  81   2          }
-  82   1      }
+  31   1      
+  32   1          // USER_TO_DO 测试时使用
+  33   1          // pwm_channel_0_set_duty(PWM_DUTY_VAL_85_PERCENT);
+  34   1          // pwm_channel_1_set_duty(PWM_DUTY_VAL_85_PERCENT);
+  35   1          // pwm_channel_2_set_duty(PWM_DUTY_VAL_85_PERCENT);
+  36   1          // pwm_channel_3_set_duty(PWM_DUTY_VAL_85_PERCENT);
+  37   1      
+  38   1          while (1)
+  39   1          {
+  40   2              WDT_KEY = WDT_KEY_VAL(0xAA); // 喂狗
+  41   2      
+  42   2              task_handle();
+  43   2      
+  44   2              // printf("main\n");
+  45   2          }
+  46   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =     76    ----
-   CONSTANT SIZE    =     11    ----
+   CODE SIZE        =     39    ----
+   CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =      5    ----
+C51 COMPILER V9.60.7.0   MAIN                                                              02/09/2026 15:12:46 PAGE 2   
+
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----

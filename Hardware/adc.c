@@ -13,8 +13,8 @@ static volatile bit flag_is_adc_val_forward1_update = 0;
 static volatile bit flag_is_adc_val_reverse1_update = 0;
 
 // adc0 、 adc1 的状态机
-static volatile u8 adc0_status = 0; // 如果不赋值，有概率，初始值会不是0，进而导致adc异常工作
-static volatile u8 adc1_status = 0;
+static volatile u8 adc0_status = ADC_STATUS_NONE; // 如果不赋值，有概率，初始值会不是0，进而导致adc异常工作
+static volatile u8 adc1_status = ADC_STATUS_NONE;
 
 void adc_init(void)
 {
@@ -275,6 +275,9 @@ static void adc1_sel_channel(u8 adc_channel)
  */
 void adc_scan(void)
 {
+    // printf("adc0_status == %bu\n", adc0_status);
+    // printf("adc1_status == %bu\n", adc1_status);
+
     if (adc0_status == ADC_STATUS_NONE || adc0_status == ADC_STATUS_SEL_GET_REVERSE)
     {
         // 切换ad通道
@@ -336,6 +339,7 @@ void ADC_IRQHandler(void) interrupt ADC_IRQn
     __IRQnIPnPush(ADC_IRQn);
 
     // ---------------- 用户函数处理 -------------------
+    // printf("ADC_IRQHandler\n");
 
     // adc0 转换完成：
     if (ADC_STA & ADC_CHAN0_DONE(0x01))
@@ -392,3 +396,38 @@ void ADC_IRQHandler(void) interrupt ADC_IRQn
     // 退出中断设置IP，不可删除
     __IRQnIPnPop(ADC_IRQn);
 }
+
+// 测试adc功能：
+#if 0
+        // if (adc_get_update_flag(ADC_CHANNEL_INDEX_FORWARD_0))
+        // {
+        //     u16 adc_val = 0;
+        //     adc_clear_update_flag(ADC_CHANNEL_INDEX_FORWARD_0);
+        //     adc_val = adc_get_val(ADC_CHANNEL_INDEX_FORWARD_0);
+        //     printf("adc forward 0 val: %u\n", adc_val);
+        // }
+
+        // if (adc_get_update_flag(ADC_CHANNEL_INDEX_REVERSE_0))
+        // {
+        //     u16 adc_val = 0;
+        //     adc_clear_update_flag(ADC_CHANNEL_INDEX_REVERSE_0);
+        //     adc_val = adc_get_val(ADC_CHANNEL_INDEX_REVERSE_0);
+        //     printf("adc reverse 0 val: %u\n", adc_val);
+        // }
+
+        // if (adc_get_update_flag(ADC_CHANNEL_INDEX_FORWARD_1))
+        // {
+        //     u16 adc_val = 0;
+        //     adc_clear_update_flag(ADC_CHANNEL_INDEX_FORWARD_1);
+        //     adc_val = adc_get_val(ADC_CHANNEL_INDEX_FORWARD_1);
+        //     printf("adc forward 1 val: %u\n", adc_val);
+        // }
+
+        // if (adc_get_update_flag(ADC_CHANNEL_INDEX_REVERSE_1))
+        // {
+        //     u16 adc_val = 0;
+        //     adc_clear_update_flag(ADC_CHANNEL_INDEX_REVERSE_1);
+        //     adc_val = adc_get_val(ADC_CHANNEL_INDEX_REVERSE_1);
+        //     printf("adc reverse 1 val: %u\n", adc_val);
+        // }
+#endif

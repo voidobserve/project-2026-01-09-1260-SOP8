@@ -40,8 +40,7 @@
 
 
 /* ----------   include ------------*/
-// #include "adc.h"
-// #include "gpio_config.h"
+// #include "adc.h" 
 // #include "timer.h"
 #include <stdio.h>
 // #include "task.h"

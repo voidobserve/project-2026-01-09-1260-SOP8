@@ -1,19 +1,27 @@
 #include "task.h"
-
-#include "gpio_config.h"
+#include "user_config.h"
 #include "adc.h"
+#include "key.h"
+#include "motor_handle.h"
 
 // #define TASK_NUM_MAX 2 // 任务数量
 
 /*
     定义任务列表，在这里注册任务
 */
+void task_debug(void);
 static volatile task_ctl_block_t task_table[] = {
-    // {0, 1, 1, MotorHadnler},
+    {0, 0, 1, motor_0_handler},
+    {0, 0, 1, motor_1_handler},
     // =======================================================
-    // {0, 5, 5, keyHandler},
+    {0, 0, 5, key0_scan_handle},
+    {0, 0, 5, key1_scan_handle},
     // =======================================================
-    {0, 0, 100, adc_scan}, // USER_TO_DO 测试时使用100ms
+    // {0, 0, 100, adc_scan}, // USER_TO_DO 测试时使用100ms
+    {0, 0, 1, adc_scan}, //
+#if USER_DEBUG_ENABLE
+    {0, 0, 100, task_debug},
+#endif
 };
 
 // 任务处理，由主循环调用
@@ -46,3 +54,9 @@ void task_schedule_tick(void)
         }
     }
 }
+
+#if USER_DEBUG_ENABLE
+void task_debug(void)
+{
+}
+#endif

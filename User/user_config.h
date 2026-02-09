@@ -8,7 +8,7 @@
 #define U16_MAX_VAL ((const u16)0xFFFF)
 
 
-#define USER_DEBUG_ENABLE 1
+#define USER_DEBUG_ENABLE 0
 
 #if USER_DEBUG_ENABLE
 #include <stdio.h>

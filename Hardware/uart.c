@@ -14,10 +14,16 @@ char putchar(char c)
 
 void uart0_init(void)
 {
+#if USER_DEBUG_PIN_ENABLE
     // P26 tx
     P2_MD1 &= ~GPIO_P26_MODE_SEL(0x03); // 清空对应的寄存器配置
     P2_MD1 |= GPIO_P26_MODE_SEL(0x01);  // 配置为 输出模式
     FOUT_S26 = GPIO_FOUT_UART0_TX;      // 输出功能选择
+#else
+    P1_MD1 &= ~GPIO_P15_MODE_SEL(0x03);
+    P1_MD1 |= GPIO_P15_MODE_SEL(0x01);
+    FOUT_S15 = GPIO_FOUT_UART0_TX;
+#endif
 
     // P14 rx
     P1_MD1 &= ~GPIO_P14_MODE_SEL(0x03); // 清空对应的寄存器配置，对应输入模式

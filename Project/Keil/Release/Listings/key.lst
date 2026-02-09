@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   KEY                                                               02/06/2026 15:26:39 PAGE 1   
+C51 COMPILER V9.60.7.0   KEY                                                               02/09/2026 15:12:46 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE KEY
@@ -13,67 +13,128 @@ line level    source
    2          #include "include.h"
    3          #include "user_config.h"
    4          #include "motor_handle.h"
-   5          
-   6          // 检测按键的引脚，配置为输入上拉
-   7          void key_init(void)
-   8          {
-   9   1          // SW1
-  10   1          P1_MD1 &= ~GPIO_P16_MODE_SEL(0x03);
+   5          #include "pwm.h"
+   6          
+   7          // 检测按键的引脚，配置为输入上拉
+   8          void key_init(void)
+   9          {
+  10   1          // SW1
   11   1          P1_PU |= GPIO_P16_PULL_UP(0x01);
-  12   1      
-  13   1          // SW2
-  14   1          P0_MD0 &= ~GPIO_P02_MODE_SEL(0x03);
+  12   1          P1_MD1 &= ~GPIO_P16_MODE_SEL(0x03); // 输入
+  13   1      
+  14   1          // SW2
   15   1          P0_PU |= GPIO_P02_PULL_UP(0x01);
-  16   1      }
-  17          
-  18          void key0_scan_handle(void)
-  19          {
-  20   1          // 使用边沿检测
-  21   1          u8 curr = P31;
-  22   1          static u8 last = (u8)-1;
-  23   1      
-  24   1          if (curr != last)
-  25   1          {
-  26   2              if (last != (u8)-1)
-  27   2              {
-  28   3                  if (curr)
-  29   3                  {
-  30   4                      // 上升沿
-  31   4      
-  32   4                      motor_0_status = MOTOR_FORWARD;
-*** ERROR C202 IN LINE 32 OF ..\..\Hardware\key.c: 'MOTOR_FORWARD': undefined identifier
-  33   4                      g_delay_change = change_delay_time;
-*** ERROR C202 IN LINE 33 OF ..\..\Hardware\key.c: 'g_delay_change': undefined identifier
-  34   4      
-  35   4      #if (no_pwm_fun)
-*** WARNING C322 IN LINE 35 OF ..\..\Hardware\key.c: unknown identifier
-                              motor_forward_pin = 0;
-                              motor_backward_pin = 0;
-              #else
-  39   4                      forward_pwm(0);
-  40   4                      backward_pwm(0);
-  41   4      #endif
-  42   4      
-  43   4                      allow_change = 1;
-  44   4                      allow_check = 0;
-  45   4                  }
-  46   3                  else
-  47   3                  {
-  48   4                      // 下降沿
-  49   4      
-  50   4                      // 电机不转
-C51 COMPILER V9.60.7.0   KEY                                                               02/06/2026 15:26:39 PAGE 2   
+  16   1          P0_MD0 &= ~GPIO_P02_MODE_SEL(0x03); // 输入
+  17   1      }
+  18          
+  19          void key0_scan_handle(void)
+  20          {
+  21   1          // 使用边沿检测
+  22   1          volatile u8 curr = KEY_0_PIN;         // 存放当前检测到的电平
+  23   1          static volatile u8 last = U8_MAX_VAL; // 存放上一次检测到的电平
+  24   1      
+  25   1          if (curr == last)
+  26   1          {
+  27   2              return;
+  28   2          }
+  29   1      
+  30   1          if (last != U8_MAX_VAL)
+  31   1          {
+  32   2              if (curr)
+  33   2              {
+  34   3                  // 上升沿
+  35   3                  motor_0_status = MOTOR_STATUS_FORWARD;
+  36   3                  motor_0_dir_change_dly = MOTOR_DIR_CHANGE_DLY_TIME;
+  37   3      
+  38   3                  MOTOR_0_FORWARD_PWM_DUTY_SET(PWM_DUTY_VAL_0_PERCENT);
+  39   3                  MOTOR_0_REVERSE_PWM_DUTY_SET(PWM_DUTY_VAL_0_PERCENT);
+  40   3      
+  41   3                  motor_0_dir_change_enable = 1;
+  42   3                  motor_0_is_working = 0;
+  43   3      
+  44   3                  // printf("key0 curr == 1\n");
+  45   3              }
+  46   2              else
+  47   2              {
+  48   3                  // 下降沿
+  49   3      
+  50   3                  // 电机不转
+  51   3      
+  52   3                  // printf("key0 curr == 0\n");
+  53   3              }
+C51 COMPILER V9.60.7.0   KEY                                                               02/09/2026 15:12:46 PAGE 2   
 
-  51   4                  }
-  52   3              }
-  53   2              else
-  54   2              {
-  55   3                  // 第一次上电，忽略
-  56   3                  motorState = MOTOR_STOP;
-  57   3              }
-  58   2      
-  59   2              last = curr;
-  60   2          }
-  61   1      }
+  54   2          }
+  55   1          else // last == U8_MAX_VAL
+  56   1          {
+  57   2              // 第一次上电，忽略
+  58   2              motor_0_status = MOTOR_STATUS_STOP;
+  59   2      
+  60   2              // printf("key0 last == U8_MAX_VAL\n");
+  61   2          }
+  62   1      
+  63   1          last = curr;
+  64   1      }
+  65          
+  66          void key1_scan_handle(void)
+  67          {
+  68   1          // 使用边沿检测
+  69   1          volatile u8 curr = KEY_1_PIN;         // 存放当前检测到的电平
+  70   1          static volatile u8 last = U8_MAX_VAL; // 存放上一次检测到的电平
+  71   1      
+  72   1          if (curr == last)
+  73   1          {
+  74   2              return;
+  75   2          }
+  76   1      
+  77   1          if (last != U8_MAX_VAL)
+  78   1          {
+  79   2              if (curr)
+  80   2              {
+  81   3                  // 上升沿
+  82   3                  motor_1_status = MOTOR_STATUS_FORWARD;
+  83   3                  motor_1_dir_change_dly = MOTOR_DIR_CHANGE_DLY_TIME;
+  84   3      
+  85   3                  MOTOR_1_FORWARD_PWM_DUTY_SET(PWM_DUTY_VAL_0_PERCENT);
+  86   3                  MOTOR_1_REVERSE_PWM_DUTY_SET(PWM_DUTY_VAL_0_PERCENT);
+  87   3      
+  88   3                  motor_1_dir_change_enable = 1;
+  89   3                  motor_1_is_working = 0;
+  90   3      
+  91   3                  // printf("key1 curr == 1\n");
+  92   3              }
+  93   2              else
+  94   2              {
+  95   3                  // 下降沿
+  96   3      
+  97   3                  // 电机不转
+  98   3      
+  99   3                  // printf("key1 curr == 0\n");
+ 100   3              }
+ 101   2          }
+ 102   1          else // last == U8_MAX_VAL
+ 103   1          {
+ 104   2              // 第一次上电，忽略
+ 105   2              motor_1_status = MOTOR_STATUS_STOP;
+ 106   2      
+ 107   2              // printf("key1 last == U8_MAX_VAL\n");
+ 108   2          }
+ 109   1      
+ 110   1          last = curr;
+ 111   1      }
 
-C51 COMPILATION COMPLETE.  1 WARNING(S),  2 ERROR(S)
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    197    ----
+C51 COMPILER V9.60.7.0   KEY                                                               02/09/2026 15:12:46 PAGE 3   
+
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =      2       2
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
