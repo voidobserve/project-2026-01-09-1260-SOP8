@@ -18,6 +18,23 @@ static volatile u8 adc1_status = 0;
 
 void adc_init(void)
 {
+    // 初始化对应的引脚：
+    // M+ DET 第1路电机正转电流检测（ADC输入，检测门向前运动时是否遇到障碍物）
+#if USER_DEBUG_PIN_ENABLE
+    P0_MD1 |= GPIO_P05_MODE_SEL(0x03); // 模拟输入
+#else
+    P1_MD0 |= GPIO_P12_MODE_SEL(0x03); // 模拟输入
+#endif
+
+    // M- DET 第1路电机反转电流检测 （ADC输入，检测门是否回到原始位置）
+    P0_MD0 |= GPIO_P00_MODE_SEL(0x03); // 模拟输入
+
+    // M2+ DET 第2路电机正转电流检测（ADC输入，检测门向前运动时是否遇到障碍物）
+    P2_MD0 |= GPIO_P21_MODE_SEL(0x03); // 模拟输入
+
+    // M2- DET 第2路电机反转电流检测（ADC输入，检测门是否回到原始位置）
+    P3_MD0 |= GPIO_P30_MODE_SEL(0x03); // 模拟输入
+
     // ADC配置
     ADC_ACON1 &= ~(ADC_VREF_SEL(0x7) | ADC_EXREF_SEL(0x1)); // 关闭外部参考电压
     ADC_ACON1 |= ADC_VREF_SEL(0x5) |                        // 选择 4.2V 作为参考电压
@@ -106,6 +123,7 @@ void adc_clear_update_flag(adc_channel_index_t adc_channel_index)
     }
 }
 
+// 获取 对应通道编号的 ad值更新标志
 u8 adc_get_update_flag(adc_channel_index_t adc_channel_index)
 {
     u8 ret = 0;
@@ -199,13 +217,17 @@ static void adc0_sel_channel(u8 adc_channel)
     {
     case ADC_CHANNEL_FORWARD:
     {
-        ADC0_SEL_FORWARD_CHANNEL();
+#if USER_DEBUG_PIN_ENABLE
+        ADC_CHS0 = ADC_ANALOG_CHAN(0x05); // 模拟通道 0x05：P05
+#else
+        ADC_CHS0 = ADC_ANALOG_CHAN(0x0A); // 模拟通道 0x0A：P12
+#endif
     }
     break;
     // =======================================================
     case ADC_CHANNEL_REVERSE:
     {
-        ADC0_SEL_REVERSE_CHANNEL();
+        ADC_CHS0 = ADC_ANALOG_CHAN(0x00); // 模拟通道 0x00：P00
     }
     break;
     // =======================================================
@@ -228,13 +250,13 @@ static void adc1_sel_channel(u8 adc_channel)
     {
     case ADC_CHANNEL_FORWARD:
     {
-        ADC1_SEL_FORWARD_CHANNEL();
+        ADC_CHS1 = ADC_ANALOG_CHAN(0x11); // 模拟通道 0x11：P21
     }
     break;
     // =======================================================
     case ADC_CHANNEL_REVERSE:
     {
-        ADC1_SEL_REVERSE_CHANNEL();
+        ADC_CHS1 = ADC_ANALOG_CHAN(0x18); // 模拟通道 0x18：P30
     }
     break;
     // =======================================================
@@ -325,7 +347,7 @@ void ADC_IRQHandler(void) interrupt ADC_IRQn
         {
             // 获取ad值
             adc_val_forward_0 = adc_val;
-            adc_set_update_flag(ADC_CHANNEL_INDEX_FORWARD_0); 
+            adc_set_update_flag(ADC_CHANNEL_INDEX_FORWARD_0);
 #if USER_DEBUG_ENABLE
             // printf("adc0 forward: %u\n", adc_val_forward_0);
 #endif

@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   MAIN                                                              02/05/2026 18:02:05 PAGE 1   
+C51 COMPILER V9.60.7.0   MAIN                                                              02/06/2026 15:26:37 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
@@ -32,10 +32,10 @@ line level    source
   20   1          // WDT_KEY = WDT_KEY_VAL(0xDD); //  关闭看门狗
   21   1      
   22   1          pwm_init();
-  23   1          // adc_init();
-  24   1          // key_init();
+  23   1          adc_init();
+  24   1          key_init();
   25   1      
-  26   1          // timer0_init(); // 系统定时器初始化，需要放在初始化的最后
+  26   1          timer0_init(); // 系统定时器初始化，需要放在初始化的最后
   27   1      
   28   1          uart0_init();
   29   1      #if USER_DEBUG_ENABLE
@@ -52,51 +52,52 @@ line level    source
   40   1          {
   41   2              WDT_KEY = WDT_KEY_VAL(0xAA); // 喂狗
   42   2      
-  43   2              // task_handle();
+  43   2              task_handle();
   44   2      
-  45   2      #if 0
-                      if (adc_get_update_flag(ADC_CHANNEL_INDEX_FORWARD_0))
-                      {
-                          u16 adc_val = 0;
-                          adc_clear_update_flag(ADC_CHANNEL_INDEX_FORWARD_0);
-                          adc_val = adc_get_val(ADC_CHANNEL_INDEX_FORWARD_0);
-                          printf("adc forward 0 val: %u\n", adc_val);
-                      }
-C51 COMPILER V9.60.7.0   MAIN                                                              02/05/2026 18:02:05 PAGE 2   
+  45   2              // 测试adc功能：
+  46   2      #if 0
+                      // if (adc_get_update_flag(ADC_CHANNEL_INDEX_FORWARD_0))
+                      // {
+                      //     u16 adc_val = 0;
+                      //     adc_clear_update_flag(ADC_CHANNEL_INDEX_FORWARD_0);
+                      //     adc_val = adc_get_val(ADC_CHANNEL_INDEX_FORWARD_0);
+                      //     printf("adc forward 0 val: %u\n", adc_val);
+C51 COMPILER V9.60.7.0   MAIN                                                              02/06/2026 15:26:37 PAGE 2   
 
+                      // }
               
-                      if (adc_get_update_flag(ADC_CHANNEL_INDEX_REVERSE_0))
-                      {
-                          u16 adc_val = 0;
-                          adc_clear_update_flag(ADC_CHANNEL_INDEX_REVERSE_0);
-                          adc_val = adc_get_val(ADC_CHANNEL_INDEX_REVERSE_0);
-                          printf("adc reverse 0 val: %u\n", adc_val);
-                      }
+                      // if (adc_get_update_flag(ADC_CHANNEL_INDEX_REVERSE_0))
+                      // {
+                      //     u16 adc_val = 0;
+                      //     adc_clear_update_flag(ADC_CHANNEL_INDEX_REVERSE_0);
+                      //     adc_val = adc_get_val(ADC_CHANNEL_INDEX_REVERSE_0);
+                      //     printf("adc reverse 0 val: %u\n", adc_val);
+                      // }
               
-                      if (adc_get_update_flag(ADC_CHANNEL_INDEX_FORWARD_1))
-                      {
-                          u16 adc_val = 0;
-                          adc_clear_update_flag(ADC_CHANNEL_INDEX_FORWARD_1);
-                          adc_val = adc_get_val(ADC_CHANNEL_INDEX_FORWARD_1);
-                          printf("adc forward 1 val: %u\n", adc_val);
-                      }
+                      // if (adc_get_update_flag(ADC_CHANNEL_INDEX_FORWARD_1))
+                      // {
+                      //     u16 adc_val = 0;
+                      //     adc_clear_update_flag(ADC_CHANNEL_INDEX_FORWARD_1);
+                      //     adc_val = adc_get_val(ADC_CHANNEL_INDEX_FORWARD_1);
+                      //     printf("adc forward 1 val: %u\n", adc_val);
+                      // }
               
-                      if (adc_get_update_flag(ADC_CHANNEL_INDEX_REVERSE_1))
-                      {
-                          u16 adc_val = 0;
-                          adc_clear_update_flag(ADC_CHANNEL_INDEX_REVERSE_1);
-                          adc_val = adc_get_val(ADC_CHANNEL_INDEX_REVERSE_1);
-                          printf("adc reverse 1 val: %u\n", adc_val);
-                      }
+                      // if (adc_get_update_flag(ADC_CHANNEL_INDEX_REVERSE_1))
+                      // {
+                      //     u16 adc_val = 0;
+                      //     adc_clear_update_flag(ADC_CHANNEL_INDEX_REVERSE_1);
+                      //     adc_val = adc_get_val(ADC_CHANNEL_INDEX_REVERSE_1);
+                      //     printf("adc reverse 1 val: %u\n", adc_val);
+                      // }
               #endif
-  78   2      
-  79   2              // printf("main\n");
-  80   2          }
-  81   1      }
+  79   2      
+  80   2              // printf("main\n");
+  81   2          }
+  82   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =     64    ----
+   CODE SIZE        =     76    ----
    CONSTANT SIZE    =     11    ----
    XDATA SIZE       =      5    ----
    PDATA SIZE       =   ----    ----

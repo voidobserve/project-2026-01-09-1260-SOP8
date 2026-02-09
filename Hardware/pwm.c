@@ -15,6 +15,9 @@ void pwm_init(void)
     P0_MD1 |= GPIO_P06_MODE_SEL(0x01);
     FOUT_S06 = GPIO_FOUT_STMR1_PWMOUT;
 #else
+    P1_MD0 &= ~GPIO_P11_MODE_SEL(0x03);
+    P1_MD0 |= GPIO_P11_MODE_SEL(0x01);
+    FOUT_S11 = GPIO_FOUT_STMR1_PWMOUT;
 #endif
 
     // M2+ ON 电机正转开关
@@ -28,6 +31,9 @@ void pwm_init(void)
     P0_MD0 |= GPIO_P01_MODE_SEL(0x01);
     FOUT_S01 = GPIO_FOUT_STMR3_PWMOUT;
 #else
+    P0_MD0 &= ~GPIO_P03_MODE_SEL(0x03);
+    P0_MD0 |= GPIO_P03_MODE_SEL(0x01);
+    FOUT_S03 = GPIO_FOUT_STMR3_PWMOUT;
 #endif
 
     // ===============================================================================

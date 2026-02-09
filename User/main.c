@@ -20,10 +20,10 @@ void main(void)
     // WDT_KEY = WDT_KEY_VAL(0xDD); //  关闭看门狗
 
     pwm_init();
-    // adc_init();
-    // key_init();
+    adc_init();
+    key_init();
 
-    // timer0_init(); // 系统定时器初始化，需要放在初始化的最后
+    timer0_init(); // 系统定时器初始化，需要放在初始化的最后
 
     uart0_init();
 #if USER_DEBUG_ENABLE
@@ -40,40 +40,41 @@ void main(void)
     {
         WDT_KEY = WDT_KEY_VAL(0xAA); // 喂狗
 
-        // task_handle();
+        task_handle();
 
+        // 测试adc功能：
 #if 0
-        if (adc_get_update_flag(ADC_CHANNEL_INDEX_FORWARD_0))
-        {
-            u16 adc_val = 0;
-            adc_clear_update_flag(ADC_CHANNEL_INDEX_FORWARD_0);
-            adc_val = adc_get_val(ADC_CHANNEL_INDEX_FORWARD_0);
-            printf("adc forward 0 val: %u\n", adc_val);
-        }
+        // if (adc_get_update_flag(ADC_CHANNEL_INDEX_FORWARD_0))
+        // {
+        //     u16 adc_val = 0;
+        //     adc_clear_update_flag(ADC_CHANNEL_INDEX_FORWARD_0);
+        //     adc_val = adc_get_val(ADC_CHANNEL_INDEX_FORWARD_0);
+        //     printf("adc forward 0 val: %u\n", adc_val);
+        // }
 
-        if (adc_get_update_flag(ADC_CHANNEL_INDEX_REVERSE_0))
-        {
-            u16 adc_val = 0;
-            adc_clear_update_flag(ADC_CHANNEL_INDEX_REVERSE_0);
-            adc_val = adc_get_val(ADC_CHANNEL_INDEX_REVERSE_0);
-            printf("adc reverse 0 val: %u\n", adc_val);
-        }
+        // if (adc_get_update_flag(ADC_CHANNEL_INDEX_REVERSE_0))
+        // {
+        //     u16 adc_val = 0;
+        //     adc_clear_update_flag(ADC_CHANNEL_INDEX_REVERSE_0);
+        //     adc_val = adc_get_val(ADC_CHANNEL_INDEX_REVERSE_0);
+        //     printf("adc reverse 0 val: %u\n", adc_val);
+        // }
 
-        if (adc_get_update_flag(ADC_CHANNEL_INDEX_FORWARD_1))
-        {
-            u16 adc_val = 0;
-            adc_clear_update_flag(ADC_CHANNEL_INDEX_FORWARD_1);
-            adc_val = adc_get_val(ADC_CHANNEL_INDEX_FORWARD_1);
-            printf("adc forward 1 val: %u\n", adc_val);
-        }
+        // if (adc_get_update_flag(ADC_CHANNEL_INDEX_FORWARD_1))
+        // {
+        //     u16 adc_val = 0;
+        //     adc_clear_update_flag(ADC_CHANNEL_INDEX_FORWARD_1);
+        //     adc_val = adc_get_val(ADC_CHANNEL_INDEX_FORWARD_1);
+        //     printf("adc forward 1 val: %u\n", adc_val);
+        // }
 
-        if (adc_get_update_flag(ADC_CHANNEL_INDEX_REVERSE_1))
-        {
-            u16 adc_val = 0;
-            adc_clear_update_flag(ADC_CHANNEL_INDEX_REVERSE_1);
-            adc_val = adc_get_val(ADC_CHANNEL_INDEX_REVERSE_1);
-            printf("adc reverse 1 val: %u\n", adc_val);
-        }
+        // if (adc_get_update_flag(ADC_CHANNEL_INDEX_REVERSE_1))
+        // {
+        //     u16 adc_val = 0;
+        //     adc_clear_update_flag(ADC_CHANNEL_INDEX_REVERSE_1);
+        //     adc_val = adc_get_val(ADC_CHANNEL_INDEX_REVERSE_1);
+        //     printf("adc reverse 1 val: %u\n", adc_val);
+        // }
 #endif
 
         // printf("main\n");
