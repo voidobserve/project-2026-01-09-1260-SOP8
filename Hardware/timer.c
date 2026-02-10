@@ -30,6 +30,8 @@ void TIMR0_IRQHandler(void) interrupt TMR0_IRQn
 		TMR0_CONH |= TMR_PRD_PND(0x1); // 清除pending
 
 		task_schedule_tick();
+
+		uart_data_recv_timeout_add();
 	}
 
 	// 退出中断设置IP，不可删除

@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   PWM                                                               02/09/2026 15:12:46 PAGE 1   
+C51 COMPILER V9.60.7.0   PWM                                                               02/10/2026 16:53:12 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE PWM
@@ -22,14 +22,14 @@ line level    source
   11   1      
   12   1      // M- ON 电机反转开关
   13   1      #if USER_DEBUG_PIN_ENABLE
-                  P0_MD1 &= ~GPIO_P06_MODE_SEL(0x03);
-                  P0_MD1 |= GPIO_P06_MODE_SEL(0x01);
-                  FOUT_S06 = GPIO_FOUT_STMR1_PWMOUT;
-              #else
-  18   1          P1_MD0 &= ~GPIO_P11_MODE_SEL(0x03);
-  19   1          P1_MD0 |= GPIO_P11_MODE_SEL(0x01);
-  20   1          FOUT_S11 = GPIO_FOUT_STMR1_PWMOUT;
-  21   1      #endif
+  14   1          P0_MD1 &= ~GPIO_P06_MODE_SEL(0x03);
+  15   1          P0_MD1 |= GPIO_P06_MODE_SEL(0x01);
+  16   1          FOUT_S06 = GPIO_FOUT_STMR1_PWMOUT;
+  17   1      #else
+                  P1_MD0 &= ~GPIO_P11_MODE_SEL(0x03);
+                  P1_MD0 |= GPIO_P11_MODE_SEL(0x01);
+                  FOUT_S11 = GPIO_FOUT_STMR1_PWMOUT;
+              #endif
   22   1      
   23   1          // M2+ ON 电机正转开关
   24   1          P2_MD1 &= ~GPIO_P27_MODE_SEL(0x03);
@@ -38,14 +38,14 @@ line level    source
   27   1      
   28   1      // M2- ON 电机反转开关
   29   1      #if USER_DEBUG_PIN_ENABLE
-                  P0_MD0 &= ~GPIO_P01_MODE_SEL(0x03);
-                  P0_MD0 |= GPIO_P01_MODE_SEL(0x01);
-                  FOUT_S01 = GPIO_FOUT_STMR3_PWMOUT;
-              #else
-  34   1          P0_MD0 &= ~GPIO_P03_MODE_SEL(0x03);
-  35   1          P0_MD0 |= GPIO_P03_MODE_SEL(0x01);
-  36   1          FOUT_S03 = GPIO_FOUT_STMR3_PWMOUT;
-  37   1      #endif
+  30   1          P0_MD0 &= ~GPIO_P01_MODE_SEL(0x03);
+  31   1          P0_MD0 |= GPIO_P01_MODE_SEL(0x01);
+  32   1          FOUT_S01 = GPIO_FOUT_STMR3_PWMOUT;
+  33   1      #else
+                  P0_MD0 &= ~GPIO_P03_MODE_SEL(0x03);
+                  P0_MD0 |= GPIO_P03_MODE_SEL(0x01);
+                  FOUT_S03 = GPIO_FOUT_STMR3_PWMOUT;
+              #endif
   38   1      
   39   1          // ===============================================================================
   40   1          // STIMER0 配置
@@ -62,7 +62,7 @@ line level    source
   50   1          STMR_CNTCLR |= STMR_0_CNT_CLR(0x1);                         // 计数清零
   51   1          STMR_CNTEN |= STMR_0_CNT_EN(0x1);                           // 计数使能
   52   1          // ===============================================================================
-C51 COMPILER V9.60.7.0   PWM                                                               02/09/2026 15:12:46 PAGE 2   
+C51 COMPILER V9.60.7.0   PWM                                                               02/10/2026 16:53:12 PAGE 2   
 
   53   1          // STIMER1 配置
   54   1          STMR1_PSC = STMR_PRESCALE_VAL(0x00);                        // 不分频
@@ -126,7 +126,7 @@ line level    source
  109   1      }
  110          
  111          // 设置通道2的占空比
-C51 COMPILER V9.60.7.0   PWM                                                               02/09/2026 15:12:46 PAGE 3   
+C51 COMPILER V9.60.7.0   PWM                                                               02/10/2026 16:53:12 PAGE 3   
 
  112          void pwm_channel_2_set_duty(u16 channel_duty)
  113          {
@@ -145,7 +145,7 @@ line level    source
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    343    ----
+   CODE SIZE        =    345    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----

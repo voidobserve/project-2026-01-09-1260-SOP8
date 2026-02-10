@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   TASK                                                              02/09/2026 15:12:46 PAGE 1   
+C51 COMPILER V9.60.7.0   TASK                                                              02/10/2026 17:37:45 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE TASK
@@ -31,8 +31,8 @@ line level    source
   20              // {0, 0, 100, adc_scan}, // USER_TO_DO 测试时使用100ms
   21              {0, 0, 1, adc_scan}, //
   22          #if USER_DEBUG_ENABLE
-                  {0, 0, 100, task_debug},
-              #endif
+  23              {0, 0, 100, task_debug},
+  24          #endif
   25          };
   26          
   27          // 任务处理，由主循环调用
@@ -62,23 +62,23 @@ line level    source
   51   2              {
   52   3                  task_table[i].task_time_slice = 0;
   53   3                  task_table[i].is_task_enable = 1;
-C51 COMPILER V9.60.7.0   TASK                                                              02/09/2026 15:12:46 PAGE 2   
+C51 COMPILER V9.60.7.0   TASK                                                              02/10/2026 17:37:45 PAGE 2   
 
   54   3              }
   55   2          }
   56   1      }
   57          
   58          #if USER_DEBUG_ENABLE
-              void task_debug(void)
-              {
-              }
-              #endif
+  59          void task_debug(void)
+  60          {
+  61   1      }
+  62          #endif
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    191    ----
+   CODE SIZE        =    192    ----
    CONSTANT SIZE    =   ----    ----
-   XDATA SIZE       =     40       1
+   XDATA SIZE       =     48       1
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----

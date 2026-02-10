@@ -7,7 +7,7 @@
 #define MOTOR_DIR_CHANGE_DLY_TIME ((u16)300) // 单位：ms
 #define MOTOR_WORKING_PWM_DUTY_VAL ((u16)PWM_DUTY_VAL_85_PERCENT)
 #define MOTOR_OVERCURRENT_ADC_VAL ((u16)1657) // 电机过流时，adc检测对应的阈值（约1.7V）
-#define MOTOR_WORKING_OVER_TIME ((u16)2500) // 电机工作正常时，超时时间
+#define MOTOR_WORKING_OVER_TIME ((u16)2500)   // 电机工作正常时，超时时间
 
 #define MOTOR_0_FORWARD_PWM_DUTY_SET(motor_0_pwm_duty) pwm_channel_0_set_duty(motor_0_pwm_duty)
 #define MOTOR_0_REVERSE_PWM_DUTY_SET(motor_0_pwm_duty) pwm_channel_1_set_duty(motor_0_pwm_duty)
@@ -19,8 +19,32 @@ enum
     MOTOR_STATUS_STOP = 0,
     MOTOR_STATUS_FORWARD,
     MOTOR_STATUS_REVERSE,
+
+    MOTOR_STATUS_FORWARD_OVER_TIME, // 电机正转期间，超时
+    MOTOR_STATUS_REVERSE_OVER_TIME, // 电机反转期间，超时
+
+    MOTOR_STATUS_FORWARD_OVERCURRENT, // 电机正转期间，检测到过流
+    MOTOR_STATUS_REVERSE_OVERCURRENT, // 电机反转期间，检测到过流
+
+    MOTOR_STATUS_STOP_BY_FORWARD_TIMEOUT, // 电机正转期间，由于超时而停止
+    MOTOR_STATUS_STOP_BY_REVERSE_TIMEOUT, // 电机反转期间，由于超时而停止
+
+    MOTOR_STATUS_STOP_BY_FORWARD_OVERCURRENT, // 电机正转期间，由于过流而停止
+    MOTOR_STATUS_STOP_BY_REVERSE_OVERCURRENT, // 电机反转期间，由于过流而停止
 };
 typedef u8 motor_status_t;
+
+typedef struct
+{
+    // motor_status_t last_status;
+    motor_status_t status;
+
+    u16 working_time_cnt;     // 工作时间计时
+    u16 overcurrent_time_cnt; // 过流时间计时
+
+    u16 dir_change_dly;   // 切换方向的延时（电机应该停下来，延时，再切换方向）
+    u8 dir_change_enable; // 改变方向使能标志位
+} motor_handle_t;
 
 extern volatile u8 motor_0_status;
 extern volatile u8 motor_1_status;
@@ -31,6 +55,9 @@ extern volatile u8 motor_1_dir_change_enable; // 标志位，是否允许电机�
 
 extern volatile u8 motor_0_is_working; // 电机是否正在工作
 extern volatile u8 motor_1_is_working; // 电机是否正在工作
+
+void motor_0_change_status(motor_status_t status);
+void motor_1_change_status(motor_status_t status);
 
 void motor_0_handler(void);
 void motor_1_handler(void);

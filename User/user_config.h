@@ -7,8 +7,9 @@
 #define U8_MAX_VAL ((const u8)0xFF)
 #define U16_MAX_VAL ((const u16)0xFFFF)
 
+#define ARRAY_SIZE(array) (sizeof(array) / sizeof(array[0]))
 
-#define USER_DEBUG_ENABLE 0
+#define USER_DEBUG_ENABLE 1
 
 #if USER_DEBUG_ENABLE
 #include <stdio.h>

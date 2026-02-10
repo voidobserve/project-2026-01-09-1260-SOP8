@@ -7,6 +7,7 @@
 #include "adc.h"
 #include "key.h"
 #include "uart.h"
+#include "uart_data_handle.h"
 
 void main(void)
 {
@@ -25,9 +26,11 @@ void main(void)
     key_init();
 
     timer0_init(); // 系统定时器初始化，需要放在初始化的最后
+    
 #if USER_DEBUG_ENABLE
     printf("sys reset\n");
 #endif
+ 
 
     // USER_TO_DO 测试时使用
     // pwm_channel_0_set_duty(PWM_DUTY_VAL_85_PERCENT);
@@ -40,6 +43,7 @@ void main(void)
         WDT_KEY = WDT_KEY_VAL(0xAA); // 喂狗
 
         task_handle();
+        uart_data_handle();
 
         // printf("main\n");
     }

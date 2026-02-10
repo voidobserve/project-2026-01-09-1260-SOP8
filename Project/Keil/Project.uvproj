@@ -401,6 +401,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\Libraries\Source\debug.c</FilePath>
             </File>
+            <File>
+              <FileName>uart_data_handle.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\uart_data_handle.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

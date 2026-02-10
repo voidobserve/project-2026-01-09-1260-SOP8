@@ -2,6 +2,7 @@
 ".\Release\Objects\system.obj",
 ".\Release\Objects\main.obj",
 ".\Release\Objects\debug.obj",
+".\Release\Objects\uart_data_handle.obj",
 ".\Release\Objects\adc.obj",
 ".\Release\Objects\timer.obj",
 ".\Release\Objects\task.obj",
