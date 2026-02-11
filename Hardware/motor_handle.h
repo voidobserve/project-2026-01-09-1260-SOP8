@@ -34,18 +34,6 @@ enum
 };
 typedef u8 motor_status_t;
 
-typedef struct
-{
-    // motor_status_t last_status;
-    motor_status_t status;
-
-    u16 working_time_cnt;     // 工作时间计时
-    u16 overcurrent_time_cnt; // 过流时间计时
-
-    u16 dir_change_dly;   // 切换方向的延时（电机应该停下来，延时，再切换方向）
-    u8 dir_change_enable; // 改变方向使能标志位
-} motor_handle_t;
-
 extern volatile u8 motor_0_status;
 extern volatile u8 motor_1_status;
 extern volatile u16 motor_0_dir_change_dly;   //
