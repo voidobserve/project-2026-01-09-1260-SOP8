@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   MOTOR_HANDLE                                                      02/11/2026 10:35:30 PAGE 1   
+C51 COMPILER V9.60.7.0   MOTOR_HANDLE                                                      02/25/2026 10:00:36 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MOTOR_HANDLE
@@ -62,7 +62,7 @@ line level    source
   51   1          MOTOR_1_FORWARD_PWM_DUTY_SET(PWM_DUTY_VAL_0_PERCENT);
   52   1          MOTOR_1_REVERSE_PWM_DUTY_SET(PWM_DUTY_VAL_0_PERCENT);
   53   1      }
-C51 COMPILER V9.60.7.0   MOTOR_HANDLE                                                      02/11/2026 10:35:30 PAGE 2   
+C51 COMPILER V9.60.7.0   MOTOR_HANDLE                                                      02/25/2026 10:00:36 PAGE 2   
 
   54          
   55          void motor_0_handler(void)
@@ -126,7 +126,7 @@ line level    source
  113   1          if (motor_0_is_working)
  114   1          {
  115   2              // 向前过流，需要反向
-C51 COMPILER V9.60.7.0   MOTOR_HANDLE                                                      02/11/2026 10:35:30 PAGE 3   
+C51 COMPILER V9.60.7.0   MOTOR_HANDLE                                                      02/25/2026 10:00:36 PAGE 3   
 
  116   2              if (adc_val_forward > MOTOR_OVERCURRENT_ADC_VAL)
  117   2              {
@@ -190,7 +190,7 @@ line level    source
  174          
  175          void motor_1_handler(void)
  176          {
-C51 COMPILER V9.60.7.0   MOTOR_HANDLE                                                      02/11/2026 10:35:30 PAGE 4   
+C51 COMPILER V9.60.7.0   MOTOR_HANDLE                                                      02/25/2026 10:00:36 PAGE 4   
 
  177   1          static volatile u16 adc_val_reverse = 0;
  178   1          static volatile u16 adc_val_forward = 0;
@@ -254,7 +254,7 @@ line level    source
  236   4                      // 反向
  237   4                      motor_1_status = MOTOR_STATUS_REVERSE;
  238   4                      motor_1_dir_change_dly = MOTOR_DIR_CHANGE_DLY_TIME;
-C51 COMPILER V9.60.7.0   MOTOR_HANDLE                                                      02/11/2026 10:35:30 PAGE 5   
+C51 COMPILER V9.60.7.0   MOTOR_HANDLE                                                      02/25/2026 10:00:36 PAGE 5   
 
  239   4                      motor_1_is_working = 0; // 停止电机流程
  240   4                      motor_1_dir_change_enable = 1;

@@ -3,6 +3,7 @@
 ".\Release\Objects\main.obj",
 ".\Release\Objects\debug.obj",
 ".\Release\Objects\uart_data_handle.obj",
+".\Release\Objects\motor_status_feedback.obj",
 ".\Release\Objects\adc.obj",
 ".\Release\Objects\timer.obj",
 ".\Release\Objects\task.obj",

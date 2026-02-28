@@ -19,18 +19,6 @@ enum
     MOTOR_STATUS_STOP = 0,
     MOTOR_STATUS_FORWARD,
     MOTOR_STATUS_REVERSE,
-
-    MOTOR_STATUS_FORWARD_OVER_TIME, // 电机正转期间，超时
-    MOTOR_STATUS_REVERSE_OVER_TIME, // 电机反转期间，超时
-
-    MOTOR_STATUS_FORWARD_OVERCURRENT, // 电机正转期间，检测到过流
-    MOTOR_STATUS_REVERSE_OVERCURRENT, // 电机反转期间，检测到过流
-
-    MOTOR_STATUS_STOP_BY_FORWARD_TIMEOUT, // 电机正转期间，由于超时而停止
-    MOTOR_STATUS_STOP_BY_REVERSE_TIMEOUT, // 电机反转期间，由于超时而停止
-
-    MOTOR_STATUS_STOP_BY_FORWARD_OVERCURRENT, // 电机正转期间，由于过流而停止
-    MOTOR_STATUS_STOP_BY_REVERSE_OVERCURRENT, // 电机反转期间，由于过流而停止
 };
 typedef u8 motor_status_t;
 

@@ -104,17 +104,17 @@ void uart0_rxbuffer_put_byte(u8 byte)
     }
 }
 
-void uart0_handle(void)
-{
-    u8 recvbyte;
-    if (uart0_rxbuffer_get_count() == 0)
-    {
-        return;
-    }
+// void uart0_handle(void)
+// {
+//     u8 recvbyte;
+//     if (uart0_rxbuffer_get_count() == 0)
+//     {
+//         return;
+//     }
 
-    // 接收缓冲区中有数据
-    recvbyte = uart0_rxbuffer_get_byte();
-}
+//     // 接收缓冲区中有数据
+//     recvbyte = uart0_rxbuffer_get_byte();
+// }
 
 // UART0中断服务函数（接收中断）
 void UART0_IRQHandler(void) interrupt UART0_IRQn

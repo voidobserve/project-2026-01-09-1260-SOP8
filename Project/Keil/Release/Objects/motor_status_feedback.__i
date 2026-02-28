@@ -1,0 +1,1 @@
+"..\..\User\motor_status_feedback.c" LARGE OPTIMIZE (8,SPEED) BROWSE INTVECTOR(0x000C) INCDIR(..\..\Libraries\Include;..\..\User;..\..\Hardware) interval(3) DEBUG OBJECTEXTEND PRINT(.\Release\Listings\motor_status_feedback.lst) OBJECT(.\Release\Objects\motor_status_feedback.obj)

@@ -8,6 +8,7 @@
 #include "key.h"
 #include "uart.h"
 #include "uart_data_handle.h"
+#include "motor_status_feedback.h"
 
 void main(void)
 {
@@ -37,6 +38,20 @@ void main(void)
     // pwm_channel_1_set_duty(PWM_DUTY_VAL_85_PERCENT);
     // pwm_channel_2_set_duty(PWM_DUTY_VAL_85_PERCENT);
     // pwm_channel_3_set_duty(PWM_DUTY_VAL_85_PERCENT);
+
+    motor_0_status_buf_push(MOTOR_STATUS_FORWARD);
+    motor_0_status_buf_push(MOTOR_STATUS_FORWARD);
+    motor_0_status_buf_push(MOTOR_STATUS_STOP);
+    motor_0_status_buf_push(MOTOR_STATUS_FORWARD);
+    motor_0_status_buf_push(MOTOR_STATUS_REVERSE);
+
+    motor_0_status_buf_push(MOTOR_STATUS_STOP);
+    motor_0_status_buf_push(MOTOR_STATUS_REVERSE);
+    motor_0_status_buf_push(MOTOR_STATUS_FORWARD);
+    motor_0_status_buf_push(MOTOR_STATUS_STOP);
+    motor_0_status_buf_push(MOTOR_STATUS_STOP);
+
+
 
     while (1)
     {

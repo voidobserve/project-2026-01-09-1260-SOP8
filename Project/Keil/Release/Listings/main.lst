@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   MAIN                                                              02/11/2026 10:29:09 PAGE 1   
+C51 COMPILER V9.60.7.0   MAIN                                                              02/28/2026 16:44:50 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
@@ -19,53 +19,68 @@ line level    source
    8          #include "key.h"
    9          #include "uart.h"
   10          #include "uart_data_handle.h"
-  11          
-  12          void main(void)
-  13          {
-  14   1          system_init();
-  15   1      
-  16   1          // 关闭HCK和HDA的调试功能
-  17   1          WDT_KEY = 0x55;  // 解除写保护
-  18   1          IO_MAP &= ~0x01; // 清除这个寄存器的值，实现关闭HCK和HDA引脚的调试功能（解除�
+  11          #include "motor_status_feedback.h"
+  12          
+  13          void main(void)
+  14          {
+  15   1          system_init();
+  16   1      
+  17   1          // 关闭HCK和HDA的调试功能
+  18   1          WDT_KEY = 0x55;  // 解除写保护
+  19   1          IO_MAP &= ~0x01; // 清除这个寄存器的值，实现关闭HCK和HDA引脚的调试功能（解除�
              -��射）
-  19   1          WDT_KEY = 0xBB;
-  20   1      
-  21   1          // WDT_KEY = WDT_KEY_VAL(0xDD); //  关闭看门狗
-  22   1          uart0_init();
-  23   1      
-  24   1          pwm_init();
-  25   1          adc_init();
-  26   1          key_init();
-  27   1      
-  28   1          timer0_init(); // 系统定时器初始化，需要放在初始化的最后
-  29   1          
-  30   1      #if USER_DEBUG_ENABLE
-  31   1          printf("sys reset\n");
-  32   1      #endif
-  33   1       
-  34   1      
-  35   1          // USER_TO_DO 测试时使用
-  36   1          // pwm_channel_0_set_duty(PWM_DUTY_VAL_85_PERCENT);
-  37   1          // pwm_channel_1_set_duty(PWM_DUTY_VAL_85_PERCENT);
-  38   1          // pwm_channel_2_set_duty(PWM_DUTY_VAL_85_PERCENT);
-  39   1          // pwm_channel_3_set_duty(PWM_DUTY_VAL_85_PERCENT);
-  40   1      
-  41   1          while (1)
-  42   1          {
-  43   2              WDT_KEY = WDT_KEY_VAL(0xAA); // 喂狗
-  44   2      
-  45   2              task_handle();
-  46   2              uart_data_handle();
-  47   2      
-  48   2              // printf("main\n");
-  49   2          }
-  50   1      }
+  20   1          WDT_KEY = 0xBB;
+  21   1      
+  22   1          // WDT_KEY = WDT_KEY_VAL(0xDD); //  关闭看门狗
+  23   1          uart0_init();
+  24   1      
+  25   1          pwm_init();
+  26   1          adc_init();
+  27   1          key_init();
+  28   1      
+  29   1          timer0_init(); // 系统定时器初始化，需要放在初始化的最后
+  30   1          
+  31   1      #if USER_DEBUG_ENABLE
+  32   1          printf("sys reset\n");
+  33   1      #endif
+  34   1       
+  35   1      
+  36   1          // USER_TO_DO 测试时使用
+  37   1          // pwm_channel_0_set_duty(PWM_DUTY_VAL_85_PERCENT);
+  38   1          // pwm_channel_1_set_duty(PWM_DUTY_VAL_85_PERCENT);
+  39   1          // pwm_channel_2_set_duty(PWM_DUTY_VAL_85_PERCENT);
+  40   1          // pwm_channel_3_set_duty(PWM_DUTY_VAL_85_PERCENT);
+  41   1      
+  42   1          motor_0_status_buf_push(MOTOR_STATUS_FORWARD);
+  43   1          motor_0_status_buf_push(MOTOR_STATUS_FORWARD);
+  44   1          motor_0_status_buf_push(MOTOR_STATUS_STOP);
+  45   1          motor_0_status_buf_push(MOTOR_STATUS_FORWARD);
+  46   1          motor_0_status_buf_push(MOTOR_STATUS_REVERSE);
+  47   1      
+  48   1          motor_0_status_buf_push(MOTOR_STATUS_STOP);
+  49   1          motor_0_status_buf_push(MOTOR_STATUS_REVERSE);
+  50   1          motor_0_status_buf_push(MOTOR_STATUS_FORWARD);
+  51   1          motor_0_status_buf_push(MOTOR_STATUS_STOP);
+  52   1          motor_0_status_buf_push(MOTOR_STATUS_STOP);
+C51 COMPILER V9.60.7.0   MAIN                                                              02/28/2026 16:44:50 PAGE 2   
 
+  53   1      
+  54   1      
+  55   1      
+  56   1          while (1)
+  57   1          {
+  58   2              WDT_KEY = WDT_KEY_VAL(0xAA); // 喂狗
+  59   2      
+  60   2              task_handle();
+  61   2              uart_data_handle();
+  62   2      
+  63   2              // printf("main\n");
+  64   2          }
+  65   1      }
 
-C51 COMPILER V9.60.7.0   MAIN                                                              02/11/2026 10:29:09 PAGE 2   
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =     51    ----
+   CODE SIZE        =    101    ----
    CONSTANT SIZE    =     11    ----
    XDATA SIZE       =      5    ----
    PDATA SIZE       =   ----    ----

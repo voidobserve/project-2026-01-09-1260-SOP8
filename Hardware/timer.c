@@ -32,6 +32,8 @@ void TIMR0_IRQHandler(void) interrupt TMR0_IRQn
 
 		task_schedule_tick();
 
+		adc_scan(); // 至少要间隔1ms，才调用一次
+
 		uart_data_recv_timeout_add();
 	}
 
