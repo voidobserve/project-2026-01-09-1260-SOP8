@@ -26,32 +26,13 @@ void main(void)
     adc_init();
     key_init();
 
+    motor_status_feedback_init();
+
     timer0_init(); // 系统定时器初始化，需要放在初始化的最后
-    
+
 #if USER_DEBUG_ENABLE
     printf("sys reset\n");
 #endif
- 
-
-    // USER_TO_DO 测试时使用
-    // pwm_channel_0_set_duty(PWM_DUTY_VAL_85_PERCENT);
-    // pwm_channel_1_set_duty(PWM_DUTY_VAL_85_PERCENT);
-    // pwm_channel_2_set_duty(PWM_DUTY_VAL_85_PERCENT);
-    // pwm_channel_3_set_duty(PWM_DUTY_VAL_85_PERCENT);
-
-    motor_0_status_buf_push(MOTOR_STATUS_FORWARD);
-    motor_0_status_buf_push(MOTOR_STATUS_FORWARD);
-    motor_0_status_buf_push(MOTOR_STATUS_STOP);
-    motor_0_status_buf_push(MOTOR_STATUS_FORWARD);
-    motor_0_status_buf_push(MOTOR_STATUS_REVERSE);
-
-    motor_0_status_buf_push(MOTOR_STATUS_STOP);
-    motor_0_status_buf_push(MOTOR_STATUS_REVERSE);
-    motor_0_status_buf_push(MOTOR_STATUS_FORWARD);
-    motor_0_status_buf_push(MOTOR_STATUS_STOP);
-    motor_0_status_buf_push(MOTOR_STATUS_STOP);
-
-
 
     while (1)
     {

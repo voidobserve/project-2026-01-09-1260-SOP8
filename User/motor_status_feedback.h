@@ -12,6 +12,7 @@
 void motor_0_status_buf_push(motor_status_t status);
 void motor_1_status_buf_push(motor_status_t status);
 
+void motor_status_feedback_init(void);
 void motor_status_scan(void);
 
 void motor_status_feedback(void); 

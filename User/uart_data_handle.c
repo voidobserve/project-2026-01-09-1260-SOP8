@@ -41,6 +41,7 @@ void uart_data_handle(void)
             timeout_enable = 0;                                     // 不使能超时计数
             uart_data_handle_status = UART_DATA_HANDLE_STATUS_IDLE; // 重新开始接收
 
+#if USER_DEBUG_ENABLE
             // 打印超时之后，缓冲区内的数据
             printf("=================================>\n");
             printf("uart recv timeout\n");
@@ -49,15 +50,15 @@ void uart_data_handle(void)
                 printf("%02x", (u16)cmd_buff[i]);
             }
             printf("=================================^\n");
+#endif
         }
 
         return; // 串口缓冲区的数据为空，直接返回
     }
 
     timeout_enable = 1; // 使能超时计数
-    timeout_cnt = 0;
+    timeout_cnt = 0;    // 收到数据，清空倒计时
     recv_byte = uart0_rxbuffer_get_byte();
-    // USER_TO_DO 收到了数据，清空超时计时
 
     switch (uart_data_handle_status)
     {
@@ -89,16 +90,20 @@ void uart_data_handle(void)
 
             if (check_sum != cmd_buff[dest_cmd_buff_len - 1])
             {
-                // 校验和错误
+// 校验和错误
+#if USER_DEBUG_ENABLE
                 printf("check sum error\n");
+#endif
                 timeout_cnt = 0;
                 timeout_enable = 0;                                     // 不使能超时计数
                 uart_data_handle_status = UART_DATA_HANDLE_STATUS_IDLE; // 重新接收数据
             }
             else
             {
-                // 校验和正确
+// 校验和正确
+#if USER_DEBUG_ENABLE
                 printf("check sum ok\n");
+#endif
                 uart_data_handle_status = UART_DATA_HANDLE_STATUS_END;
             }
         }
@@ -114,12 +119,14 @@ void uart_data_handle(void)
         return; // 未接收完数据，不进入下面的处理操作，函数直接返回
     }
 
+#if USER_DEBUG_ENABLE
     // 打印接收到的一帧数据
     for (i = 0; i < dest_cmd_buff_len; i++)
     {
         printf("0x%02x ", (u16)cmd_buff[i]);
     }
     printf("\n");
+#endif
 
     switch (cmd_buff[2])
     {
@@ -133,11 +140,15 @@ void uart_data_handle(void)
             break;
         case 0x01: // 正转
             motor_0_change_status(MOTOR_STATUS_FORWARD);
+#if USER_DEBUG_ENABLE
             printf("motor 0 forward\n");
+#endif
             break;
         case 0x02: // 反转
             motor_0_change_status(MOTOR_STATUS_REVERSE);
+#if USER_DEBUG_ENABLE
             printf("motor 0 reverse\n");
+#endif
             break;
         default:
             break;

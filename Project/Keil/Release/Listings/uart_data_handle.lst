@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   UART_DATA_HANDLE                                                  02/25/2026 10:00:36 PAGE 1   
+C51 COMPILER V9.60.7.0   UART_DATA_HANDLE                                                  03/05/2026 14:48:55 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE UART_DATA_HANDLE
@@ -54,148 +54,159 @@ line level    source
   41   3                  timeout_enable = 0;                                     // 不使能超时计数
   42   3                  uart_data_handle_status = UART_DATA_HANDLE_STATUS_IDLE; // 重新开始接收
   43   3      
-  44   3                  // 打印超时之后，缓冲区内的数据
-  45   3                  printf("=================================>\n");
-  46   3                  printf("uart recv timeout\n");
-  47   3                  for (i = 0; i < ARRAY_SIZE(cmd_buff); i++)
-  48   3                  {
-  49   4                      printf("%02x", (u16)cmd_buff[i]);
-  50   4                  }
-  51   3                  printf("=================================^\n");
-C51 COMPILER V9.60.7.0   UART_DATA_HANDLE                                                  02/25/2026 10:00:36 PAGE 2   
+  44   3      #if USER_DEBUG_ENABLE
+                          // 打印超时之后，缓冲区内的数据
+                          printf("=================================>\n");
+                          printf("uart recv timeout\n");
+                          for (i = 0; i < ARRAY_SIZE(cmd_buff); i++)
+                          {
+                              printf("%02x", (u16)cmd_buff[i]);
+                          }
+C51 COMPILER V9.60.7.0   UART_DATA_HANDLE                                                  03/05/2026 14:48:55 PAGE 2   
 
-  52   3              }
-  53   2      
-  54   2              return; // 串口缓冲区的数据为空，直接返回
-  55   2          }
-  56   1      
-  57   1          timeout_enable = 1; // 使能超时计数
-  58   1          timeout_cnt = 0;
-  59   1          recv_byte = uart0_rxbuffer_get_byte();
-  60   1          // USER_TO_DO 收到了数据，清空超时计时
-  61   1      
-  62   1          switch (uart_data_handle_status)
-  63   1          {
-  64   2          case UART_DATA_HANDLE_STATUS_IDLE:
-  65   2              if (UART_DATA_HANDLE_FORMAT_HEAD == recv_byte)
-  66   2              {
-  67   3                  cmd_buff[0] = recv_byte;
-  68   3                  cur_cmd_buff_len = 1;
-  69   3      
-  70   3                  uart_data_handle_status = UART_DATA_HANDLE_STATUS_FORMAT_HEAD;
-  71   3              }
-  72   2              break;
-  73   2              // ===============================================================
-  74   2          case UART_DATA_HANDLE_STATUS_FORMAT_HEAD:
-  75   2              cmd_buff[cur_cmd_buff_len++] = recv_byte;
-  76   2              dest_cmd_buff_len = recv_byte;                         // 存放要接收的数据长度
-  77   2              uart_data_handle_status = UART_DATA_HANDLE_STATUS_LEN; // 表示接收到了数据帧长度
-  78   2              // printf("len == %bu\n", dest_cmd_buff_len);
-  79   2              break;
-  80   2              // ===============================================================
-  81   2          case UART_DATA_HANDLE_STATUS_LEN:
-  82   2              cmd_buff[cur_cmd_buff_len++] = recv_byte;
-  83   2              if (cur_cmd_buff_len >= dest_cmd_buff_len) // 如果接收完所有的数据
-  84   2              {
-  85   3                  for (i = 0; i < dest_cmd_buff_len - 1; i++)
-  86   3                  {
-  87   4                      check_sum += cmd_buff[i];
-  88   4                  }
-  89   3      
-  90   3                  if (check_sum != cmd_buff[dest_cmd_buff_len - 1])
-  91   3                  {
-  92   4                      // 校验和错误
-  93   4                      printf("check sum error\n");
-  94   4                      timeout_cnt = 0;
-  95   4                      timeout_enable = 0;                                     // 不使能超时计数
-  96   4                      uart_data_handle_status = UART_DATA_HANDLE_STATUS_IDLE; // 重新接收数据
-  97   4                  }
-  98   3                  else
-  99   3                  {
- 100   4                      // 校验和正确
- 101   4                      printf("check sum ok\n");
- 102   4                      uart_data_handle_status = UART_DATA_HANDLE_STATUS_END;
- 103   4                  }
- 104   3              }
- 105   2              break;
- 106   2          // ===============================================================
- 107   2          default:
- 108   2      
- 109   2              break;
- 110   2          }
- 111   1      
- 112   1          if (UART_DATA_HANDLE_STATUS_END != uart_data_handle_status)
- 113   1          {
-C51 COMPILER V9.60.7.0   UART_DATA_HANDLE                                                  02/25/2026 10:00:36 PAGE 3   
+                          printf("=================================^\n");
+              #endif
+  54   3              }
+  55   2      
+  56   2              return; // 串口缓冲区的数据为空，直接返回
+  57   2          }
+  58   1      
+  59   1          timeout_enable = 1; // 使能超时计数
+  60   1          timeout_cnt = 0;    // 收到数据，清空倒计时
+  61   1          recv_byte = uart0_rxbuffer_get_byte();
+  62   1      
+  63   1          switch (uart_data_handle_status)
+  64   1          {
+  65   2          case UART_DATA_HANDLE_STATUS_IDLE:
+  66   2              if (UART_DATA_HANDLE_FORMAT_HEAD == recv_byte)
+  67   2              {
+  68   3                  cmd_buff[0] = recv_byte;
+  69   3                  cur_cmd_buff_len = 1;
+  70   3      
+  71   3                  uart_data_handle_status = UART_DATA_HANDLE_STATUS_FORMAT_HEAD;
+  72   3              }
+  73   2              break;
+  74   2              // ===============================================================
+  75   2          case UART_DATA_HANDLE_STATUS_FORMAT_HEAD:
+  76   2              cmd_buff[cur_cmd_buff_len++] = recv_byte;
+  77   2              dest_cmd_buff_len = recv_byte;                         // 存放要接收的数据长度
+  78   2              uart_data_handle_status = UART_DATA_HANDLE_STATUS_LEN; // 表示接收到了数据帧长度
+  79   2              // printf("len == %bu\n", dest_cmd_buff_len);
+  80   2              break;
+  81   2              // ===============================================================
+  82   2          case UART_DATA_HANDLE_STATUS_LEN:
+  83   2              cmd_buff[cur_cmd_buff_len++] = recv_byte;
+  84   2              if (cur_cmd_buff_len >= dest_cmd_buff_len) // 如果接收完所有的数据
+  85   2              {
+  86   3                  for (i = 0; i < dest_cmd_buff_len - 1; i++)
+  87   3                  {
+  88   4                      check_sum += cmd_buff[i];
+  89   4                  }
+  90   3      
+  91   3                  if (check_sum != cmd_buff[dest_cmd_buff_len - 1])
+  92   3                  {
+  93   4      // 校验和错误
+  94   4      #if USER_DEBUG_ENABLE
+                              printf("check sum error\n");
+              #endif
+  97   4                      timeout_cnt = 0;
+  98   4                      timeout_enable = 0;                                     // 不使能超时计数
+  99   4                      uart_data_handle_status = UART_DATA_HANDLE_STATUS_IDLE; // 重新接收数据
+ 100   4                  }
+ 101   3                  else
+ 102   3                  {
+ 103   4      // 校验和正确
+ 104   4      #if USER_DEBUG_ENABLE
+                              printf("check sum ok\n");
+              #endif
+ 107   4                      uart_data_handle_status = UART_DATA_HANDLE_STATUS_END;
+ 108   4                  }
+ 109   3              }
+ 110   2              break;
+ 111   2          // ===============================================================
+ 112   2          default:
+ 113   2      
+C51 COMPILER V9.60.7.0   UART_DATA_HANDLE                                                  03/05/2026 14:48:55 PAGE 3   
 
- 114   2              return; // 未接收完数据，不进入下面的处理操作，函数直接返回
+ 114   2              break;
  115   2          }
  116   1      
- 117   1          // 打印接收到的一帧数据
- 118   1          for (i = 0; i < dest_cmd_buff_len; i++)
- 119   1          {
- 120   2              printf("0x%02x ", (u16)cmd_buff[i]);
- 121   2          }
- 122   1          printf("\n");
- 123   1      
- 124   1          switch (cmd_buff[2])
- 125   1          {
- 126   2              // 判断要操作哪个电机
- 127   2          case 0x01:
- 128   2              // printf("obj == motor 0 \n");
- 129   2              switch (cmd_buff[3])
- 130   2              {
- 131   3                  // 判断要执行什么操作
- 132   3              case 0x00: // 停止
- 133   3                  break;
- 134   3              case 0x01: // 正转
- 135   3                  motor_0_change_status(MOTOR_STATUS_FORWARD);
- 136   3                  printf("motor 0 forward\n");
- 137   3                  break;
- 138   3              case 0x02: // 反转
- 139   3                  motor_0_change_status(MOTOR_STATUS_REVERSE);
- 140   3                  printf("motor 0 reverse\n");
- 141   3                  break;
- 142   3              default:
- 143   3                  break;
- 144   3              }
- 145   2              break;
- 146   2              // =======================================
- 147   2          case 0x02:
- 148   2              // printf("motor 1 \n");
- 149   2              switch (cmd_buff[3])
- 150   2              {
- 151   3                  // 判断要执行什么操作
- 152   3              case 0x00: // 停止
- 153   3                  break;
- 154   3              case 0x01: // 正转
- 155   3                  motor_1_change_status(MOTOR_STATUS_FORWARD);
- 156   3                  break;
- 157   3              case 0x02: // 反转
- 158   3                  motor_1_change_status(MOTOR_STATUS_REVERSE);
- 159   3                  break;
- 160   3              default:
- 161   3                  break;
- 162   3              }
- 163   2              break;
- 164   2      
- 165   2          default:
- 166   2              break;
- 167   2          }
- 168   1      
- 169   1          // 处理完成后，重新接收数据
- 170   1          timeout_cnt = 0;
- 171   1          timeout_enable = 0; // 不使能超时计数
- 172   1          uart_data_handle_status = UART_DATA_HANDLE_STATUS_IDLE;
- 173   1      }
+ 117   1          if (UART_DATA_HANDLE_STATUS_END != uart_data_handle_status)
+ 118   1          {
+ 119   2              return; // 未接收完数据，不进入下面的处理操作，函数直接返回
+ 120   2          }
+ 121   1      
+ 122   1      #if USER_DEBUG_ENABLE
+                  // 打印接收到的一帧数据
+                  for (i = 0; i < dest_cmd_buff_len; i++)
+                  {
+                      printf("0x%02x ", (u16)cmd_buff[i]);
+                  }
+                  printf("\n");
+              #endif
+ 130   1      
+ 131   1          switch (cmd_buff[2])
+ 132   1          {
+ 133   2              // 判断要操作哪个电机
+ 134   2          case 0x01:
+ 135   2              // printf("obj == motor 0 \n");
+ 136   2              switch (cmd_buff[3])
+ 137   2              {
+ 138   3                  // 判断要执行什么操作
+ 139   3              case 0x00: // 停止
+ 140   3                  break;
+ 141   3              case 0x01: // 正转
+ 142   3                  motor_0_change_status(MOTOR_STATUS_FORWARD);
+ 143   3      #if USER_DEBUG_ENABLE
+                          printf("motor 0 forward\n");
+              #endif
+ 146   3                  break;
+ 147   3              case 0x02: // 反转
+ 148   3                  motor_0_change_status(MOTOR_STATUS_REVERSE);
+ 149   3      #if USER_DEBUG_ENABLE
+                          printf("motor 0 reverse\n");
+              #endif
+ 152   3                  break;
+ 153   3              default:
+ 154   3                  break;
+ 155   3              }
+ 156   2              break;
+ 157   2              // =======================================
+ 158   2          case 0x02:
+ 159   2              // printf("motor 1 \n");
+ 160   2              switch (cmd_buff[3])
+ 161   2              {
+ 162   3                  // 判断要执行什么操作
+ 163   3              case 0x00: // 停止
+ 164   3                  break;
+ 165   3              case 0x01: // 正转
+ 166   3                  motor_1_change_status(MOTOR_STATUS_FORWARD);
+ 167   3                  break;
+ 168   3              case 0x02: // 反转
+ 169   3                  motor_1_change_status(MOTOR_STATUS_REVERSE);
+ 170   3                  break;
+ 171   3              default:
+ 172   3                  break;
+ 173   3              }
+ 174   2              break;
+ 175   2      
+C51 COMPILER V9.60.7.0   UART_DATA_HANDLE                                                  03/05/2026 14:48:55 PAGE 4   
 
+ 176   2          default:
+ 177   2              break;
+ 178   2          }
+ 179   1      
+ 180   1          // 处理完成后，重新接收数据
+ 181   1          timeout_cnt = 0;
+ 182   1          timeout_enable = 0; // 不使能超时计数
+ 183   1          uart_data_handle_status = UART_DATA_HANDLE_STATUS_IDLE;
+ 184   1      }
 
-C51 COMPILER V9.60.7.0   UART_DATA_HANDLE                                                  02/25/2026 10:00:36 PAGE 4   
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    526    ----
-   CONSTANT SIZE    =    171    ----
-   XDATA SIZE       =     16       2
+   CODE SIZE        =    327    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =     16       1
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----

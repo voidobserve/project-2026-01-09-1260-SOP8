@@ -9,7 +9,7 @@
 
 #define ARRAY_SIZE(array) (sizeof(array) / sizeof(array[0]))
 
-#define USER_DEBUG_ENABLE 1 // 打开用户调试，包含使用demo板上的引脚
+#define USER_DEBUG_ENABLE 0 // 打开用户调试，包含使用demo板上的引脚
 
 #if USER_DEBUG_ENABLE
 #include <stdio.h>

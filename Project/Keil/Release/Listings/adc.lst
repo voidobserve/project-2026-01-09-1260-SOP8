@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   ADC                                                               02/11/2026 10:29:10 PAGE 1   
+C51 COMPILER V9.60.7.0   ADC                                                               03/05/2026 14:48:55 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE ADC
@@ -34,10 +34,10 @@ line level    source
   22   1          // M+ DET 第1路电机正转电流检测（ADC输入，检测门向前运动时是否遇到障碍物�
              -��
   23   1      #if USER_DEBUG_PIN_ENABLE
-  24   1          P0_MD1 |= GPIO_P05_MODE_SEL(0x03); // 模拟输入
-  25   1      #else
-                  P1_MD0 |= GPIO_P12_MODE_SEL(0x03); // 模拟输入
-              #endif
+                  P0_MD1 |= GPIO_P05_MODE_SEL(0x03); // 模拟输入
+              #else
+  26   1          P1_MD0 |= GPIO_P12_MODE_SEL(0x03); // 模拟输入
+  27   1      #endif
   28   1      
   29   1          // M- DET 第1路电机反转电流检测 （ADC输入，检测门是否回到原始位置）
   30   1          P0_MD0 |= GPIO_P00_MODE_SEL(0x03); // 模拟输入
@@ -62,7 +62,7 @@ line level    source
   48   1          IE_EA = 1;             // 使能总中断
   49   1      
   50   1          ADC_CFG1 |= (0x0F << 3) | // ADC时钟分频为16分频，为系统时钟/16（相当于把adc时钟�
-C51 COMPILER V9.60.7.0   ADC                                                               02/11/2026 10:29:10 PAGE 2   
+C51 COMPILER V9.60.7.0   ADC                                                               03/05/2026 14:48:55 PAGE 2   
 
              -�置为最慢，）
   51   1                      (0x01 << 1) | // ADC1 通道中断使能
@@ -126,7 +126,7 @@ line level    source
  109   2          break;
  110   2              // =======================================================
  111   2          case ADC_CHANNEL_INDEX_FORWARD_1:
-C51 COMPILER V9.60.7.0   ADC                                                               02/11/2026 10:29:10 PAGE 3   
+C51 COMPILER V9.60.7.0   ADC                                                               03/05/2026 14:48:55 PAGE 3   
 
  112   2          {
  113   3              flag_is_adc_val_forward1_update = 0;
@@ -190,7 +190,7 @@ line level    source
  171          {
  172   1          u16 ret = 0;
  173   1      
-C51 COMPILER V9.60.7.0   ADC                                                               02/11/2026 10:29:10 PAGE 4   
+C51 COMPILER V9.60.7.0   ADC                                                               03/05/2026 14:48:55 PAGE 4   
 
  174   1          // 获取ad值之前，先屏蔽中断，因为ad值是在中断中更新
  175   1          IE_EA = 0;
@@ -239,10 +239,10 @@ line level    source
  218   2          case ADC_CHANNEL_FORWARD:
  219   2          {
  220   3      #if USER_DEBUG_PIN_ENABLE
- 221   3              ADC_CHS0 = ADC_ANALOG_CHAN(0x05); // 模拟通道 0x05：P05
- 222   3      #else
-                      ADC_CHS0 = ADC_ANALOG_CHAN(0x0A); // 模拟通道 0x0A：P12
-              #endif
+                      ADC_CHS0 = ADC_ANALOG_CHAN(0x05); // 模拟通道 0x05：P05
+              #else
+ 223   3              ADC_CHS0 = ADC_ANALOG_CHAN(0x0A); // 模拟通道 0x0A：P12
+ 224   3      #endif
  225   3          }
  226   2          break;
  227   2          // =======================================================
@@ -254,7 +254,7 @@ line level    source
  233   2          // =======================================================
  234   2          default:
  235   2          {
-C51 COMPILER V9.60.7.0   ADC                                                               02/11/2026 10:29:10 PAGE 5   
+C51 COMPILER V9.60.7.0   ADC                                                               03/05/2026 14:48:55 PAGE 5   
 
  236   3          }
  237   2          break;
@@ -318,7 +318,7 @@ line level    source
  294   1          {
  295   2              // 切换ad通道
  296   2              adc0_sel_channel(ADC_CHANNEL_REVERSE);
-C51 COMPILER V9.60.7.0   ADC                                                               02/11/2026 10:29:10 PAGE 6   
+C51 COMPILER V9.60.7.0   ADC                                                               03/05/2026 14:48:55 PAGE 6   
 
  297   2              adc0_status = ADC_STATUS_SEL_GET_REVERSE_WAITING;
  298   2          }
@@ -379,10 +379,10 @@ line level    source
  353   3                  adc_val_forward_0 = adc_val;
  354   3                  adc_set_update_flag(ADC_CHANNEL_INDEX_FORWARD_0);
  355   3      #if USER_DEBUG_ENABLE
- 356   3                  // printf("adc0 forward: %u\n", adc_val_forward_0);
- 357   3      #endif
+                          // printf("adc0 forward: %u\n", adc_val_forward_0);
+              #endif
  358   3              }
-C51 COMPILER V9.60.7.0   ADC                                                               02/11/2026 10:29:10 PAGE 7   
+C51 COMPILER V9.60.7.0   ADC                                                               03/05/2026 14:48:55 PAGE 7   
 
  359   2              else if (adc0_status == ADC_STATUS_SEL_GET_REVERSE)
  360   2              {
@@ -390,8 +390,8 @@ line level    source
  362   3                  adc_val_reverse_0 = adc_val;
  363   3                  adc_set_update_flag(ADC_CHANNEL_INDEX_REVERSE_0);
  364   3      #if USER_DEBUG_ENABLE
- 365   3                  // printf("adc0 reverse: %u\n", adc_val_reverse_0);
- 366   3      #endif
+                          // printf("adc0 reverse: %u\n", adc_val_reverse_0);
+              #endif
  367   3              }
  368   2          }
  369   1      
@@ -407,8 +407,8 @@ line level    source
  379   3                  adc_val_forward_1 = adc_val;
  380   3                  adc_set_update_flag(ADC_CHANNEL_INDEX_FORWARD_1);
  381   3      #if USER_DEBUG_ENABLE
- 382   3                  // printf("adc1 forward: %u\n", adc_val_forward_1);
- 383   3      #endif
+                          // printf("adc1 forward: %u\n", adc_val_forward_1);
+              #endif
  384   3              }
  385   2              else if (adc1_status == ADC_STATUS_SEL_GET_REVERSE)
  386   2              {
@@ -416,8 +416,8 @@ line level    source
  388   3                  adc_val_reverse_1 = adc_val;
  389   3                  adc_set_update_flag(ADC_CHANNEL_INDEX_REVERSE_1);
  390   3      #if USER_DEBUG_ENABLE
- 391   3                  // printf("adc1 reverse: %u\n", adc_val_reverse_1);
- 392   3      #endif
+                          // printf("adc1 reverse: %u\n", adc_val_reverse_1);
+              #endif
  393   3              }
  394   2          }
  395   1      
@@ -446,7 +446,7 @@ line level    source
                       // if (adc_get_update_flag(ADC_CHANNEL_INDEX_FORWARD_1))
                       // {
                       //     u16 adc_val = 0;
-C51 COMPILER V9.60.7.0   ADC                                                               02/11/2026 10:29:10 PAGE 8   
+C51 COMPILER V9.60.7.0   ADC                                                               03/05/2026 14:48:55 PAGE 8   
 
                       //     adc_clear_update_flag(ADC_CHANNEL_INDEX_FORWARD_1);
                       //     adc_val = adc_get_val(ADC_CHANNEL_INDEX_FORWARD_1);
@@ -464,7 +464,7 @@ line level    source
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    599    ----
+   CODE SIZE        =    600    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =     10       2
    PDATA SIZE       =   ----    ----
