@@ -1,5 +1,6 @@
 #include "timer.h"
 #include "task.h"
+#include "adc.h"
 #include "uart_data_handle.h"
 
 // timer0 用作系统定时器

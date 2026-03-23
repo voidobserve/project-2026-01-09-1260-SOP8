@@ -10,12 +10,14 @@
 #define ARRAY_SIZE(array) (sizeof(array) / sizeof(array[0]))
 
 #define USER_DEBUG_ENABLE 0 // 打开用户调试，包含使用demo板上的引脚
+#define USER_DEBUG_PIN_ENABLE 0 // 是否使用demo板来调试，使用demo板的引脚
+
+#if ((0 == USER_DEBUG_ENABLE) && USER_DEBUG_PIN_ENABLE)
+#error USER_DEBUG_PIN_ENABLE should be disable
+#endif
 
 #if USER_DEBUG_ENABLE
 #include <stdio.h>
-#define USER_DEBUG_PIN_ENABLE 1 // 使用demo板上的引脚
-#else
-#define USER_DEBUG_PIN_ENABLE 0 // 不使用demo板上的引脚，使用实际的引脚
 #endif
 
 

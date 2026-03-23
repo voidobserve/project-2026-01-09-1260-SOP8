@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   MAIN                                                              03/05/2026 16:51:36 PAGE 1   
+C51 COMPILER V9.60.7.0   MAIN                                                              03/18/2026 10:35:58 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
@@ -46,24 +46,28 @@ line level    source
                   printf("sys reset\n");
               #endif
   36   1      
-  37   1          while (1)
-  38   1          {
-  39   2              WDT_KEY = WDT_KEY_VAL(0xAA); // 喂狗
-  40   2      
-  41   2              task_handle();
-  42   2              uart_data_handle();
-  43   2      
-  44   2              // printf("main\n");
-  45   2          }
-  46   1      }
+  37   1          // MOTOR_0_FORWARD_PWM_DUTY_SET(MOTOR_WORKING_PWM_DUTY_VAL);
+  38   1      
+  39   1          // MOTOR_0_REVERSE_PWM_DUTY_SET(MOTOR_WORKING_PWM_DUTY_VAL);
+  40   1      
+  41   1          while (1)
+  42   1          {
+  43   2              WDT_KEY = WDT_KEY_VAL(0xAA); // 喂狗
+  44   2      
+  45   2              task_handle();
+  46   2              uart_data_handle();
+  47   2      
+  48   2              // printf("main\n");
+  49   2          }
+  50   1      }
 
+
+C51 COMPILER V9.60.7.0   MAIN                                                              03/18/2026 10:35:58 PAGE 2   
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
    CODE SIZE        =     45    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =      5    ----
-C51 COMPILER V9.60.7.0   MAIN                                                              03/05/2026 16:51:36 PAGE 2   
-
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----

@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   MOTOR_STATUS_FEEDBACK                                             03/05/2026 14:48:55 PAGE 1   
+C51 COMPILER V9.60.7.0   MOTOR_STATUS_FEEDBACK                                             03/18/2026 10:35:59 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MOTOR_STATUS_FEEDBACK
@@ -62,7 +62,7 @@ line level    source
   51   2                  当前第二新的数据索引 == motor_0_status_buf_index - 2
   52   2      
   53   2                  motor_0_status_buf_index：当前写入位置
-C51 COMPILER V9.60.7.0   MOTOR_STATUS_FEEDBACK                                             03/05/2026 14:48:55 PAGE 2   
+C51 COMPILER V9.60.7.0   MOTOR_STATUS_FEEDBACK                                             03/18/2026 10:35:59 PAGE 2   
 
   54   2                  buf_size - 1：回退到最新的已写入数据位置
   55   2                  - i：根据循环次数向前移动，获取更旧的数据
@@ -126,7 +126,7 @@ line level    source
  113   3                  weighted_sum[status] += weight;
  114   3              }
  115   2          }
-C51 COMPILER V9.60.7.0   MOTOR_STATUS_FEEDBACK                                             03/05/2026 14:48:55 PAGE 3   
+C51 COMPILER V9.60.7.0   MOTOR_STATUS_FEEDBACK                                             03/18/2026 10:35:59 PAGE 3   
 
  116   1      
  117   1          // 找出加权和最大的状态
@@ -190,7 +190,7 @@ line level    source
  175   1          uart0_sendbyte(0x05);                         // 整一帧数据的长度
  176   1          uart0_sendbyte(0x01);                         // 电机索引
  177   1          uart0_sendbyte(motor_0_status);               // 电机状态
-C51 COMPILER V9.60.7.0   MOTOR_STATUS_FEEDBACK                                             03/05/2026 14:48:55 PAGE 4   
+C51 COMPILER V9.60.7.0   MOTOR_STATUS_FEEDBACK                                             03/18/2026 10:35:59 PAGE 4   
 
  178   1          uart0_sendbyte(check_sum);
  179   1      
@@ -254,7 +254,7 @@ line level    source
  237          // motor_1_status_buf_push(MOTOR_STATUS_FORWARD);
  238          // motor_1_status_buf_push(MOTOR_STATUS_REVERSE);
  239          // motor_1_status_buf_push(MOTOR_STATUS_STOP);
-C51 COMPILER V9.60.7.0   MOTOR_STATUS_FEEDBACK                                             03/05/2026 14:48:55 PAGE 5   
+C51 COMPILER V9.60.7.0   MOTOR_STATUS_FEEDBACK                                             03/18/2026 10:35:59 PAGE 5   
 
  240          // motor_1_status_buf_push(MOTOR_STATUS_FORWARD);
  241          // motor_1_status_buf_push(MOTOR_STATUS_REVERSE);

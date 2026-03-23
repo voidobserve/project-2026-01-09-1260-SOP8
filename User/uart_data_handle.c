@@ -164,9 +164,15 @@ void uart_data_handle(void)
             break;
         case 0x01: // 正转
             motor_1_change_status(MOTOR_STATUS_FORWARD);
+#if USER_DEBUG_ENABLE
+            printf("motor 1 forward\n");
+#endif
             break;
         case 0x02: // 反转
             motor_1_change_status(MOTOR_STATUS_REVERSE);
+#if USER_DEBUG_ENABLE
+            printf("motor 1 reverse\n");
+#endif
             break;
         default:
             break;

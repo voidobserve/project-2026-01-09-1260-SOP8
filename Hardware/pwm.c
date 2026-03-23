@@ -4,6 +4,8 @@
 
 void pwm_init(void)
 {
+    // USER_TO_DO 上电之后会有脉冲，需要先设置PWM占空比为0，再使能PWM
+
     // M+ ON 电机正转开关
     P1_MD0 &= ~GPIO_P13_MODE_SEL(0x03);
     P1_MD0 |= GPIO_P13_MODE_SEL(0x01);

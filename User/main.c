@@ -34,6 +34,10 @@ void main(void)
     printf("sys reset\n");
 #endif
 
+    // MOTOR_0_FORWARD_PWM_DUTY_SET(MOTOR_WORKING_PWM_DUTY_VAL);
+
+    // MOTOR_0_REVERSE_PWM_DUTY_SET(MOTOR_WORKING_PWM_DUTY_VAL);
+
     while (1)
     {
         WDT_KEY = WDT_KEY_VAL(0xAA); // 喂狗
