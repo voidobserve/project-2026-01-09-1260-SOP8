@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   PWM                                                               03/18/2026 10:36:01 PAGE 1   
+C51 COMPILER V9.60.7.0   PWM                                                               03/23/2026 10:29:15 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE PWM
@@ -62,7 +62,7 @@ line level    source
   50   1          STMR_CNTMD |= STMR_0_CNT_MODE(0x1);                         // 选择连续计数模式
   51   1          STMR_LOADEN |= STMR_0_LOAD_EN(0x1);                         // 自动装载使能
   52   1          STMR_CNTCLR |= STMR_0_CNT_CLR(0x1);                         // 计数清零
-C51 COMPILER V9.60.7.0   PWM                                                               03/18/2026 10:36:01 PAGE 2   
+C51 COMPILER V9.60.7.0   PWM                                                               03/23/2026 10:29:15 PAGE 2   
 
   53   1          STMR_CNTEN |= STMR_0_CNT_EN(0x1);                           // 计数使能
   54   1          // ===============================================================================
@@ -126,7 +126,7 @@ line level    source
  109   1          STMR1_CMPAL = STMR_CMPA_VAL_L(((channel_duty) >> 0) & 0xFF); // 比较值
  110   1          STMR_LOADEN |= STMR_1_LOAD_EN(0x1);                          // 自动装载使能
  111   1      }
-C51 COMPILER V9.60.7.0   PWM                                                               03/18/2026 10:36:01 PAGE 3   
+C51 COMPILER V9.60.7.0   PWM                                                               03/23/2026 10:29:15 PAGE 3   
 
  112          
  113          // 设置通道2的占空比

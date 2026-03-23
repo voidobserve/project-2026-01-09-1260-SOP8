@@ -14,14 +14,15 @@
 #define MOTOR_1_FORWARD_PWM_DUTY_SET(motor_1_pwm_duty) pwm_channel_2_set_duty(motor_1_pwm_duty)
 #define MOTOR_1_REVERSE_PWM_DUTY_SET(motor_1_pwm_duty) pwm_channel_3_set_duty(motor_1_pwm_duty)
 
-enum
-{
-    MOTOR_STATUS_STOP = 0,
-    MOTOR_STATUS_FORWARD,
-    MOTOR_STATUS_REVERSE,
-};
-typedef u8 motor_status_t;
+// enum
+// {
+//     MOTOR_STATUS_STOP = 0,
+//     MOTOR_STATUS_FORWARD,
+//     MOTOR_STATUS_REVERSE,
+// };
+// typedef u8 motor_status_t;
 
+#if 0
 extern volatile u8 motor_0_status;
 extern volatile u8 motor_1_status;
 extern volatile u16 motor_0_dir_change_dly;   //
@@ -37,5 +38,6 @@ void motor_1_change_status(motor_status_t status);
 
 void motor_0_handler(void);
 void motor_1_handler(void);
+#endif
 
 #endif

@@ -33,7 +33,7 @@ void uart_data_handle(void)
 
     if (0 == uart0_rxbuffer_get_count())
     {
-        // USER_TO_DO 未收到数据，累加超时计时
+        // 未收到数据，累加超时计时
         if (timeout_cnt >= UART_DATA_HANDLE_TIMEOUT)
         {
             // 接收超时
@@ -128,6 +128,8 @@ void uart_data_handle(void)
     printf("\n");
 #endif
 
+// USER_TO_DO 需要换成以对象为参数进行操作
+#if 0
     switch (cmd_buff[2])
     {
         // 判断要操作哪个电机
@@ -182,6 +184,7 @@ void uart_data_handle(void)
     default:
         break;
     }
+#endif
 
     // 处理完成后，重新接收数据
     timeout_cnt = 0;

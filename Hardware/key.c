@@ -18,6 +18,7 @@ void key_init(void)
 
 void key0_scan_handle(void)
 {
+#if 0
     // 使用边沿检测
     volatile u8 curr = KEY_0_PIN;         // 存放当前检测到的电平
     static volatile u8 last = U8_MAX_VAL; // 存放上一次检测到的电平
@@ -61,10 +62,12 @@ void key0_scan_handle(void)
     }
 
     last = curr;
+#endif
 }
 
 void key1_scan_handle(void)
 {
+#if 0
     // 使用边沿检测
     volatile u8 curr = KEY_1_PIN;         // 存放当前检测到的电平
     static volatile u8 last = U8_MAX_VAL; // 存放上一次检测到的电平
@@ -108,4 +111,5 @@ void key1_scan_handle(void)
     }
 
     last = curr;
+#endif
 }

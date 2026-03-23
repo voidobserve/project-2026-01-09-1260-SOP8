@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   MOTOR_STATUS_FEEDBACK                                             03/18/2026 10:35:59 PAGE 1   
+C51 COMPILER V9.60.7.0   MOTOR_STATUS_FEEDBACK                                             03/23/2026 18:25:24 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MOTOR_STATUS_FEEDBACK
@@ -22,254 +22,259 @@ line level    source
   11          static volatile u8 motor_1_status_buf[MOTOR_STATUS_FEEDBACK_PERIOD / MOTOR_STATUS_SCAN_PERIOD];
   12          static volatile u8 motor_1_status_buf_index = 0;
   13          
-  14          void motor_0_status_buf_push(motor_status_t status)
-  15          {
-  16   1          motor_0_status_buf[motor_0_status_buf_index] = status;
-  17   1          motor_0_status_buf_index++;
-  18   1          if (motor_0_status_buf_index >= ARRAY_SIZE(motor_0_status_buf))
-  19   1          {
-  20   2              motor_0_status_buf_index = 0;
-  21   2          }
-  22   1      }
-  23          
-  24          void motor_1_status_buf_push(motor_status_t status)
-  25          {
-  26   1          motor_1_status_buf[motor_1_status_buf_index] = status;
-  27   1          motor_1_status_buf_index++;
-  28   1          if (motor_1_status_buf_index >= ARRAY_SIZE(motor_1_status_buf))
-  29   1          {
-  30   2              motor_1_status_buf_index = 0;
-  31   2          }
-  32   1      }
-  33          
-  34          motor_status_t motor_0_status_buf_get_weighted_average(void)
-  35          {
-  36   1          u16 weighted_sum[3] = {0}; // 加权和，索引对应: [STOP, FORWARD, REVERSE]
-  37   1          motor_status_t ret_status = MOTOR_STATUS_STOP;
-  38   1          u16 max_weighted_sum = 0;
-  39   1          u8 i;
-  40   1          u16 weight;
-  41   1          u8 status;
-  42   1          u8 actual_index;
-  43   1      
-  44   1          // 计算加权平均，越新的数据权重越高
-  45   1          u8 buf_size = ARRAY_SIZE(motor_0_status_buf);
-  46   1          for (i = 0; i < buf_size; i++)
-  47   1          {
-  48   2              // 计算当前数据在环形缓冲区中的实际位置
-  49   2              /*
-  50   2                  当前最新的数据索引 == motor_0_status_buf_index - 1
-  51   2                  当前第二新的数据索引 == motor_0_status_buf_index - 2
-  52   2      
-  53   2                  motor_0_status_buf_index：当前写入位置
-C51 COMPILER V9.60.7.0   MOTOR_STATUS_FEEDBACK                                             03/18/2026 10:35:59 PAGE 2   
+  14          // 往加权平均数组放入数据：
+  15          void motor_0_status_buf_push(feedback_motor_status_t status)
+  16          {
+  17   1          motor_0_status_buf[motor_0_status_buf_index] = status;
+  18   1          motor_0_status_buf_index++;
+  19   1          if (motor_0_status_buf_index >= ARRAY_SIZE(motor_0_status_buf))
+  20   1          {
+  21   2              motor_0_status_buf_index = 0;
+  22   2          }
+  23   1      }
+  24          
+  25          void motor_1_status_buf_push(feedback_motor_status_t status)
+  26          {
+  27   1          motor_1_status_buf[motor_1_status_buf_index] = status;
+  28   1          motor_1_status_buf_index++;
+  29   1          if (motor_1_status_buf_index >= ARRAY_SIZE(motor_1_status_buf))
+  30   1          {
+  31   2              motor_1_status_buf_index = 0;
+  32   2          }
+  33   1      }
+  34          
+  35          feedback_motor_status_t motor_0_status_buf_get_weighted_average(void)
+  36          {
+  37   1          u16 weighted_sum[FEEDBACK_MOTOR_STATUS_TOTAL_NUM] = {0}; // 加权和，索引对应:  feedback_motor_
+             -status_t 
+  38   1          feedback_motor_status_t ret_status = FEEDBACK_MOTOR_STATUS_NONE; 
+  39   1          u16 max_weighted_sum = 0;
+  40   1          u8 i;
+  41   1          u16 weight;
+  42   1          u8 status;
+  43   1          u8 actual_index;
+  44   1      
+  45   1          // 计算加权平均，越新的数据权重越高
+  46   1          u8 buf_size = ARRAY_SIZE(motor_0_status_buf);
+  47   1          for (i = 0; i < buf_size; i++)
+  48   1          {
+  49   2              // 计算当前数据在环形缓冲区中的实际位置
+  50   2              /*
+  51   2                  当前最新的数据索引 == motor_0_status_buf_index - 1
+  52   2                  当前第二新的数据索引 == motor_0_status_buf_index - 2
+C51 COMPILER V9.60.7.0   MOTOR_STATUS_FEEDBACK                                             03/23/2026 18:25:24 PAGE 2   
 
-  54   2                  buf_size - 1：回退到最新的已写入数据位置
-  55   2                  - i：根据循环次数向前移动，获取更旧的数据
-  56   2                  % buf_size：确保索引在缓冲区范围内循环
-  57   2              */
-  58   2              actual_index = (motor_0_status_buf_index + buf_size - 1 - i) % buf_size;
-  59   2              status = motor_0_status_buf[actual_index];
-  60   2      
-  61   2              if (status < 3) // 确保状态值有效
-  62   2              {
-  63   3                  weight = buf_size - i; // 权重递增：最新的数据权重最高，数值最大
-  64   3                  weighted_sum[status] += weight;
-  65   3              }
-  66   2          }
-  67   1      
-  68   1          // 找出加权和最大的状态
-  69   1          for (i = 0; i < 3; i++)
-  70   1          {
-  71   2              if (weighted_sum[i] > max_weighted_sum)
-  72   2              {
-  73   3                  max_weighted_sum = weighted_sum[i];
-  74   3                  ret_status = (motor_status_t)i;
-  75   3              }
-  76   2      
-  77   2              // printf("weighted_sum[%01d] = %02d\n", (u16)i, (u16)weighted_sum[i]);
-  78   2          }
-  79   1      
-  80   1          return ret_status;
-  81   1      }
-  82          
-  83          motor_status_t motor_1_status_buf_get_weighted_average(void)
-  84          {
-  85   1          u16 weighted_sum[3] = {0}; // 加权和，索引对应: [STOP, FORWARD, REVERSE]
-  86   1          motor_status_t ret_status = MOTOR_STATUS_STOP;
-  87   1          u16 max_weighted_sum = 0; // 存放最大的加权和
-  88   1          u8 i;
-  89   1          u16 weight; // 存放单个状态的权重
-  90   1          u8 status;  // 存放电机状态值（在 motor_status_t中有定义）
-  91   1          u8 actual_index;
-  92   1      
-  93   1          // 计算加权平均，越新的数据权重越高
-  94   1          u8 buf_size = ARRAY_SIZE(motor_1_status_buf);
-  95   1          for (i = 0; i < buf_size; i++)
-  96   1          {
-  97   2              // 计算当前数据在环形缓冲区中的实际位置
-  98   2              /*
-  99   2                  当前最新的数据索引 == motor_0_status_buf_index - 1
- 100   2                  当前第二新的数据索引 == motor_0_status_buf_index - 2
- 101   2      
- 102   2                  motor_0_status_buf_index：当前写入位置
- 103   2                  buf_size - 1：回退到最新的已写入数据位置
- 104   2                  - i：根据循环次数向前移动，获取更旧的数据
- 105   2                  % buf_size：确保索引在缓冲区范围内循环
- 106   2              */
- 107   2              actual_index = (motor_1_status_buf_index + buf_size - 1 - i) % buf_size;
- 108   2              status = motor_1_status_buf[actual_index];
- 109   2      
- 110   2              if (status < 3) // 确保状态值有效
- 111   2              {
- 112   3                  weight = buf_size - i; // 权重递增：最新的数据权重最高
- 113   3                  weighted_sum[status] += weight;
- 114   3              }
- 115   2          }
-C51 COMPILER V9.60.7.0   MOTOR_STATUS_FEEDBACK                                             03/18/2026 10:35:59 PAGE 3   
+  53   2      
+  54   2                  motor_0_status_buf_index：当前写入位置
+  55   2                  buf_size - 1：回退到最新的已写入数据位置
+  56   2                  - i：根据循环次数向前移动，获取更旧的数据
+  57   2                  % buf_size：确保索引在缓冲区范围内循环
+  58   2              */
+  59   2              actual_index = (motor_0_status_buf_index + buf_size - 1 - i) % buf_size;
+  60   2              status = motor_0_status_buf[actual_index];
+  61   2      
+  62   2              if (status < FEEDBACK_MOTOR_STATUS_TOTAL_NUM) // 确保状态值有效
+  63   2              {
+  64   3                  weight = buf_size - i; // 权重递增：最新的数据权重最高，数值最大
+  65   3                  weighted_sum[status] += weight;
+  66   3              }
+  67   2          }
+  68   1      
+  69   1          // 找出加权和最大的状态
+  70   1          for (i = 0; i < FEEDBACK_MOTOR_STATUS_TOTAL_NUM; i++)
+  71   1          {
+  72   2              if (weighted_sum[i] > max_weighted_sum)
+  73   2              {
+  74   3                  max_weighted_sum = weighted_sum[i];
+  75   3                  ret_status = (feedback_motor_status_t)i;
+  76   3              }
+  77   2      
+  78   2              // printf("weighted_sum[%01d] = %02d\n", (u16)i, (u16)weighted_sum[i]);
+  79   2          }
+  80   1      
+  81   1          return ret_status;
+  82   1      }
+  83          
+  84          feedback_motor_status_t motor_1_status_buf_get_weighted_average(void)
+  85          {
+  86   1          u16 weighted_sum[FEEDBACK_MOTOR_STATUS_TOTAL_NUM] = {0}; // 加权和，索引对应: feedback_motor_s
+             -tatus_t
+  87   1          feedback_motor_status_t ret_status = FEEDBACK_MOTOR_STATUS_NONE;
+  88   1          u16 max_weighted_sum = 0; // 存放最大的加权和
+  89   1          u8 i;
+  90   1          u16 weight; // 存放单个状态的权重
+  91   1          u8 status;  // 存放电机状态值（在 motor_status_t中有定义）
+  92   1          u8 actual_index;
+  93   1      
+  94   1          // 计算加权平均，越新的数据权重越高
+  95   1          u8 buf_size = ARRAY_SIZE(motor_1_status_buf);
+  96   1          for (i = 0; i < buf_size; i++)
+  97   1          {
+  98   2              // 计算当前数据在环形缓冲区中的实际位置
+  99   2              /*
+ 100   2                  当前最新的数据索引 == motor_0_status_buf_index - 1
+ 101   2                  当前第二新的数据索引 == motor_0_status_buf_index - 2
+ 102   2      
+ 103   2                  motor_0_status_buf_index：当前写入位置
+ 104   2                  buf_size - 1：回退到最新的已写入数据位置
+ 105   2                  - i：根据循环次数向前移动，获取更旧的数据
+ 106   2                  % buf_size：确保索引在缓冲区范围内循环
+ 107   2              */
+ 108   2              actual_index = (motor_1_status_buf_index + buf_size - 1 - i) % buf_size;
+ 109   2              status = motor_1_status_buf[actual_index];
+ 110   2      
+ 111   2              if (status < FEEDBACK_MOTOR_STATUS_TOTAL_NUM) // 确保状态值有效
+ 112   2              {
+ 113   3                  weight = buf_size - i; // 权重递增：最新的数据权重最高
+C51 COMPILER V9.60.7.0   MOTOR_STATUS_FEEDBACK                                             03/23/2026 18:25:24 PAGE 3   
 
- 116   1      
- 117   1          // 找出加权和最大的状态
- 118   1          for (i = 0; i < 3; i++)
- 119   1          {
- 120   2              if (weighted_sum[i] > max_weighted_sum)
- 121   2              {
- 122   3                  max_weighted_sum = weighted_sum[i];
- 123   3                  ret_status = (motor_status_t)i;
- 124   3              }
- 125   2      
- 126   2              // printf("weighted_sum[%01d] = %02d\n", (u16)i, (u16)weighted_sum[i]);
- 127   2          }
- 128   1      
- 129   1          return ret_status;
- 130   1      }
- 131          
- 132          /*
- 133              向蓝牙ic反馈电机的状态
- 134          
- 135              由于电机的状态经常变化，
- 136              需要采用类似滑动平均再加权的方式，来获取当前电机的状态
- 137              例如：10ms扫描一次，每100ms通过滑动平均再加权的方式，得到状态
- 138          */
- 139          // 系统初始化时调用
- 140          void motor_status_feedback_init(void)
- 141          {
- 142   1          u8 i;
- 143   1          for (i = 0; i < (MOTOR_STATUS_FEEDBACK_PERIOD / MOTOR_STATUS_SCAN_PERIOD); i++)
- 144   1          {
- 145   2              motor_0_status_buf[i] = MOTOR_STATUS_STOP;
- 146   2              motor_1_status_buf[i] = MOTOR_STATUS_STOP;
- 147   2          }
- 148   1      }
- 149          
- 150          // 扫描电机状态，将电机状态放入缓冲区
- 151          void motor_status_scan(void)
- 152          {
- 153   1          motor_0_status_buf_push(motor_0_status);
- 154   1          motor_1_status_buf_push(motor_1_status);
- 155   1      }
- 156          
- 157          // void motor_status_feedback_(void)
- 158          // {
- 159          //     uart0_sendbyte();
- 160          // }
- 161          
- 162          void motor_status_feedback(void)
- 163          {
- 164   1          // 加权平均，求得电机状态
- 165   1          motor_status_t motor_0_status = motor_0_status_buf_get_weighted_average();
- 166   1          motor_status_t motor_1_status = motor_1_status_buf_get_weighted_average();
- 167   1      
- 168   1          // printf("motor_0_status: %02d\n", (u16)motor_0_status);
- 169   1          // printf("motor_1_status: %02d\n", (u16)motor_1_status);
- 170   1          
- 171   1          // 将电机状态反馈给蓝牙ic：
- 172   1          u8 check_sum = 0;
- 173   1          check_sum = UART_DATA_HANDLE_FORMAT_HEAD + 0x05 + 0x01 + motor_0_status;
- 174   1          uart0_sendbyte(UART_DATA_HANDLE_FORMAT_HEAD); // 发送格式头
- 175   1          uart0_sendbyte(0x05);                         // 整一帧数据的长度
- 176   1          uart0_sendbyte(0x01);                         // 电机索引
- 177   1          uart0_sendbyte(motor_0_status);               // 电机状态
-C51 COMPILER V9.60.7.0   MOTOR_STATUS_FEEDBACK                                             03/18/2026 10:35:59 PAGE 4   
+ 114   3                  weighted_sum[status] += weight;
+ 115   3              }
+ 116   2          }
+ 117   1      
+ 118   1          // 找出加权和最大的状态
+ 119   1          for (i = 0; i < FEEDBACK_MOTOR_STATUS_TOTAL_NUM; i++)
+ 120   1          {
+ 121   2              if (weighted_sum[i] > max_weighted_sum)
+ 122   2              {
+ 123   3                  max_weighted_sum = weighted_sum[i];
+ 124   3                  ret_status = (feedback_motor_status_t)i;
+ 125   3              }
+ 126   2      
+ 127   2              // printf("weighted_sum[%01d] = %02d\n", (u16)i, (u16)weighted_sum[i]);
+ 128   2          }
+ 129   1      
+ 130   1          return ret_status;
+ 131   1      }
+ 132          
+ 133          /*
+ 134              向蓝牙ic反馈电机的状态
+ 135          
+ 136              由于电机的状态经常变化，
+ 137              需要采用类似滑动平均再加权的方式，来获取当前电机的状态
+ 138              例如：10ms扫描一次，每100ms通过滑动平均再加权的方式，得到状态
+ 139          */
+ 140          // 系统初始化时调用
+ 141          void motor_status_feedback_init(void)
+ 142          {
+ 143   1          u8 i;
+ 144   1          for (i = 0; i < (MOTOR_STATUS_FEEDBACK_PERIOD / MOTOR_STATUS_SCAN_PERIOD); i++)
+ 145   1          {
+ 146   2              motor_0_status_buf[i] = FEEDBACK_MOTOR_STATUS_NONE;
+ 147   2              motor_1_status_buf[i] = FEEDBACK_MOTOR_STATUS_NONE;
+ 148   2          }
+ 149   1      }
+ 150          
+ 151          // 扫描电机状态，将电机状态放入缓冲区
+ 152          void motor_status_scan(void)
+ 153          {
+ 154   1          // motor_0_status_buf_push(motor_0_status);
+ 155   1          // motor_1_status_buf_push(motor_1_status);
+ 156   1      
+ 157   1          // USER_TO_DO 需要换成 motor_handle_0.status 
+ 158   1      }
+ 159          
+ 160          // void motor_status_feedback_(void)
+ 161          // {
+ 162          //     uart0_sendbyte();
+ 163          // }
+ 164          
+ 165          void motor_status_feedback(void)
+ 166          {
+ 167   1          // 加权平均，求得电机状态
+ 168   1          feedback_motor_status_t motor_0_status = motor_0_status_buf_get_weighted_average();
+ 169   1          feedback_motor_status_t motor_1_status = motor_1_status_buf_get_weighted_average();
+ 170   1      
+ 171   1          // printf("motor_0_status: %02d\n", (u16)motor_0_status);
+ 172   1          // printf("motor_1_status: %02d\n", (u16)motor_1_status);
+ 173   1          
+ 174   1          // 将电机状态反馈给蓝牙ic：
+ 175   1          u8 check_sum = 0;
+C51 COMPILER V9.60.7.0   MOTOR_STATUS_FEEDBACK                                             03/23/2026 18:25:24 PAGE 4   
 
- 178   1          uart0_sendbyte(check_sum);
- 179   1      
- 180   1          check_sum = UART_DATA_HANDLE_FORMAT_HEAD + 0x05 + 0x02 + motor_1_status;
- 181   1          uart0_sendbyte(UART_DATA_HANDLE_FORMAT_HEAD); // 发送格式头
- 182   1          uart0_sendbyte(0x05);                         // 整一帧数据的长度
- 183   1          uart0_sendbyte(0x02);                         // 电机索引
- 184   1          uart0_sendbyte(motor_1_status);               // 电机状态
- 185   1          uart0_sendbyte(check_sum);
- 186   1      }
- 187          
- 188          /*
- 189              测试方法：
+ 176   1          check_sum = UART_DATA_HANDLE_FORMAT_HEAD + 0x05 + 0x01 + motor_0_status;
+ 177   1          uart0_sendbyte(UART_DATA_HANDLE_FORMAT_HEAD); // 发送格式头
+ 178   1          uart0_sendbyte(0x05);                         // 整一帧数据的长度
+ 179   1          uart0_sendbyte(0x01);                         // 电机索引
+ 180   1          uart0_sendbyte(motor_0_status);               // 电机状态
+ 181   1          uart0_sendbyte(check_sum);
+ 182   1      
+ 183   1          check_sum = UART_DATA_HANDLE_FORMAT_HEAD + 0x05 + 0x02 + motor_1_status;
+ 184   1          uart0_sendbyte(UART_DATA_HANDLE_FORMAT_HEAD); // 发送格式头
+ 185   1          uart0_sendbyte(0x05);                         // 整一帧数据的长度
+ 186   1          uart0_sendbyte(0x02);                         // 电机索引
+ 187   1          uart0_sendbyte(motor_1_status);               // 电机状态
+ 188   1          uart0_sendbyte(check_sum);
+ 189   1      }
  190          
- 191                  定时调用 motor_0_status_buf_push() 、motor_1_status_buf_push()，
- 192              存放电机状态
- 193                  定时调用 motor_0_status_buf_get_weighted_average() 、
- 194              motor_1_status_buf_get_weighted_average()，获取求得的电机状态
- 195          
- 196                  可以在 motor_x_status_buf_push() 中打印每个状态对应的加权和
- 197                  在 motor_x_status_buf_get_weighted_average() 中打印求得的电机状态
- 198          */
- 199          // motor_0_status_buf_push(MOTOR_STATUS_FORWARD);
- 200          // motor_0_status_buf_push(MOTOR_STATUS_FORWARD);
- 201          // motor_0_status_buf_push(MOTOR_STATUS_STOP);
+ 191          /*
+ 192              测试方法：
+ 193          
+ 194                  定时调用 motor_0_status_buf_push() 、motor_1_status_buf_push()，
+ 195              存放电机状态
+ 196                  定时调用 motor_0_status_buf_get_weighted_average() 、
+ 197              motor_1_status_buf_get_weighted_average()，获取求得的电机状态
+ 198          
+ 199                  可以在 motor_x_status_buf_push() 中打印每个状态对应的加权和
+ 200                  在 motor_x_status_buf_get_weighted_average() 中打印求得的电机状态
+ 201          */
  202          // motor_0_status_buf_push(MOTOR_STATUS_FORWARD);
- 203          // motor_0_status_buf_push(MOTOR_STATUS_REVERSE);
- 204          
- 205          // motor_0_status_buf_push(MOTOR_STATUS_STOP);
+ 203          // motor_0_status_buf_push(MOTOR_STATUS_FORWARD);
+ 204          // motor_0_status_buf_push(MOTOR_STATUS_STOP);
+ 205          // motor_0_status_buf_push(MOTOR_STATUS_FORWARD);
  206          // motor_0_status_buf_push(MOTOR_STATUS_REVERSE);
- 207          // motor_0_status_buf_push(MOTOR_STATUS_FORWARD);
+ 207          
  208          // motor_0_status_buf_push(MOTOR_STATUS_STOP);
- 209          // motor_0_status_buf_push(MOTOR_STATUS_STOP);
- 210          // ===
- 211          
- 212          // motor_0_status_buf_push(MOTOR_STATUS_FORWARD);
- 213          // motor_0_status_buf_push(MOTOR_STATUS_REVERSE);
- 214          // motor_0_status_buf_push(MOTOR_STATUS_STOP);
+ 209          // motor_0_status_buf_push(MOTOR_STATUS_REVERSE);
+ 210          // motor_0_status_buf_push(MOTOR_STATUS_FORWARD);
+ 211          // motor_0_status_buf_push(MOTOR_STATUS_STOP);
+ 212          // motor_0_status_buf_push(MOTOR_STATUS_STOP);
+ 213          // ===
+ 214          
  215          // motor_0_status_buf_push(MOTOR_STATUS_FORWARD);
  216          // motor_0_status_buf_push(MOTOR_STATUS_REVERSE);
- 217          
- 218          // motor_0_status_buf_push(MOTOR_STATUS_STOP);
+ 217          // motor_0_status_buf_push(MOTOR_STATUS_STOP);
+ 218          // motor_0_status_buf_push(MOTOR_STATUS_FORWARD);
  219          // motor_0_status_buf_push(MOTOR_STATUS_REVERSE);
- 220          // motor_0_status_buf_push(MOTOR_STATUS_STOP);
- 221          // motor_0_status_buf_push(MOTOR_STATUS_FORWARD);
- 222          // motor_0_status_buf_push(MOTOR_STATUS_FORWARD);
- 223          // ========================
- 224          
- 225          // motor_1_status_buf_push(MOTOR_STATUS_FORWARD);
- 226          // motor_1_status_buf_push(MOTOR_STATUS_FORWARD);
- 227          // motor_1_status_buf_push(MOTOR_STATUS_STOP);
+ 220          
+ 221          // motor_0_status_buf_push(MOTOR_STATUS_STOP);
+ 222          // motor_0_status_buf_push(MOTOR_STATUS_REVERSE);
+ 223          // motor_0_status_buf_push(MOTOR_STATUS_STOP);
+ 224          // motor_0_status_buf_push(MOTOR_STATUS_FORWARD);
+ 225          // motor_0_status_buf_push(MOTOR_STATUS_FORWARD);
+ 226          // ========================
+ 227          
  228          // motor_1_status_buf_push(MOTOR_STATUS_FORWARD);
- 229          // motor_1_status_buf_push(MOTOR_STATUS_REVERSE);
- 230          
- 231          // motor_1_status_buf_push(MOTOR_STATUS_STOP);
+ 229          // motor_1_status_buf_push(MOTOR_STATUS_FORWARD);
+ 230          // motor_1_status_buf_push(MOTOR_STATUS_STOP);
+ 231          // motor_1_status_buf_push(MOTOR_STATUS_FORWARD);
  232          // motor_1_status_buf_push(MOTOR_STATUS_REVERSE);
- 233          // motor_1_status_buf_push(MOTOR_STATUS_FORWARD);
+ 233          
  234          // motor_1_status_buf_push(MOTOR_STATUS_STOP);
- 235          // motor_1_status_buf_push(MOTOR_STATUS_STOP);
- 236          
- 237          // motor_1_status_buf_push(MOTOR_STATUS_FORWARD);
- 238          // motor_1_status_buf_push(MOTOR_STATUS_REVERSE);
- 239          // motor_1_status_buf_push(MOTOR_STATUS_STOP);
-C51 COMPILER V9.60.7.0   MOTOR_STATUS_FEEDBACK                                             03/18/2026 10:35:59 PAGE 5   
+ 235          // motor_1_status_buf_push(MOTOR_STATUS_REVERSE);
+ 236          // motor_1_status_buf_push(MOTOR_STATUS_FORWARD);
+ 237          // motor_1_status_buf_push(MOTOR_STATUS_STOP);
+C51 COMPILER V9.60.7.0   MOTOR_STATUS_FEEDBACK                                             03/23/2026 18:25:24 PAGE 5   
 
+ 238          // motor_1_status_buf_push(MOTOR_STATUS_STOP);
+ 239          
  240          // motor_1_status_buf_push(MOTOR_STATUS_FORWARD);
  241          // motor_1_status_buf_push(MOTOR_STATUS_REVERSE);
- 242          
- 243          // motor_1_status_buf_push(MOTOR_STATUS_STOP);
+ 242          // motor_1_status_buf_push(MOTOR_STATUS_STOP);
+ 243          // motor_1_status_buf_push(MOTOR_STATUS_FORWARD);
  244          // motor_1_status_buf_push(MOTOR_STATUS_REVERSE);
- 245          // motor_1_status_buf_push(MOTOR_STATUS_STOP);
- 246          // motor_1_status_buf_push(MOTOR_STATUS_FORWARD);
- 247          // motor_1_status_buf_push(MOTOR_STATUS_FORWARD);
+ 245          
+ 246          // motor_1_status_buf_push(MOTOR_STATUS_STOP);
+ 247          // motor_1_status_buf_push(MOTOR_STATUS_REVERSE);
+ 248          // motor_1_status_buf_push(MOTOR_STATUS_STOP);
+ 249          // motor_1_status_buf_push(MOTOR_STATUS_FORWARD);
+ 250          // motor_1_status_buf_push(MOTOR_STATUS_FORWARD);
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    599    ----
-   CONSTANT SIZE    =     12    ----
-   XDATA SIZE       =     22      21
+   CODE SIZE        =    584    ----
+   CONSTANT SIZE    =     20    ----
+   XDATA SIZE       =     22      29
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----

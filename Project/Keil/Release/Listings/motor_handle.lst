@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   MOTOR_HANDLE                                                      03/18/2026 09:23:04 PAGE 1   
+C51 COMPILER V9.60.7.0   MOTOR_HANDLE                                                      03/23/2026 18:28:29 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MOTOR_HANDLE
@@ -12,303 +12,506 @@ line level    source
    1          #include "motor_handle.h"
    2          #include "adc.h"
    3          
-   4          volatile u8 motor_0_status = MOTOR_STATUS_STOP; // 电机的状态机
-   5          volatile u8 motor_1_status = MOTOR_STATUS_STOP; // 电机的状态机
-   6          
-   7          volatile u16 motor_0_dir_change_dly = 0; //
-   8          volatile u16 motor_1_dir_change_dly = 0; //
-   9          
-  10          /*
-  11              标志位，是否允许电机改变方向，
-  12              处理函数会检测 motor_0_status 的值，更新电机工作对应的方向
-  13              如果这个变量置一，后续的处理函数循环又会给 motor_0_is_working 置一
-  14          */
-  15          volatile u8 motor_0_dir_change_enable = 0;
-  16          volatile u8 motor_1_dir_change_enable = 0; // 标志位，是否允许电机改变方向
-  17          
-  18          volatile u8 motor_0_is_working = 0; // 电机是否正在工作
-  19          volatile u8 motor_1_is_working = 0; // 电机是否正在工作
-  20          
-  21          void motor_0_change_status(motor_status_t status)
-  22          {
-  23   1          if (status != MOTOR_STATUS_FORWARD &&
-  24   1              status != MOTOR_STATUS_REVERSE)
-  25   1          {
-  26   2              return;
-  27   2          }
-  28   1      
-  29   1          motor_0_status = status;
-  30   1          motor_0_is_working = 0;
-  31   1          motor_0_dir_change_enable = 1;
-  32   1          motor_0_dir_change_dly = MOTOR_DIR_CHANGE_DLY_TIME;
-  33   1      
-  34   1          MOTOR_0_FORWARD_PWM_DUTY_SET(PWM_DUTY_VAL_0_PERCENT);
-  35   1          MOTOR_0_REVERSE_PWM_DUTY_SET(PWM_DUTY_VAL_0_PERCENT);
-  36   1      }
-  37          
-  38          void motor_1_change_status(motor_status_t status)
-  39          {
-  40   1          if (status != MOTOR_STATUS_FORWARD &&
-  41   1              status != MOTOR_STATUS_REVERSE)
-  42   1          {
-  43   2              return;
-  44   2          }
-  45   1      
-  46   1          motor_1_status = status;
-  47   1          motor_1_is_working = 0;
-  48   1          motor_1_dir_change_enable = 1;
-  49   1          motor_1_dir_change_dly = MOTOR_DIR_CHANGE_DLY_TIME;
-  50   1      
-  51   1          MOTOR_1_FORWARD_PWM_DUTY_SET(PWM_DUTY_VAL_0_PERCENT);
-  52   1          MOTOR_1_REVERSE_PWM_DUTY_SET(PWM_DUTY_VAL_0_PERCENT);
-  53   1      }
-C51 COMPILER V9.60.7.0   MOTOR_HANDLE                                                      03/18/2026 09:23:04 PAGE 2   
+   4          #if 0
+              volatile u8 motor_0_status = MOTOR_STATUS_STOP; // 电机的状态机
+              volatile u8 motor_1_status = MOTOR_STATUS_STOP; // 电机的状态机
+              
+              volatile u16 motor_0_dir_change_dly = 0; //
+              volatile u16 motor_1_dir_change_dly = 0; //
+              
+              /*
+                  标志位，是否允许电机改变方向，
+                  处理函数会检测 motor_0_status 的值，更新电机工作对应的方向
+                  如果这个变量置一，后续的处理函数循环又会给 motor_0_is_working 置一
+              */
+              volatile u8 motor_0_dir_change_enable = 0;
+              volatile u8 motor_1_dir_change_enable = 0; // 标志位，是否允许电机改变方向
+              
+              volatile u8 motor_0_is_working = 0; // 电机是否正在工作
+              volatile u8 motor_1_is_working = 0; // 电机是否正在工作
+              
+              void motor_0_change_status(motor_status_t status)
+              {
+                  if (status != MOTOR_STATUS_FORWARD &&
+                      status != MOTOR_STATUS_REVERSE)
+                  {
+                      return;
+                  }
+              
+                  motor_0_status = status;
+                  motor_0_is_working = 0;
+                  motor_0_dir_change_enable = 1;
+                  motor_0_dir_change_dly = MOTOR_DIR_CHANGE_DLY_TIME;
+              
+                  MOTOR_0_FORWARD_PWM_DUTY_SET(PWM_DUTY_VAL_0_PERCENT);
+                  MOTOR_0_REVERSE_PWM_DUTY_SET(PWM_DUTY_VAL_0_PERCENT);
+              }
+              
+              void motor_1_change_status(motor_status_t status)
+              {
+                  if (status != MOTOR_STATUS_FORWARD &&
+                      status != MOTOR_STATUS_REVERSE)
+                  {
+                      return;
+                  }
+              
+                  motor_1_status = status;
+                  motor_1_is_working = 0;
+                  motor_1_dir_change_enable = 1;
+                  motor_1_dir_change_dly = MOTOR_DIR_CHANGE_DLY_TIME;
+              
+                  MOTOR_1_FORWARD_PWM_DUTY_SET(PWM_DUTY_VAL_0_PERCENT);
+                  MOTOR_1_REVERSE_PWM_DUTY_SET(PWM_DUTY_VAL_0_PERCENT);
+C51 COMPILER V9.60.7.0   MOTOR_HANDLE                                                      03/23/2026 18:28:29 PAGE 2   
 
-  54          
-  55          void motor_0_handler(void)
-  56          {
-  57   1          static volatile u16 motor_0_working_timing = 0;
-  58   1          static volatile u16 motor_0_overcurrent_cnt = 0; // 电机过流检测计数值
-  59   1          static volatile u16 adc_val_reverse = 0;
-  60   1          static volatile u16 adc_val_forward = 0;
-  61   1          //  ====================  延时切换电机方向  ========================
-  62   1          //  ====================  需求电机停止几百ms再启动  ========================
-  63   1      
-  64   1          // printf("motor_0_dir_change_dly == %u\n", motor_0_dir_change_dly);
-  65   1          if (motor_0_dir_change_dly > 0)
-  66   1          {
-  67   2              motor_0_dir_change_dly--;
-  68   2          }
-  69   1          else
-  70   1          {
-  71   2              if (motor_0_dir_change_enable)
-  72   2              {
-  73   3                  motor_0_dir_change_enable = 0;
-  74   3                  if (motor_0_status == MOTOR_STATUS_FORWARD)
-  75   3                  {
-  76   4                      MOTOR_0_FORWARD_PWM_DUTY_SET(MOTOR_WORKING_PWM_DUTY_VAL);
-  77   4                      MOTOR_0_REVERSE_PWM_DUTY_SET(PWM_DUTY_VAL_0_PERCENT);
-  78   4                      motor_0_working_timing = 0;
-  79   4                      motor_0_is_working = 1;
-  80   4                      motor_0_overcurrent_cnt = 0;
-  81   4                      // printf("setting motor 0 forward\n");
-  82   4                  }
-  83   3                  else if (motor_0_status == MOTOR_STATUS_REVERSE)
-  84   3                  {
-  85   4                      MOTOR_0_FORWARD_PWM_DUTY_SET(PWM_DUTY_VAL_0_PERCENT);
-  86   4                      MOTOR_0_REVERSE_PWM_DUTY_SET(MOTOR_WORKING_PWM_DUTY_VAL);
-  87   4                      motor_0_working_timing = 0;
-  88   4                      motor_0_is_working = 1;
-  89   4                      motor_0_overcurrent_cnt = 0;
-  90   4                      // printf("setting motor 0 reverse\n");
-  91   4                  }
-  92   3              }
-  93   2          }
-  94   1      
-  95   1          // =================== ADC检测  ========================
-  96   1          // 有新的数值更新，才会覆盖旧值：
-  97   1          if (adc_get_update_flag(ADC_CHANNEL_INDEX_FORWARD_0))
-  98   1          {
-  99   2              adc_clear_update_flag(ADC_CHANNEL_INDEX_FORWARD_0);
- 100   2              adc_val_forward = adc_get_val(ADC_CHANNEL_INDEX_FORWARD_0);
- 101   2              // adc_val_forward = 4095;
- 102   2              // printf("adc_val_forward = %u\n", adc_val_forward);
- 103   2          }
- 104   1      
- 105   1          if (adc_get_update_flag(ADC_CHANNEL_INDEX_REVERSE_0))
- 106   1          {
- 107   2              adc_clear_update_flag(ADC_CHANNEL_INDEX_REVERSE_0);
- 108   2              adc_val_reverse = adc_get_val(ADC_CHANNEL_INDEX_REVERSE_0);
- 109   2          }
- 110   1      
- 111   1          // =================== 电机工作过程  ========================
- 112   1          // 当电机工作时，检测是否有过流
- 113   1          if (motor_0_is_working)
- 114   1          {
- 115   2              // 向前过流，需要反向
-C51 COMPILER V9.60.7.0   MOTOR_HANDLE                                                      03/18/2026 09:23:04 PAGE 3   
+              }
+              
+              void motor_0_handler(void)
+              {
+                  static volatile u16 motor_0_working_timing = 0;
+                  static volatile u16 motor_0_overcurrent_cnt = 0; // 电机过流检测计数值
+                  static volatile u16 adc_val_reverse = 0;
+                  static volatile u16 adc_val_forward = 0;
+                  //  ====================  延时切换电机方向  ========================
+                  //  ====================  需求电机停止几百ms再启动  ========================
+              
+                  // printf("motor_0_dir_change_dly == %u\n", motor_0_dir_change_dly);
+                  if (motor_0_dir_change_dly > 0)
+                  {
+                      motor_0_dir_change_dly--;
+                  }
+                  else
+                  {
+                      if (motor_0_dir_change_enable)
+                      {
+                          motor_0_dir_change_enable = 0;
+                          if (motor_0_status == MOTOR_STATUS_FORWARD)
+                          {
+                              MOTOR_0_FORWARD_PWM_DUTY_SET(MOTOR_WORKING_PWM_DUTY_VAL);
+                              MOTOR_0_REVERSE_PWM_DUTY_SET(PWM_DUTY_VAL_0_PERCENT);
+                              motor_0_working_timing = 0;
+                              motor_0_is_working = 1;
+                              motor_0_overcurrent_cnt = 0;
+                              // printf("setting motor 0 forward\n");
+                          }
+                          else if (motor_0_status == MOTOR_STATUS_REVERSE)
+                          {
+                              MOTOR_0_FORWARD_PWM_DUTY_SET(PWM_DUTY_VAL_0_PERCENT);
+                              MOTOR_0_REVERSE_PWM_DUTY_SET(MOTOR_WORKING_PWM_DUTY_VAL);
+                              motor_0_working_timing = 0;
+                              motor_0_is_working = 1;
+                              motor_0_overcurrent_cnt = 0;
+                              // printf("setting motor 0 reverse\n");
+                          }
+                      }
+                  }
+              
+                  // =================== ADC检测  ========================
+                  // 有新的数值更新，才会覆盖旧值：
+                  if (adc_get_update_flag(ADC_CHANNEL_INDEX_FORWARD_0))
+                  {
+                      adc_clear_update_flag(ADC_CHANNEL_INDEX_FORWARD_0);
+                      adc_val_forward = adc_get_val(ADC_CHANNEL_INDEX_FORWARD_0);
+                      // adc_val_forward = 4095;
+                      // printf("adc_val_forward = %u\n", adc_val_forward);
+                  }
+              
+                  if (adc_get_update_flag(ADC_CHANNEL_INDEX_REVERSE_0))
+                  {
+                      adc_clear_update_flag(ADC_CHANNEL_INDEX_REVERSE_0);
+                      adc_val_reverse = adc_get_val(ADC_CHANNEL_INDEX_REVERSE_0);
+                  }
+              
+                  // =================== 电机工作过程  ========================
+                  // 当电机工作时，检测是否有过流
+                  if (motor_0_is_working)
+                  {
+C51 COMPILER V9.60.7.0   MOTOR_HANDLE                                                      03/23/2026 18:28:29 PAGE 3   
 
- 116   2              if (adc_val_forward > MOTOR_OVERCURRENT_ADC_VAL)
- 117   2              {
- 118   3                  motor_0_overcurrent_cnt++;
- 119   3                  // printf("motor 0 forward overcurrent cnt ++\n");
- 120   3                  if (motor_0_overcurrent_cnt > 200)
- 121   3                  {
- 122   4                      // printf("motor 0 forward overcurrent\n");
- 123   4                      // 反向
- 124   4                      motor_0_status = MOTOR_STATUS_REVERSE;
- 125   4                      motor_0_dir_change_dly = MOTOR_DIR_CHANGE_DLY_TIME;
- 126   4                      motor_0_is_working = 0;        // 停止电机流程
- 127   4                      motor_0_dir_change_enable = 1; // 这里使能，后续函数循环又会给 motor_0_is_wo
+                      // 向前过流，需要反向
+                      if (adc_val_forward > MOTOR_OVERCURRENT_ADC_VAL)
+                      {
+                          motor_0_overcurrent_cnt++;
+                          // printf("motor 0 forward overcurrent cnt ++\n");
+                          if (motor_0_overcurrent_cnt > 200)
+                          {
+                              // printf("motor 0 forward overcurrent\n");
+                              // 反向
+                              motor_0_status = MOTOR_STATUS_REVERSE;
+                              motor_0_dir_change_dly = MOTOR_DIR_CHANGE_DLY_TIME;
+                              motor_0_is_working = 0;        // 停止电机流程
+                              motor_0_dir_change_enable = 1; // 这里使能，后续函数循环又会给 motor_0_is_wo
              -rking 置一
- 128   4      
- 129   4                      // 反向结束
- 130   4                  }
- 131   3              }
- 132   2      
- 133   2              // 回来原始位置停止工作
- 134   2              if (adc_val_reverse > MOTOR_OVERCURRENT_ADC_VAL)
- 135   2              {
- 136   3                  motor_0_overcurrent_cnt++;
- 137   3                  if (motor_0_overcurrent_cnt > 200)
- 138   3                  {
- 139   4                      // printf("motor 0 reverse overcurrent\n");
- 140   4                      motor_0_status = MOTOR_STATUS_STOP;
- 141   4                  }
- 142   3              }
- 143   2      
- 144   2              // 工作过程中，防止检测不到过流。够时间就强制复位
- 145   2              if (motor_0_working_timing < MOTOR_WORKING_OVER_TIME)
- 146   2              {
- 147   3                  motor_0_working_timing++;
- 148   3              }
- 149   2              else
- 150   2              {
- 151   3                  // 反向
- 152   3                  // printf("working over time\n");
- 153   3      
- 154   3                  motor_0_status = MOTOR_STATUS_REVERSE;
- 155   3                  motor_0_dir_change_dly = MOTOR_DIR_CHANGE_DLY_TIME;
- 156   3                  motor_0_is_working = 0; // 停止电机流程
- 157   3                  motor_0_dir_change_enable = 1;
- 158   3                  // 反向结束
- 159   3              }
- 160   2          }
- 161   1      
- 162   1          // =================== 过流后，全部拉低，停止工作  ========================
- 163   1      
- 164   1          if (motor_0_status == MOTOR_STATUS_STOP)
- 165   1          {
- 166   2              motor_0_is_working = 0;
- 167   2      
- 168   2              MOTOR_0_FORWARD_PWM_DUTY_SET(PWM_DUTY_VAL_0_PERCENT);
- 169   2              MOTOR_0_REVERSE_PWM_DUTY_SET(PWM_DUTY_VAL_0_PERCENT);
- 170   2      
- 171   2              // printf("motor 0 stop\n");
- 172   2          }
- 173   1      }
- 174          
- 175          void motor_1_handler(void)
- 176          {
-C51 COMPILER V9.60.7.0   MOTOR_HANDLE                                                      03/18/2026 09:23:04 PAGE 4   
+              
+                              // 反向结束
+                          }
+                      }
+              
+                      // 回来原始位置停止工作
+                      if (adc_val_reverse > MOTOR_OVERCURRENT_ADC_VAL)
+                      {
+                          motor_0_overcurrent_cnt++;
+                          if (motor_0_overcurrent_cnt > 200)
+                          {
+                              // printf("motor 0 reverse overcurrent\n");
+                              motor_0_status = MOTOR_STATUS_STOP;
+                          }
+                      }
+              
+                      // 工作过程中，防止检测不到过流。够时间就强制复位
+                      if (motor_0_working_timing < MOTOR_WORKING_OVER_TIME)
+                      {
+                          motor_0_working_timing++;
+                      }
+                      else
+                      {
+                          // 反向
+                          // printf("working over time\n");
+              
+                          motor_0_status = MOTOR_STATUS_REVERSE;
+                          motor_0_dir_change_dly = MOTOR_DIR_CHANGE_DLY_TIME;
+                          motor_0_is_working = 0; // 停止电机流程
+                          motor_0_dir_change_enable = 1;
+                          // 反向结束
+                      }
+                  }
+              
+                  // =================== 过流后，全部拉低，停止工作  ========================
+              
+                  if (motor_0_status == MOTOR_STATUS_STOP)
+                  {
+                      motor_0_is_working = 0;
+              
+                      MOTOR_0_FORWARD_PWM_DUTY_SET(PWM_DUTY_VAL_0_PERCENT);
+                      MOTOR_0_REVERSE_PWM_DUTY_SET(PWM_DUTY_VAL_0_PERCENT);
+              
+                      // printf("motor 0 stop\n");
+                  }
+              }
+              
+              void motor_1_handler(void)
+C51 COMPILER V9.60.7.0   MOTOR_HANDLE                                                      03/23/2026 18:28:29 PAGE 4   
 
- 177   1          static volatile u16 adc_val_reverse = 0;
- 178   1          static volatile u16 adc_val_forward = 0;
- 179   1          static volatile u16 working_timing = 0;
- 180   1          static volatile u16 motor_overcurrent_cnt = 0; // 电机过流检测计数值
- 181   1      
- 182   1          //  ====================  延时切换电机方向  ========================
- 183   1          //  ====================  需求电机停止几百ms再启动  ========================
- 184   1          if (motor_1_dir_change_dly > 0)
- 185   1          {
- 186   2              motor_1_dir_change_dly--;
- 187   2          }
- 188   1          else
- 189   1          {
- 190   2              if (motor_1_dir_change_enable)
- 191   2              {
- 192   3                  motor_1_dir_change_enable = 0;
- 193   3                  if (motor_1_status == MOTOR_STATUS_FORWARD)
- 194   3                  {
- 195   4                      MOTOR_1_FORWARD_PWM_DUTY_SET(MOTOR_WORKING_PWM_DUTY_VAL);
- 196   4                      MOTOR_1_REVERSE_PWM_DUTY_SET(PWM_DUTY_VAL_0_PERCENT);
- 197   4                      working_timing = 0;
- 198   4                      motor_1_is_working = 1;
- 199   4                      motor_overcurrent_cnt = 0;
- 200   4                  }
- 201   3                  else if (motor_1_status == MOTOR_STATUS_REVERSE)
- 202   3                  {
- 203   4                      MOTOR_1_FORWARD_PWM_DUTY_SET(PWM_DUTY_VAL_0_PERCENT);
- 204   4                      MOTOR_1_REVERSE_PWM_DUTY_SET(MOTOR_WORKING_PWM_DUTY_VAL);
- 205   4                      working_timing = 0;
- 206   4                      motor_1_is_working = 1;
- 207   4                      motor_overcurrent_cnt = 0;
- 208   4                  }
- 209   3              }
- 210   2          }
- 211   1      
- 212   1          // =================== ADC检测  ========================
- 213   1          if (adc_get_update_flag(ADC_CHANNEL_INDEX_FORWARD_1))
- 214   1          {
- 215   2              adc_clear_update_flag(ADC_CHANNEL_INDEX_FORWARD_1);
- 216   2              adc_val_forward = adc_get_val(ADC_CHANNEL_INDEX_FORWARD_1);
- 217   2          }
- 218   1      
- 219   1          if (adc_get_update_flag(ADC_CHANNEL_INDEX_REVERSE_1))
- 220   1          {
- 221   2              adc_clear_update_flag(ADC_CHANNEL_INDEX_REVERSE_1);
- 222   2              adc_val_reverse = adc_get_val(ADC_CHANNEL_INDEX_REVERSE_1);
- 223   2          }
- 224   1      
- 225   1          // =================== 电机工作过程  ========================
- 226   1          // 当电机工作时，检测是否有过流
- 227   1          if (motor_1_is_working)
- 228   1          {
- 229   2              // 向前过流，需要反向
- 230   2              if (adc_val_forward > MOTOR_OVERCURRENT_ADC_VAL)
- 231   2              {
- 232   3                  motor_overcurrent_cnt++;
- 233   3                  if (motor_overcurrent_cnt > 200)
- 234   3                  {
- 235   4                      // printf("motor 1 forward overcurrent\n");
- 236   4                      // 反向
- 237   4                      motor_1_status = MOTOR_STATUS_REVERSE;
- 238   4                      motor_1_dir_change_dly = MOTOR_DIR_CHANGE_DLY_TIME;
-C51 COMPILER V9.60.7.0   MOTOR_HANDLE                                                      03/18/2026 09:23:04 PAGE 5   
+              {
+                  static volatile u16 adc_val_reverse = 0;
+                  static volatile u16 adc_val_forward = 0;
+                  static volatile u16 working_timing = 0;
+                  static volatile u16 motor_overcurrent_cnt = 0; // 电机过流检测计数值
+              
+                  //  ====================  延时切换电机方向  ========================
+                  //  ====================  需求电机停止几百ms再启动  ========================
+                  if (motor_1_dir_change_dly > 0)
+                  {
+                      motor_1_dir_change_dly--;
+                  }
+                  else
+                  {
+                      if (motor_1_dir_change_enable)
+                      {
+                          motor_1_dir_change_enable = 0;
+                          if (motor_1_status == MOTOR_STATUS_FORWARD)
+                          {
+                              MOTOR_1_FORWARD_PWM_DUTY_SET(MOTOR_WORKING_PWM_DUTY_VAL);
+                              MOTOR_1_REVERSE_PWM_DUTY_SET(PWM_DUTY_VAL_0_PERCENT);
+                              working_timing = 0;
+                              motor_1_is_working = 1;
+                              motor_overcurrent_cnt = 0;
+                          }
+                          else if (motor_1_status == MOTOR_STATUS_REVERSE)
+                          {
+                              MOTOR_1_FORWARD_PWM_DUTY_SET(PWM_DUTY_VAL_0_PERCENT);
+                              MOTOR_1_REVERSE_PWM_DUTY_SET(MOTOR_WORKING_PWM_DUTY_VAL);
+                              working_timing = 0;
+                              motor_1_is_working = 1;
+                              motor_overcurrent_cnt = 0;
+                          }
+                      }
+                  }
+              
+                  // =================== ADC检测  ========================
+                  if (adc_get_update_flag(ADC_CHANNEL_INDEX_FORWARD_1))
+                  {
+                      adc_clear_update_flag(ADC_CHANNEL_INDEX_FORWARD_1);
+                      adc_val_forward = adc_get_val(ADC_CHANNEL_INDEX_FORWARD_1);
+                  }
+              
+                  if (adc_get_update_flag(ADC_CHANNEL_INDEX_REVERSE_1))
+                  {
+                      adc_clear_update_flag(ADC_CHANNEL_INDEX_REVERSE_1);
+                      adc_val_reverse = adc_get_val(ADC_CHANNEL_INDEX_REVERSE_1);
+                  }
+              
+                  // =================== 电机工作过程  ========================
+                  // 当电机工作时，检测是否有过流
+                  if (motor_1_is_working)
+                  {
+                      // 向前过流，需要反向
+                      if (adc_val_forward > MOTOR_OVERCURRENT_ADC_VAL)
+                      {
+                          motor_overcurrent_cnt++;
+                          if (motor_overcurrent_cnt > 200)
+                          {
+                              // printf("motor 1 forward overcurrent\n");
+                              // 反向
+                              motor_1_status = MOTOR_STATUS_REVERSE;
+C51 COMPILER V9.60.7.0   MOTOR_HANDLE                                                      03/23/2026 18:28:29 PAGE 5   
 
- 239   4                      motor_1_is_working = 0; // 停止电机流程
- 240   4                      motor_1_dir_change_enable = 1;
- 241   4      
- 242   4                      // 反向结束
- 243   4                  }
- 244   3              }
- 245   2      
- 246   2              // 回来原始位置停止工作
- 247   2              if (adc_val_reverse > MOTOR_OVERCURRENT_ADC_VAL)
- 248   2              {
- 249   3      
- 250   3                  motor_overcurrent_cnt++;
- 251   3                  if (motor_overcurrent_cnt > 200)
- 252   3                  {
- 253   4                      // printf("motor 1 reverse overcurrent\n");
- 254   4                      motor_1_status = MOTOR_STATUS_STOP;
- 255   4                  }
- 256   3              }
- 257   2      
- 258   2              // 工作过程中，防止检测不到过流。够时间就强制复位
- 259   2              if (working_timing < MOTOR_WORKING_OVER_TIME)
- 260   2              {
- 261   3                  working_timing++;
- 262   3              }
- 263   2              else
- 264   2              {
- 265   3                  // 反向
- 266   3                  // printf("working over time\n");
- 267   3                  motor_1_status = MOTOR_STATUS_REVERSE;
- 268   3                  motor_1_dir_change_dly = MOTOR_DIR_CHANGE_DLY_TIME;
- 269   3                  motor_1_is_working = 0; // 停止电机流程
- 270   3                  motor_1_dir_change_enable = 1;
- 271   3                  // 反向结束
- 272   3              }
- 273   2          }
- 274   1      
- 275   1          // =================== 过流后，全部拉低，停止工作  ========================
- 276   1      
- 277   1          if (motor_1_status == MOTOR_STATUS_STOP)
- 278   1          {
- 279   2              motor_1_is_working = 0;
- 280   2      
- 281   2              MOTOR_1_FORWARD_PWM_DUTY_SET(PWM_DUTY_VAL_0_PERCENT);
- 282   2              MOTOR_1_REVERSE_PWM_DUTY_SET(PWM_DUTY_VAL_0_PERCENT);
- 283   2          }
- 284   1      }
+                              motor_1_dir_change_dly = MOTOR_DIR_CHANGE_DLY_TIME;
+                              motor_1_is_working = 0; // 停止电机流程
+                              motor_1_dir_change_enable = 1;
+              
+                              // 反向结束
+                          }
+                      }
+              
+                      // 回来原始位置停止工作
+                      if (adc_val_reverse > MOTOR_OVERCURRENT_ADC_VAL)
+                      {
+              
+                          motor_overcurrent_cnt++;
+                          if (motor_overcurrent_cnt > 200)
+                          {
+                              // printf("motor 1 reverse overcurrent\n");
+                              motor_1_status = MOTOR_STATUS_STOP;
+                          }
+                      }
+              
+                      // 工作过程中，防止检测不到过流。够时间就强制复位
+                      if (working_timing < MOTOR_WORKING_OVER_TIME)
+                      {
+                          working_timing++;
+                      }
+                      else
+                      {
+                          // 反向
+                          // printf("working over time\n");
+                          motor_1_status = MOTOR_STATUS_REVERSE;
+                          motor_1_dir_change_dly = MOTOR_DIR_CHANGE_DLY_TIME;
+                          motor_1_is_working = 0; // 停止电机流程
+                          motor_1_dir_change_enable = 1;
+                          // 反向结束
+                      }
+                  }
+              
+                  // =================== 过流后，全部拉低，停止工作  ========================
+              
+                  if (motor_1_status == MOTOR_STATUS_STOP)
+                  {
+                      motor_1_is_working = 0;
+              
+                      MOTOR_1_FORWARD_PWM_DUTY_SET(PWM_DUTY_VAL_0_PERCENT);
+                      MOTOR_1_REVERSE_PWM_DUTY_SET(PWM_DUTY_VAL_0_PERCENT);
+                  }
+              }
+              #endif
+ 287          
+ 288          // 定义电机状态
+ 289          enum
+ 290          {
+ 291              // MOTOR_STATUS_IDLE = 0, // 刚上电，电机处于空闲状态
+ 292              MOTOR_STATUS_STOP = 0, // 电机停止工作
+ 293              MOTOR_STATUS_FORWARD,  // 电机正在正转
+ 294                                     // MOTOR_STATUS_FORWARD_OVERCURRENT, // 电机正转，遇到过流而停止
+ 295                                     // MOTOR_STATUS_FORWARD_OVERTIME, // 电机正转，超过指定时间而停止
+ 296                                     // MOTOR_STATUS_FORWARD_STOP, // 电机正转，遇到过流 或者 超过指�
+             -�时间 而停止
+ 297          
+ 298              MOTOR_STATUS_REVERSE,
+ 299              // MOTOR_STATUS_REVERSE_OVERCURRENT,
+C51 COMPILER V9.60.7.0   MOTOR_HANDLE                                                      03/23/2026 18:28:29 PAGE 6   
+
+ 300              // MOTOR_STATUS_REVERSE_OVERTIME,
+ 301              // MOTOR_STATUS_REVERSE_STOP, // 电机反转，遇到过流 或者 超过指定时间 而停止
+ 302          };
+ 303          typedef u8 motor_status_t;
+ 304          
+ 305          // 电机方向，作为矢量来使用，并不代表电机当前的状态
+ 306          enum
+ 307          {
+ 308              MOTOR_DIR_NONE = 0, // 默认状态
+ 309              MOTOR_DIR_FORWARD,
+ 310              MOTOR_DIR_REVERSE,
+ 311          };
+ 312          typedef u8 motor_dest_dir_t;
+ 313          
+ 314          typedef struct
+ 315          {
+ 316              motor_dest_dir_t dest_dir; // 目标方向（只能是正转或者反转）
+ 317              motor_status_t status;     // 当前状态
+ 318          
+ 319              u8 change_dir_enable; // 是否要改变方向
+ 320              u16 change_dir_cnt;   // 改变方向的计数器（电机不能马上改变方向，如果同时正�
+             -�和反转，驱动电机的MOS管会短路）
+ 321          
+ 322              u16 overcurrent_time_cnt; // 过流检测计数器
+ 323              u16 adc_val_forward;      // 正转时，检测到的ad值
+ 324              u16 adc_val_reverse;      // 反转时，检测到的ad值
+ 325          
+ 326              u16 working_time_cnt; // 工作时间计数器
+ 327          
+ 328              void (*adc_val_update)(void); // 更新ad值
+ 329              void (*forward)(void);        // 正转
+ 330              void (*reverse)(void);        // 反转
+ 331              void (*stop)(void);           // 停止
+ 332          } motor_handle_t;
+ 333          
+ 334          volatile motor_handle_t motor_handle_0;
+ 335          volatile motor_handle_t motor_handle_1;
+ 336          
+ 337          void motor_0_stop(void)
+ 338          {
+ 339   1          MOTOR_0_FORWARD_PWM_DUTY_SET(PWM_DUTY_VAL_0_PERCENT);
+ 340   1          MOTOR_0_REVERSE_PWM_DUTY_SET(PWM_DUTY_VAL_0_PERCENT);
+ 341   1      }
+ 342          
+ 343          void motor_0_forward(void)
+ 344          {
+ 345   1          MOTOR_0_FORWARD_PWM_DUTY_SET(MOTOR_WORKING_PWM_DUTY_VAL);
+ 346   1      }
+ 347          
+ 348          void motor_0_reverse(void)
+ 349          {
+ 350   1          MOTOR_0_REVERSE_PWM_DUTY_SET(MOTOR_WORKING_PWM_DUTY_VAL);
+ 351   1      }
+ 352          
+ 353          void motor_0_adc_val_update(void)
+ 354          {
+ 355   1          if (adc_get_update_flag(ADC_CHANNEL_INDEX_FORWARD_0))
+ 356   1          {
+ 357   2              adc_clear_update_flag(ADC_CHANNEL_INDEX_FORWARD_0);
+ 358   2              motor_handle_0.adc_val_forward = adc_get_val(ADC_CHANNEL_INDEX_FORWARD_0);
+ 359   2          }
+ 360   1      
+C51 COMPILER V9.60.7.0   MOTOR_HANDLE                                                      03/23/2026 18:28:29 PAGE 7   
+
+ 361   1          if (adc_get_update_flag(ADC_CHANNEL_INDEX_REVERSE_0))
+ 362   1          {
+ 363   2              adc_clear_update_flag(ADC_CHANNEL_INDEX_REVERSE_0);
+ 364   2              motor_handle_0.adc_val_reverse = adc_get_val(ADC_CHANNEL_INDEX_REVERSE_0);
+ 365   2          }
+ 366   1      }
+ 367          
+ 368          void motor_handle_init(void)
+ 369          {
+ 370   1          motor_handle_0.dest_dir = MOTOR_DIR_NONE;
+ 371   1          motor_handle_0.status = MOTOR_STATUS_STOP;
+ 372   1          motor_handle_0.change_dir_enable = 0;
+ 373   1          motor_handle_0.forward = motor_0_forward;
+ 374   1          motor_handle_0.reverse = motor_0_reverse;
+ 375   1          motor_handle_0.stop = motor_0_stop;
+ 376   1          motor_handle_0.adc_val_update = motor_0_adc_val_update;
+ 377   1      
+ 378   1          // motor_handle_1.status = MOTOR_STATUS_STOP;
+ 379   1          // motor_handle_0.change_dir_enable = 0;
+ 380   1      }
+ 381          
+ 382          // 设置延时，准备让电机改变方向
+ 383          void motor_change_dir_enable(motor_handle_t *motor_handle)
+ 384          {
+ 385   1          motor_handle->change_dir_cnt = MOTOR_DIR_CHANGE_DLY_TIME;
+ 386   1          motor_handle->change_dir_enable = 1;
+ 387   1      }
+ 388          
+ 389          // 反转电机的方向，供按键处理函数调用
+ 390          void motor_toggle_dir(motor_handle_t *motor_handle)
+ 391          {
+ 392   1          u8 dest_dir = motor_handle->dest_dir;
+ 393   1          if (dest_dir == MOTOR_DIR_FORWARD)
+ 394   1          {
+ 395   2              dest_dir = MOTOR_DIR_REVERSE;
+ 396   2          }
+ 397   1          else // dest_dir == MOTOR_DIR_NONE || dest_dir == MOTOR_DIR_REVERSE
+ 398   1          {
+ 399   2              dest_dir = MOTOR_DIR_FORWARD;
+ 400   2          }
+ 401   1      
+ 402   1          motor_handle->dest_dir = dest_dir; // 设置目标方向
+ 403   1      
+ 404   1          motor_change_dir_enable(motor_handle);
+ 405   1          motor_handle->stop(); // 停止电机
+ 406   1      }
+ 407          
+ 408          void motor_change_dir(motor_handle_t *motor_handle, motor_dest_dir_t dest_dir)
+ 409          {
+ 410   1          motor_handle->dest_dir = dest_dir; // 设置目标方向
+ 411   1          motor_change_dir_enable(motor_handle);
+ 412   1          motor_handle->stop(); // 停止电机
+ 413   1      }
+ 414          
+ 415          void motor_handle(motor_handle_t *motor_handle)
+ 416          {
+ 417   1          if (motor_handle->change_dir_enable && motor_handle->change_dir_cnt > 0)
+ 418   1          {
+ 419   2              // 如果还在准备改变方向，不处理
+ 420   2              motor_handle->change_dir_cnt--;
+ 421   2          }
+ 422   1      
+C51 COMPILER V9.60.7.0   MOTOR_HANDLE                                                      03/23/2026 18:28:29 PAGE 8   
+
+ 423   1          if (motor_handle->change_dir_enable && motor_handle->change_dir_cnt == 0)
+ 424   1          {
+ 425   2              // 如果要改变电机方向，并且已经计数完毕
+ 426   2              motor_handle->change_dir_enable = 0;
+ 427   2              if (motor_handle->dest_dir == MOTOR_DIR_FORWARD)
+ 428   2              {
+ 429   3                  motor_handle->status = MOTOR_STATUS_FORWARD;
+ 430   3                  motor_handle->forward();
+ 431   3              }
+ 432   2              else
+ 433   2              {
+ 434   3                  motor_handle->status = MOTOR_STATUS_REVERSE;
+ 435   3                  motor_handle->reverse();
+ 436   3              }
+ 437   2          }
+ 438   1      
+ 439   1          // 在电机转动时，检测电机是否过流：
+ 440   1          motor_handle->adc_val_update(); // 更新ad值
+ 441   1          if (motor_handle->status == MOTOR_STATUS_FORWARD)
+ 442   1          {
+ 443   2              if (motor_handle->adc_val_forward > MOTOR_OVERCURRENT_ADC_VAL)
+ 444   2              {
+ 445   3                  motor_handle->overcurrent_time_cnt++;
+ 446   3              }
+ 447   2              else
+ 448   2              {
+ 449   3                  motor_handle->overcurrent_time_cnt = 0;
+ 450   3              }
+ 451   2          }
+ 452   1          else if (motor_handle->status == MOTOR_STATUS_REVERSE)
+ 453   1          {
+ 454   2              if (motor_handle->adc_val_reverse > MOTOR_OVERCURRENT_ADC_VAL)
+ 455   2              {
+ 456   3                  motor_handle->overcurrent_time_cnt++;
+ 457   3              }
+ 458   2              else
+ 459   2              {
+ 460   3                  motor_handle->overcurrent_time_cnt = 0;
+ 461   3              }
+ 462   2          }
+ 463   1      
+ 464   1          if (motor_handle->status != MOTOR_STATUS_STOP)
+ 465   1          {
+ 466   2              motor_handle->working_time_cnt++; // 工作时间计数
+ 467   2          }
+ 468   1      
+ 469   1          if (motor_handle_0.overcurrent_time_cnt > 200 ||
+ 470   1              motor_handle_0.working_time_cnt > MOTOR_WORKING_OVER_TIME)
+ 471   1          {
+ 472   2              // 过流且累计一定次数，停下电机
+ 473   2              // 电机转动且超过一定时间，也停下电机
+ 474   2              motor_handle_0.status = MOTOR_STATUS_STOP;
+ 475   2              motor_handle_0.stop();
+ 476   2          }
+ 477   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    790    ----
+   CODE SIZE        =    574    ----
    CONSTANT SIZE    =   ----    ----
-   XDATA SIZE       =     26    ----
+   XDATA SIZE       =     50       9
    PDATA SIZE       =   ----    ----
+C51 COMPILER V9.60.7.0   MOTOR_HANDLE                                                      03/23/2026 18:28:29 PAGE 9   
+
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----
    BIT SIZE         =   ----    ----

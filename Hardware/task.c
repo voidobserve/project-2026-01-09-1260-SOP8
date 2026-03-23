@@ -12,13 +12,14 @@
 */
 void task_debug(void);
 static volatile task_ctl_block_t task_table[] = {
-    {0, 0, 1, motor_0_handler},
-    {0, 0, 1, motor_1_handler},
+    // {0, 0, 1, motor_0_handler}, // USER_TO_DO 需要换成以对象为参数进行操作
+    // {0, 0, 1, motor_1_handler},
     // // =======================================================
     {0, 0, 5, key0_scan_handle},
     {0, 0, 5, key1_scan_handle},
     // =======================================================
     {0, 0, MOTOR_STATUS_SCAN_PERIOD, motor_status_scan}, // USER_TO_DO 测试时屏蔽
+
     // {0, 0, 1000, motor_status_feedback}, // USER_TO_DO 测试时使用 1000ms
     {0, 0, MOTOR_STATUS_FEEDBACK_PERIOD, motor_status_feedback}, // USER_TO_DO 测试时屏蔽，实际需要恢复
 

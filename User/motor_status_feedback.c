@@ -11,7 +11,8 @@ static volatile u8 motor_0_status_buf_index = 0;
 static volatile u8 motor_1_status_buf[MOTOR_STATUS_FEEDBACK_PERIOD / MOTOR_STATUS_SCAN_PERIOD];
 static volatile u8 motor_1_status_buf_index = 0;
 
-void motor_0_status_buf_push(motor_status_t status)
+// 往加权平均数组放入数据：
+void motor_0_status_buf_push(feedback_motor_status_t status)
 {
     motor_0_status_buf[motor_0_status_buf_index] = status;
     motor_0_status_buf_index++;
@@ -21,7 +22,7 @@ void motor_0_status_buf_push(motor_status_t status)
     }
 }
 
-void motor_1_status_buf_push(motor_status_t status)
+void motor_1_status_buf_push(feedback_motor_status_t status)
 {
     motor_1_status_buf[motor_1_status_buf_index] = status;
     motor_1_status_buf_index++;
@@ -31,10 +32,10 @@ void motor_1_status_buf_push(motor_status_t status)
     }
 }
 
-motor_status_t motor_0_status_buf_get_weighted_average(void)
+feedback_motor_status_t motor_0_status_buf_get_weighted_average(void)
 {
-    u16 weighted_sum[3] = {0}; // 加权和，索引对应: [STOP, FORWARD, REVERSE]
-    motor_status_t ret_status = MOTOR_STATUS_STOP;
+    u16 weighted_sum[FEEDBACK_MOTOR_STATUS_TOTAL_NUM] = {0}; // 加权和，索引对应:  feedback_motor_status_t 
+    feedback_motor_status_t ret_status = FEEDBACK_MOTOR_STATUS_NONE; 
     u16 max_weighted_sum = 0;
     u8 i;
     u16 weight;
@@ -58,7 +59,7 @@ motor_status_t motor_0_status_buf_get_weighted_average(void)
         actual_index = (motor_0_status_buf_index + buf_size - 1 - i) % buf_size;
         status = motor_0_status_buf[actual_index];
 
-        if (status < 3) // 确保状态值有效
+        if (status < FEEDBACK_MOTOR_STATUS_TOTAL_NUM) // 确保状态值有效
         {
             weight = buf_size - i; // 权重递增：最新的数据权重最高，数值最大
             weighted_sum[status] += weight;
@@ -66,12 +67,12 @@ motor_status_t motor_0_status_buf_get_weighted_average(void)
     }
 
     // 找出加权和最大的状态
-    for (i = 0; i < 3; i++)
+    for (i = 0; i < FEEDBACK_MOTOR_STATUS_TOTAL_NUM; i++)
     {
         if (weighted_sum[i] > max_weighted_sum)
         {
             max_weighted_sum = weighted_sum[i];
-            ret_status = (motor_status_t)i;
+            ret_status = (feedback_motor_status_t)i;
         }
 
         // printf("weighted_sum[%01d] = %02d\n", (u16)i, (u16)weighted_sum[i]);
@@ -80,10 +81,10 @@ motor_status_t motor_0_status_buf_get_weighted_average(void)
     return ret_status;
 }
 
-motor_status_t motor_1_status_buf_get_weighted_average(void)
+feedback_motor_status_t motor_1_status_buf_get_weighted_average(void)
 {
-    u16 weighted_sum[3] = {0}; // 加权和，索引对应: [STOP, FORWARD, REVERSE]
-    motor_status_t ret_status = MOTOR_STATUS_STOP;
+    u16 weighted_sum[FEEDBACK_MOTOR_STATUS_TOTAL_NUM] = {0}; // 加权和，索引对应: feedback_motor_status_t
+    feedback_motor_status_t ret_status = FEEDBACK_MOTOR_STATUS_NONE;
     u16 max_weighted_sum = 0; // 存放最大的加权和
     u8 i;
     u16 weight; // 存放单个状态的权重
@@ -107,7 +108,7 @@ motor_status_t motor_1_status_buf_get_weighted_average(void)
         actual_index = (motor_1_status_buf_index + buf_size - 1 - i) % buf_size;
         status = motor_1_status_buf[actual_index];
 
-        if (status < 3) // 确保状态值有效
+        if (status < FEEDBACK_MOTOR_STATUS_TOTAL_NUM) // 确保状态值有效
         {
             weight = buf_size - i; // 权重递增：最新的数据权重最高
             weighted_sum[status] += weight;
@@ -115,12 +116,12 @@ motor_status_t motor_1_status_buf_get_weighted_average(void)
     }
 
     // 找出加权和最大的状态
-    for (i = 0; i < 3; i++)
+    for (i = 0; i < FEEDBACK_MOTOR_STATUS_TOTAL_NUM; i++)
     {
         if (weighted_sum[i] > max_weighted_sum)
         {
             max_weighted_sum = weighted_sum[i];
-            ret_status = (motor_status_t)i;
+            ret_status = (feedback_motor_status_t)i;
         }
 
         // printf("weighted_sum[%01d] = %02d\n", (u16)i, (u16)weighted_sum[i]);
@@ -142,16 +143,18 @@ void motor_status_feedback_init(void)
     u8 i;
     for (i = 0; i < (MOTOR_STATUS_FEEDBACK_PERIOD / MOTOR_STATUS_SCAN_PERIOD); i++)
     {
-        motor_0_status_buf[i] = MOTOR_STATUS_STOP;
-        motor_1_status_buf[i] = MOTOR_STATUS_STOP;
+        motor_0_status_buf[i] = FEEDBACK_MOTOR_STATUS_NONE;
+        motor_1_status_buf[i] = FEEDBACK_MOTOR_STATUS_NONE;
     }
 }
 
 // 扫描电机状态，将电机状态放入缓冲区
 void motor_status_scan(void)
 {
-    motor_0_status_buf_push(motor_0_status);
-    motor_1_status_buf_push(motor_1_status);
+    // motor_0_status_buf_push(motor_0_status);
+    // motor_1_status_buf_push(motor_1_status);
+
+    // USER_TO_DO 需要换成 motor_handle_0.status 
 }
 
 // void motor_status_feedback_(void)
@@ -162,8 +165,8 @@ void motor_status_scan(void)
 void motor_status_feedback(void)
 {
     // 加权平均，求得电机状态
-    motor_status_t motor_0_status = motor_0_status_buf_get_weighted_average();
-    motor_status_t motor_1_status = motor_1_status_buf_get_weighted_average();
+    feedback_motor_status_t motor_0_status = motor_0_status_buf_get_weighted_average();
+    feedback_motor_status_t motor_1_status = motor_1_status_buf_get_weighted_average();
 
     // printf("motor_0_status: %02d\n", (u16)motor_0_status);
     // printf("motor_1_status: %02d\n", (u16)motor_1_status);
