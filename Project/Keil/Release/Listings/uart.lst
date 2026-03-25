@@ -1,11 +1,11 @@
-C51 COMPILER V9.60.7.0   UART                                                              03/23/2026 10:29:15 PAGE 1   
+C51 COMPILER V9.60.7.0   UART                                                              03/25/2026 16:34:37 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE UART
 OBJECT MODULE PLACED IN .\Release\Objects\uart.obj
-COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE ..\..\Hardware\uart.c LARGE OPTIMIZE(8,SPEED) BROWSE INTVECTOR(0X000C) I
-                    -NCDIR(..\..\Libraries\Include;..\..\User;..\..\Hardware) INTERVAL(3) DEBUG OBJECTEXTEND PRINT(.\Release\Listings\uart.ls
-                    -t) OBJECT(.\Release\Objects\uart.obj)
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE ..\..\Hardware\uart.c LARGE OPTIMIZE(9,SIZE) BROWSE ORDER INTVECTOR(0X00
+                    -0C) INCDIR(..\..\Libraries\Include;..\..\User;..\..\Hardware) INTERVAL(3) DEBUG OBJECTEXTEND PRINT(.\Release\Listings\ua
+                    -rt.lst) OBJECT(.\Release\Objects\uart.obj)
 
 line level    source
 
@@ -62,18 +62,18 @@ line level    source
   51   1          // IE_EA = 1;
   52   1          while (!(UART0_STA & UART_TX_DONE(0x01))) // 等待这次发送完成
   53   1              ;
-C51 COMPILER V9.60.7.0   UART                                                              03/23/2026 10:29:15 PAGE 2   
+C51 COMPILER V9.60.7.0   UART                                                              03/25/2026 16:34:37 PAGE 2   
 
   54   1      }
   55          
-  56          void uart0_sendbuf(u8 *buf, u8 len)
-  57          {
-  58   1          u8 i = 0;
-  59   1          for (; i < len; i++) 
-  60   1          {
-  61   2              uart0_sendbyte(buf[i]);
-  62   2          }
-  63   1      }
+  56          // void uart0_sendbuf(u8 *buf, u8 len)
+  57          // {
+  58          //     u8 i = 0;
+  59          //     for (; i < len; i++) 
+  60          //     {
+  61          //         uart0_sendbyte(buf[i]);
+  62          //     }
+  63          // }
   64          
   65          // 获取接收缓冲区中有效的数据个数，单位：字节Byte
   66          u8 uart0_rxbuffer_get_count(void)
@@ -126,7 +126,7 @@ line level    source
  113          //     }
  114          
  115          //     // 接收缓冲区中有数据
-C51 COMPILER V9.60.7.0   UART                                                              03/23/2026 10:29:15 PAGE 3   
+C51 COMPILER V9.60.7.0   UART                                                              03/25/2026 16:34:37 PAGE 3   
 
  116          //     recvbyte = uart0_rxbuffer_get_byte();
  117          // }
@@ -151,9 +151,9 @@ line level    source
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    214    ----
+   CODE SIZE        =    161    ----
    CONSTANT SIZE    =   ----    ----
-   XDATA SIZE       =    131       3
+   XDATA SIZE       =    131    ----
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----

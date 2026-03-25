@@ -42,6 +42,7 @@ void uart_data_handle(void)
             uart_data_handle_status = UART_DATA_HANDLE_STATUS_IDLE; // 重新开始接收
 
 #if USER_DEBUG_ENABLE
+#if 0
             // 打印超时之后，缓冲区内的数据
             printf("=================================>\n");
             printf("uart recv timeout\n");
@@ -50,6 +51,7 @@ void uart_data_handle(void)
                 printf("%02x", (u16)cmd_buff[i]);
             }
             printf("=================================^\n");
+#endif
 #endif
         }
 
@@ -92,7 +94,7 @@ void uart_data_handle(void)
             {
 // 校验和错误
 #if USER_DEBUG_ENABLE
-                printf("check sum error\n");
+                // printf("check sum error\n");
 #endif
                 timeout_cnt = 0;
                 timeout_enable = 0;                                     // 不使能超时计数
@@ -102,7 +104,7 @@ void uart_data_handle(void)
             {
 // 校验和正确
 #if USER_DEBUG_ENABLE
-                printf("check sum ok\n");
+                // printf("check sum ok\n");
 #endif
                 uart_data_handle_status = UART_DATA_HANDLE_STATUS_END;
             }
@@ -120,6 +122,7 @@ void uart_data_handle(void)
     }
 
 #if USER_DEBUG_ENABLE
+#if 0
     // 打印接收到的一帧数据
     for (i = 0; i < dest_cmd_buff_len; i++)
     {
@@ -127,9 +130,8 @@ void uart_data_handle(void)
     }
     printf("\n");
 #endif
+#endif
 
-// USER_TO_DO 需要换成以对象为参数进行操作
-#if 0
     switch (cmd_buff[2])
     {
         // 判断要操作哪个电机
@@ -138,18 +140,18 @@ void uart_data_handle(void)
         switch (cmd_buff[3])
         {
             // 判断要执行什么操作
-        case 0x00: // 停止
+        case UART_CMD_STOP: // 停止
             break;
-        case 0x01: // 正转
-            motor_0_change_status(MOTOR_STATUS_FORWARD);
+        case UART_CMD_FORWARD: // 正转
+            motor_set_dir(&motor_handle_0, MOTOR_DIR_FORWARD);
 #if USER_DEBUG_ENABLE
-            printf("motor 0 forward\n");
+            // printf("motor 0 forward\n");
 #endif
             break;
-        case 0x02: // 反转
-            motor_0_change_status(MOTOR_STATUS_REVERSE);
+        case UART_CMD_REVERSE: // 反转
+            motor_set_dir(&motor_handle_0, MOTOR_DIR_REVERSE);
 #if USER_DEBUG_ENABLE
-            printf("motor 0 reverse\n");
+            // printf("motor 0 reverse\n");
 #endif
             break;
         default:
@@ -162,18 +164,18 @@ void uart_data_handle(void)
         switch (cmd_buff[3])
         {
             // 判断要执行什么操作
-        case 0x00: // 停止
+        case UART_CMD_STOP: // 停止
             break;
-        case 0x01: // 正转
-            motor_1_change_status(MOTOR_STATUS_FORWARD);
+        case UART_CMD_FORWARD: // 正转
+            motor_set_dir(&motor_handle_1, MOTOR_DIR_FORWARD);
 #if USER_DEBUG_ENABLE
-            printf("motor 1 forward\n");
+            // printf("motor 1 forward\n");
 #endif
             break;
-        case 0x02: // 反转
-            motor_1_change_status(MOTOR_STATUS_REVERSE);
+        case UART_CMD_REVERSE: // 反转
+            motor_set_dir(&motor_handle_1, MOTOR_DIR_REVERSE);
 #if USER_DEBUG_ENABLE
-            printf("motor 1 reverse\n");
+            // printf("motor 1 reverse\n");
 #endif
             break;
         default:
@@ -184,7 +186,6 @@ void uart_data_handle(void)
     default:
         break;
     }
-#endif
 
     // 处理完成后，重新接收数据
     timeout_cnt = 0;

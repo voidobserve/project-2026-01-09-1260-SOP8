@@ -1,11 +1,11 @@
-C51 COMPILER V9.60.7.0   KEY                                                               03/23/2026 18:27:32 PAGE 1   
+C51 COMPILER V9.60.7.0   KEY                                                               03/25/2026 16:34:37 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE KEY
 OBJECT MODULE PLACED IN .\Release\Objects\key.obj
-COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE ..\..\Hardware\key.c LARGE OPTIMIZE(8,SPEED) BROWSE INTVECTOR(0X000C) IN
-                    -CDIR(..\..\Libraries\Include;..\..\User;..\..\Hardware) INTERVAL(3) DEBUG OBJECTEXTEND PRINT(.\Release\Listings\key.lst)
-                    - OBJECT(.\Release\Objects\key.obj)
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE ..\..\Hardware\key.c LARGE OPTIMIZE(9,SIZE) BROWSE ORDER INTVECTOR(0X000
+                    -C) INCDIR(..\..\Libraries\Include;..\..\User;..\..\Hardware) INTERVAL(3) DEBUG OBJECTEXTEND PRINT(.\Release\Listings\key
+                    -.lst) OBJECT(.\Release\Objects\key.obj)
 
 line level    source
 
@@ -29,111 +29,82 @@ line level    source
   18          
   19          void key0_scan_handle(void)
   20          {
-  21   1      #if 0
-                  // 使用边沿检测
-                  volatile u8 curr = KEY_0_PIN;         // 存放当前检测到的电平
-                  static volatile u8 last = U8_MAX_VAL; // 存放上一次检测到的电平
-              
-                  if (curr == last)
-                  {
-                      return;
-                  }
-              
-                  if (last != U8_MAX_VAL)
-                  {
-                      if (curr)
-                      {
-                          // 上升沿
-                          motor_0_status = MOTOR_STATUS_FORWARD;
-                          motor_0_dir_change_dly = MOTOR_DIR_CHANGE_DLY_TIME;
-              
-                          MOTOR_0_FORWARD_PWM_DUTY_SET(PWM_DUTY_VAL_0_PERCENT);
-                          MOTOR_0_REVERSE_PWM_DUTY_SET(PWM_DUTY_VAL_0_PERCENT);
-              
-                          motor_0_dir_change_enable = 1;
-                          motor_0_is_working = 0;
-              
-                          // printf("key0 curr == 1\n");
-                      }
-                      else
-                      {
-                          // 下降沿
-              
-                          // 电机不转
-              
-                          // printf("key0 curr == 0\n");
-C51 COMPILER V9.60.7.0   KEY                                                               03/23/2026 18:27:32 PAGE 2   
+  21   1          // 使用边沿检测
+  22   1          volatile u8 curr = KEY_0_PIN;         // 存放当前检测到的电平
+  23   1          static volatile u8 last = U8_MAX_VAL; // 存放上一次检测到的电平
+  24   1      
+  25   1          if (curr == last)
+  26   1          {
+  27   2              return;
+  28   2          }
+  29   1      
+  30   1          if (last != U8_MAX_VAL)
+  31   1          {
+  32   2              if (curr)
+  33   2              {
+  34   3                  // 上升沿
+  35   3                  motor_set_dir(&motor_handle_0, MOTOR_DIR_NONE);
+  36   3                  // printf("key0 level == 1\n");
+  37   3                  // printf("toggle\n");
+  38   3              }
+  39   2              else
+  40   2              {
+  41   3                  // 下降沿
+  42   3                  // printf("key0 level == 0\n");
+  43   3              }
+  44   2          }
+  45   1          else // last == U8_MAX_VAL
+  46   1          {
+  47   2              // 第一次上电，忽略
+  48   2              // printf("key0 last == U8_MAX_VAL\n");
+  49   2          }
+  50   1      
+  51   1          last = curr;
+  52   1      }
+  53          
+C51 COMPILER V9.60.7.0   KEY                                                               03/25/2026 16:34:37 PAGE 2   
 
-                      }
-                  }
-                  else // last == U8_MAX_VAL
-                  {
-                      // 第一次上电，忽略
-                      motor_0_status = MOTOR_STATUS_STOP;
-              
-                      // printf("key0 last == U8_MAX_VAL\n");
-                  }
-              
-                  last = curr;
-              #endif
-  66   1      }
-  67          
-  68          void key1_scan_handle(void)
-  69          {
-  70   1      #if 0
-                  // 使用边沿检测
-                  volatile u8 curr = KEY_1_PIN;         // 存放当前检测到的电平
-                  static volatile u8 last = U8_MAX_VAL; // 存放上一次检测到的电平
-              
-                  if (curr == last)
-                  {
-                      return;
-                  }
-              
-                  if (last != U8_MAX_VAL)
-                  {
-                      if (curr)
-                      {
-                          // 上升沿
-                          motor_1_status = MOTOR_STATUS_FORWARD;
-                          motor_1_dir_change_dly = MOTOR_DIR_CHANGE_DLY_TIME;
-              
-                          MOTOR_1_FORWARD_PWM_DUTY_SET(PWM_DUTY_VAL_0_PERCENT);
-                          MOTOR_1_REVERSE_PWM_DUTY_SET(PWM_DUTY_VAL_0_PERCENT);
-              
-                          motor_1_dir_change_enable = 1;
-                          motor_1_is_working = 0;
-              
-                          // printf("key1 curr == 1\n");
-                      }
-                      else
-                      {
-                          // 下降沿
-              
-                          // 电机不转
-              
-                          // printf("key1 curr == 0\n");
-                      }
-                  }
-                  else // last == U8_MAX_VAL
-                  {
-                      // 第一次上电，忽略
-                      motor_1_status = MOTOR_STATUS_STOP;
-              
-                      // printf("key1 last == U8_MAX_VAL\n");
-                  }
-              
-                  last = curr;
-              #endif
- 115   1      }
-C51 COMPILER V9.60.7.0   KEY                                                               03/23/2026 18:27:32 PAGE 3   
-
+  54          void key1_scan_handle(void)
+  55          {
+  56   1          // 使用边沿检测
+  57   1          volatile u8 curr = KEY_1_PIN;         // 存放当前检测到的电平
+  58   1          static volatile u8 last = U8_MAX_VAL; // 存放上一次检测到的电平
+  59   1      
+  60   1          if (curr == last)
+  61   1          {
+  62   2              return;
+  63   2          }
+  64   1      
+  65   1          if (last != U8_MAX_VAL)
+  66   1          {
+  67   2              if (curr)
+  68   2              {
+  69   3                  // 上升沿
+  70   3                  motor_set_dir(&motor_handle_1, MOTOR_DIR_NONE);
+  71   3      
+  72   3                  // printf("key1 level == 1\n");
+  73   3              }
+  74   2              else
+  75   2              {
+  76   3                  // 下降沿
+  77   3                  // printf("key1 level == 0\n");
+  78   3              }
+  79   2          }
+  80   1          else // last == U8_MAX_VAL
+  81   1          {
+  82   2              // 第一次上电，忽略
+  83   2      
+  84   2              // printf("key1 last == U8_MAX_VAL\n");
+  85   2          }
+  86   1      
+  87   1          last = curr;
+  88   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =     27    ----
+   CODE SIZE        =    131    ----
    CONSTANT SIZE    =   ----    ----
-   XDATA SIZE       =   ----    ----
+   XDATA SIZE       =      2       2
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----

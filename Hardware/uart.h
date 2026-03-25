@@ -18,7 +18,7 @@ typedef struct
 void uart0_init(void);
 
 void uart0_sendbyte(u8 byte);
-void uart0_sendbuf(u8 *buf, u8 len);
+// void uart0_sendbuf(u8 *buf, u8 len);
 
 u8 uart0_rxbuffer_get_count(void);
 u8 uart0_rxbuffer_get_byte(void);

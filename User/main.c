@@ -10,6 +10,8 @@
 #include "uart_data_handle.h"
 #include "motor_status_feedback.h"
 
+
+
 void main(void)
 {
     system_init();
@@ -26,17 +28,16 @@ void main(void)
     adc_init();
     key_init();
 
+    motor_handle_init();
     motor_status_feedback_init();
 
     timer0_init(); // 系统定时器初始化，需要放在初始化的最后
 
+    delay_ms(10); // 等待系统稳定
 #if USER_DEBUG_ENABLE
     printf("sys reset\n");
 #endif
-
-    // MOTOR_0_FORWARD_PWM_DUTY_SET(MOTOR_WORKING_PWM_DUTY_VAL);
-
-    // MOTOR_0_REVERSE_PWM_DUTY_SET(MOTOR_WORKING_PWM_DUTY_VAL);
+     
 
     while (1)
     {
@@ -44,6 +45,7 @@ void main(void)
 
         task_handle();
         uart_data_handle();
+ 
 
         // printf("main\n");
     }

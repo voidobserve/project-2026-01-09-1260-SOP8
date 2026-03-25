@@ -1,11 +1,11 @@
-C51 COMPILER V9.60.7.0   SYSTEM                                                            03/18/2026 09:23:02 PAGE 1   
+C51 COMPILER V9.60.7.0   SYSTEM                                                            03/25/2026 15:27:36 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE SYSTEM
 OBJECT MODULE PLACED IN .\Release\Objects\system.obj
-COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE ..\..\Libraries\Source\system.c LARGE OPTIMIZE(8,SPEED) BROWSE INTVECTOR
-                    -(0X000C) INCDIR(..\..\Libraries\Include;..\..\User;..\..\Hardware) INTERVAL(3) DEBUG OBJECTEXTEND PRINT(.\Release\Listin
-                    -gs\system.lst) OBJECT(.\Release\Objects\system.obj)
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE ..\..\Libraries\Source\system.c LARGE OPTIMIZE(9,SIZE) BROWSE ORDER INTV
+                    -ECTOR(0X000C) INCDIR(..\..\Libraries\Include;..\..\User;..\..\Hardware) INTERVAL(3) DEBUG OBJECTEXTEND PRINT(.\Release\L
+                    -istings\system.lst) OBJECT(.\Release\Objects\system.obj)
 
 line level    source
 
@@ -62,7 +62,7 @@ line level    source
   51   2              delay(1450);
   52   2          }
   53   1      }
-C51 COMPILER V9.60.7.0   SYSTEM                                                            03/18/2026 09:23:02 PAGE 2   
+C51 COMPILER V9.60.7.0   SYSTEM                                                            03/25/2026 15:27:36 PAGE 2   
 
   54          
   55          /**

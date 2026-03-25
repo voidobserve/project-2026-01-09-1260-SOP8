@@ -53,14 +53,14 @@ void uart0_sendbyte(u8 byte)
         ;
 }
 
-void uart0_sendbuf(u8 *buf, u8 len)
-{
-    u8 i = 0;
-    for (; i < len; i++) 
-    {
-        uart0_sendbyte(buf[i]);
-    }
-}
+// void uart0_sendbuf(u8 *buf, u8 len)
+// {
+//     u8 i = 0;
+//     for (; i < len; i++) 
+//     {
+//         uart0_sendbyte(buf[i]);
+//     }
+// }
 
 // 获取接收缓冲区中有效的数据个数，单位：字节Byte
 u8 uart0_rxbuffer_get_count(void)

@@ -1,11 +1,11 @@
-C51 COMPILER V9.60.7.0   MAIN                                                              03/23/2026 18:25:23 PAGE 1   
+C51 COMPILER V9.60.7.0   MAIN                                                              03/25/2026 16:34:36 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
 OBJECT MODULE PLACED IN .\Release\Objects\main.obj
-COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE ..\..\User\main.c LARGE OPTIMIZE(8,SPEED) BROWSE INTVECTOR(0X000C) INCDI
-                    -R(..\..\Libraries\Include;..\..\User;..\..\Hardware) INTERVAL(3) DEBUG OBJECTEXTEND PRINT(.\Release\Listings\main.lst) O
-                    -BJECT(.\Release\Objects\main.obj)
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE ..\..\User\main.c LARGE OPTIMIZE(9,SIZE) BROWSE ORDER INTVECTOR(0X000C) 
+                    -INCDIR(..\..\Libraries\Include;..\..\User;..\..\Hardware) INTERVAL(3) DEBUG OBJECTEXTEND PRINT(.\Release\Listings\main.l
+                    -st) OBJECT(.\Release\Objects\main.obj)
 
 line level    source
 
@@ -21,51 +21,53 @@ line level    source
   10          #include "uart_data_handle.h"
   11          #include "motor_status_feedback.h"
   12          
-  13          void main(void)
-  14          {
-  15   1          system_init();
-  16   1      
-  17   1          // 关闭HCK和HDA的调试功能
-  18   1          WDT_KEY = 0x55;  // 解除写保护
-  19   1          IO_MAP &= ~0x01; // 清除这个寄存器的值，实现关闭HCK和HDA引脚的调试功能（解除�
+  13          
+  14          
+  15          void main(void)
+  16          {
+  17   1          system_init();
+  18   1      
+  19   1          // 关闭HCK和HDA的调试功能
+  20   1          WDT_KEY = 0x55;  // 解除写保护
+  21   1          IO_MAP &= ~0x01; // 清除这个寄存器的值，实现关闭HCK和HDA引脚的调试功能（解除�
              -��射）
-  20   1          WDT_KEY = 0xBB;
-  21   1      
-  22   1          // WDT_KEY = WDT_KEY_VAL(0xDD); //  关闭看门狗
-  23   1          uart0_init();
-  24   1      
-  25   1          pwm_init();
-  26   1          adc_init();
-  27   1          key_init();
-  28   1      
-  29   1          motor_status_feedback_init();
+  22   1          WDT_KEY = 0xBB;
+  23   1      
+  24   1          // WDT_KEY = WDT_KEY_VAL(0xDD); //  关闭看门狗
+  25   1          uart0_init();
+  26   1      
+  27   1          pwm_init();
+  28   1          adc_init();
+  29   1          key_init();
   30   1      
-  31   1          timer0_init(); // 系统定时器初始化，需要放在初始化的最后
-  32   1      
-  33   1      #if USER_DEBUG_ENABLE
+  31   1          motor_handle_init();
+  32   1          motor_status_feedback_init();
+  33   1      
+  34   1          timer0_init(); // 系统定时器初始化，需要放在初始化的最后
+  35   1      
+  36   1          delay_ms(10); // 等待系统稳定
+  37   1      #if USER_DEBUG_ENABLE
                   printf("sys reset\n");
               #endif
-  36   1      
-  37   1          // MOTOR_0_FORWARD_PWM_DUTY_SET(MOTOR_WORKING_PWM_DUTY_VAL);
-  38   1      
-  39   1          // MOTOR_0_REVERSE_PWM_DUTY_SET(MOTOR_WORKING_PWM_DUTY_VAL);
-  40   1      
-  41   1          while (1)
-  42   1          {
-  43   2              WDT_KEY = WDT_KEY_VAL(0xAA); // 喂狗
-  44   2      
-  45   2              task_handle();
-  46   2              uart_data_handle();
-  47   2      
-  48   2              // printf("main\n");
-  49   2          }
-  50   1      }
+  40   1           
+  41   1      
+  42   1          while (1)
+  43   1          {
+  44   2              WDT_KEY = WDT_KEY_VAL(0xAA); // 喂狗
+  45   2      
+  46   2              task_handle();
+  47   2              uart_data_handle();
+  48   2       
+  49   2      
+  50   2              // printf("main\n");
+  51   2          }
+  52   1      }
+C51 COMPILER V9.60.7.0   MAIN                                                              03/25/2026 16:34:36 PAGE 2   
 
 
-C51 COMPILER V9.60.7.0   MAIN                                                              03/23/2026 18:25:23 PAGE 2   
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =     45    ----
+   CODE SIZE        =     55    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =      5    ----
    PDATA SIZE       =   ----    ----

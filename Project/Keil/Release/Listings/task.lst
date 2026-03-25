@@ -1,11 +1,11 @@
-C51 COMPILER V9.60.7.0   TASK                                                              03/23/2026 18:26:47 PAGE 1   
+C51 COMPILER V9.60.7.0   TASK                                                              03/25/2026 16:34:37 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE TASK
 OBJECT MODULE PLACED IN .\Release\Objects\task.obj
-COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE ..\..\Hardware\task.c LARGE OPTIMIZE(8,SPEED) BROWSE INTVECTOR(0X000C) I
-                    -NCDIR(..\..\Libraries\Include;..\..\User;..\..\Hardware) INTERVAL(3) DEBUG OBJECTEXTEND PRINT(.\Release\Listings\task.ls
-                    -t) OBJECT(.\Release\Objects\task.obj)
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE ..\..\Hardware\task.c LARGE OPTIMIZE(9,SIZE) BROWSE ORDER INTVECTOR(0X00
+                    -0C) INCDIR(..\..\Libraries\Include;..\..\User;..\..\Hardware) INTERVAL(3) DEBUG OBJECTEXTEND PRINT(.\Release\Listings\ta
+                    -sk.lst) OBJECT(.\Release\Objects\task.obj)
 
 line level    source
 
@@ -23,8 +23,8 @@ line level    source
   12          */
   13          void task_debug(void);
   14          static volatile task_ctl_block_t task_table[] = {
-  15              // {0, 0, 1, motor_0_handler}, // USER_TO_DO 需要换成以对象为参数进行操作
-  16              // {0, 0, 1, motor_1_handler},
+  15              {0, 0, 1, motor_handle_func_0}, //
+  16              {0, 0, 1, motor_handle_func_1},
   17              // // =======================================================
   18              {0, 0, 5, key0_scan_handle},
   19              {0, 0, 5, key1_scan_handle},
@@ -36,7 +36,7 @@ line level    source
              -要恢复
   25          
   26          #if USER_DEBUG_ENABLE
-                  {0, 0, 100, task_debug},
+              // {0, 0, 100, task_debug},
               #endif
   29          };
   30          
@@ -62,7 +62,7 @@ line level    source
   50   1          u8 i = 0;
   51   1          for (i = 0; i < (sizeof(task_table) / sizeof(task_ctl_block_t)); i++)
   52   1          {
-C51 COMPILER V9.60.7.0   TASK                                                              03/23/2026 18:26:47 PAGE 2   
+C51 COMPILER V9.60.7.0   TASK                                                              03/25/2026 16:34:37 PAGE 2   
 
   53   2              task_table[i].task_time_slice++;
   54   2              if (task_table[i].task_time_slice >= task_table[i].target_task_time_slice)
@@ -81,9 +81,9 @@ line level    source
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    191    ----
+   CODE SIZE        =    153    ----
    CONSTANT SIZE    =   ----    ----
-   XDATA SIZE       =     32       1
+   XDATA SIZE       =     48       1
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----

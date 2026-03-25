@@ -15,6 +15,14 @@ enum
     UART_DATA_HANDLE_STATUS_END,
 };
 
+// 串口控制命令：
+enum
+{
+    UART_CMD_STOP = 0x00,
+    UART_CMD_FORWARD = 0x01,
+    UART_CMD_REVERSE = 0x02,
+};
+
 void uart_data_handle(void);
 
 void uart_data_recv_timeout_add(void);

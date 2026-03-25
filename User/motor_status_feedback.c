@@ -32,10 +32,11 @@ void motor_1_status_buf_push(feedback_motor_status_t status)
     }
 }
 
+// 求出滑动加权平均的状态
 feedback_motor_status_t motor_0_status_buf_get_weighted_average(void)
 {
-    u16 weighted_sum[FEEDBACK_MOTOR_STATUS_TOTAL_NUM] = {0}; // 加权和，索引对应:  feedback_motor_status_t 
-    feedback_motor_status_t ret_status = FEEDBACK_MOTOR_STATUS_NONE; 
+    u16 weighted_sum[FEEDBACK_MOTOR_STATUS_TOTAL_NUM] = {0}; // 加权和，索引对应:  feedback_motor_status_t
+    feedback_motor_status_t ret_status = FEEDBACK_MOTOR_STATUS_NONE;
     u16 max_weighted_sum = 0;
     u8 i;
     u16 weight;
@@ -97,10 +98,10 @@ feedback_motor_status_t motor_1_status_buf_get_weighted_average(void)
     {
         // 计算当前数据在环形缓冲区中的实际位置
         /*
-            当前最新的数据索引 == motor_0_status_buf_index - 1
-            当前第二新的数据索引 == motor_0_status_buf_index - 2
+            当前最新的数据索引 == motor_x_status_buf_index - 1
+            当前第二新的数据索引 == motor_x_status_buf_index - 2
 
-            motor_0_status_buf_index：当前写入位置
+            motor_x_status_buf_index ：当前写入位置
             buf_size - 1：回退到最新的已写入数据位置
             - i：根据循环次数向前移动，获取更旧的数据
             % buf_size：确保索引在缓冲区范围内循环
@@ -151,10 +152,77 @@ void motor_status_feedback_init(void)
 // 扫描电机状态，将电机状态放入缓冲区
 void motor_status_scan(void)
 {
-    // motor_0_status_buf_push(motor_0_status);
-    // motor_1_status_buf_push(motor_1_status);
+    volatile feedback_motor_status_t feedback_status = FEEDBACK_MOTOR_STATUS_NONE;
+    volatile u8 dest_dir = motor_handle_0.dest_dir;
+    volatile u8 status = motor_handle_0.status;
 
-    // USER_TO_DO 需要换成 motor_handle_0.status 
+    if (status == MOTOR_STATUS_STOP)
+    {
+        // 如果现在是停止状态，要判断是正向停止还是反向停止，还是刚上电没有在转动
+        if (dest_dir == MOTOR_DIR_FORWARD)
+        {
+            feedback_status = FEEDBACK_MOTOR_STATUS_FORWARD_STOP;
+        }
+        else if (dest_dir == MOTOR_DIR_REVERSE)
+        {
+            feedback_status = FEEDBACK_MOTOR_STATUS_REVERSE_STOP;
+        }
+        else
+        {
+            // 这里可以省略
+            // feedback_status = FEEDBACK_MOTOR_STATUS_NONE;
+        }
+    }
+    else if (status == MOTOR_STATUS_FORWARD)
+    {
+        feedback_status = FEEDBACK_MOTOR_STATUS_FORWARD;
+    }
+    else if (status == MOTOR_STATUS_REVERSE)
+    {
+        feedback_status = FEEDBACK_MOTOR_STATUS_REVERSE;
+    }
+
+    // printf("motor 0 feedback status: %02d\n", (u16)feedback_status);
+    if (motor_handle_0.is_status_need_to_feedback)
+    {
+        // 电机因为要换方向而短暂停止时，不把这个状态反馈给蓝牙ic
+        motor_0_status_buf_push(feedback_status);
+    }
+
+    // 另外一个电机，这里要重新初始化相关变量：
+    feedback_status = FEEDBACK_MOTOR_STATUS_NONE;
+    dest_dir = motor_handle_1.dest_dir;
+    status = motor_handle_1.status;
+    if (status == MOTOR_STATUS_STOP)
+    {
+        if (dest_dir == MOTOR_DIR_FORWARD)
+        {
+            feedback_status = FEEDBACK_MOTOR_STATUS_FORWARD_STOP;
+        }
+        else if (dest_dir == MOTOR_DIR_REVERSE)
+        {
+            feedback_status = FEEDBACK_MOTOR_STATUS_REVERSE_STOP;
+        }
+        else
+        {
+            // 这里可以省略
+            // feedback_status = FEEDBACK_MOTOR_STATUS_NONE;
+        }
+    }
+    else if (status == MOTOR_STATUS_FORWARD)
+    {
+        feedback_status = FEEDBACK_MOTOR_STATUS_FORWARD;
+    }
+    else if (status == MOTOR_STATUS_REVERSE)
+    {
+        feedback_status = FEEDBACK_MOTOR_STATUS_REVERSE;
+    }
+
+    // printf("motor 1 feedback status: %02d\n", (u16)feedback_status);
+    if (motor_handle_1.is_status_need_to_feedback)
+    {
+        motor_1_status_buf_push(feedback_status);
+    }
 }
 
 // void motor_status_feedback_(void)
@@ -167,12 +235,12 @@ void motor_status_feedback(void)
     // 加权平均，求得电机状态
     feedback_motor_status_t motor_0_status = motor_0_status_buf_get_weighted_average();
     feedback_motor_status_t motor_1_status = motor_1_status_buf_get_weighted_average();
+    u8 check_sum = 0;
 
     // printf("motor_0_status: %02d\n", (u16)motor_0_status);
     // printf("motor_1_status: %02d\n", (u16)motor_1_status);
-    
+
     // 将电机状态反馈给蓝牙ic：
-    u8 check_sum = 0;
     check_sum = UART_DATA_HANDLE_FORMAT_HEAD + 0x05 + 0x01 + motor_0_status;
     uart0_sendbyte(UART_DATA_HANDLE_FORMAT_HEAD); // 发送格式头
     uart0_sendbyte(0x05);                         // 整一帧数据的长度
