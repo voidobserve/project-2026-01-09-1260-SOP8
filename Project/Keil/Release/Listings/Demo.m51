@@ -1,4 +1,4 @@
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                    03/25/2026  16:34:37  PAGE 1
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                    03/27/2026  15:47:36  PAGE 1
 
 
 BL51 BANKED LINKER/LOCATER V6.22.4.0, INVOKED BY:
@@ -59,7 +59,7 @@ LINK MAP OF MODULE:  .\Release\Objects\Demo (?C_STARTUP)
                     0008H     0018H                  *** GAP ***
             BIT     0020H.0   0000H.4   UNIT         ?BI?ADC
                     0020H.4   0000H.4                *** GAP ***
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/25/2026  16:34:37  PAGE 2
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/27/2026  15:47:36  PAGE 2
 
 
             IDATA   0021H     0001H     UNIT         ?STACK
@@ -119,7 +119,7 @@ LINK MAP OF MODULE:  .\Release\Objects\Demo (?C_STARTUP)
             CODE    10D6H     0026H     UNIT         ?PR?UART0_IRQHANDLER?UART
             CODE    10FCH     0024H     UNIT         ?PR?_ADC_GET_UPDATE_FLAG?ADC
             CODE    1120H     0024H     UNIT         ?PR?PWM
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/25/2026  16:34:37  PAGE 3
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/27/2026  15:47:36  PAGE 3
 
 
             CODE    1144H     001AH     UNIT         ?PR?_MOTOR_0_STATUS_BUF_PUSH?MOTOR_STATUS_FEEDBACK
@@ -179,7 +179,7 @@ SEGMENT                                            XDATA_GROUP
   +--> ?PR?UART_DATA_HANDLE?UART_DATA_HANDLE
 
 ?PR?SYSTEM_INIT?SYSTEM                           -----    -----
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/25/2026  16:34:37  PAGE 4
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/27/2026  15:47:36  PAGE 4
 
 
   +--> ?PR?_DELAY?SYSTEM
@@ -239,7 +239,7 @@ SEGMENT                                            XDATA_GROUP
 
 ?PR?MOTOR_1_STOP?MOTOR_HANDLE                    -----    -----
   +--> ?PR?_PWM_CHANNEL_2_SET_DUTY?PWM
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/25/2026  16:34:37  PAGE 5
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/27/2026  15:47:36  PAGE 5
 
 
   +--> ?PR?_PWM_CHANNEL_3_SET_DUTY?PWM
@@ -299,7 +299,7 @@ SEGMENT                                            XDATA_GROUP
 
 ?PR?_MOTOR_0_STATUS_BUF_PUSH?MOTOR_ST...         -----    -----
   +--> ?PR?MOTOR_STATUS_FEEDBACK
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/25/2026  16:34:37  PAGE 6
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/27/2026  15:47:36  PAGE 6
 
 
 
@@ -359,7 +359,7 @@ SYMBOL TABLE OF MODULE:  .\Release\Objects\Demo (?C_STARTUP)
   I:0021H         SEGMENT       ?STACK
   C:0000H         PUBLIC        ?C_STARTUP
   D:00E0H         SYMBOL        ACC
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/25/2026  16:34:37  PAGE 7
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/27/2026  15:47:36  PAGE 7
 
 
   D:00F0H         SYMBOL        B
@@ -419,7 +419,7 @@ SYMBOL TABLE OF MODULE:  .\Release\Objects\Demo (?C_STARTUP)
   -------         DO            
   D:0007H         SYMBOL        i
   -------         ENDDO         
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/25/2026  16:34:37  PAGE 8
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/27/2026  15:47:36  PAGE 8
 
 
   C:0835H         LINE#         60
@@ -479,7 +479,7 @@ SYMBOL TABLE OF MODULE:  .\Release\Objects\Demo (?C_STARTUP)
   X:6127H         SYMBOL        cmd_buff
   X:6131H         SYMBOL        cur_cmd_buff_len
   X:6132H         SYMBOL        dest_cmd_buff_len
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/25/2026  16:34:37  PAGE 9
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/27/2026  15:47:36  PAGE 9
 
 
   X:6133H         SYMBOL        timeout_enable
@@ -539,7 +539,7 @@ SYMBOL TABLE OF MODULE:  .\Release\Objects\Demo (?C_STARTUP)
   C:05A5H         LINE#         86
   C:05B2H         LINE#         87
   C:05B2H         LINE#         88
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/25/2026  16:34:37  PAGE 10
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/27/2026  15:47:36  PAGE 10
 
 
   C:05BFH         LINE#         89
@@ -599,7 +599,7 @@ SYMBOL TABLE OF MODULE:  .\Release\Objects\Demo (?C_STARTUP)
   C:064FH         LINE#         188
   C:064FH         LINE#         191
   C:0656H         LINE#         192
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/25/2026  16:34:37  PAGE 11
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/27/2026  15:47:36  PAGE 11
 
 
   C:065AH         LINE#         193
@@ -659,7 +659,7 @@ SYMBOL TABLE OF MODULE:  .\Release\Objects\Demo (?C_STARTUP)
   C:1175H         LINE#         30
   C:1175H         LINE#         31
   C:1177H         LINE#         32
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/25/2026  16:34:37  PAGE 12
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/27/2026  15:47:36  PAGE 12
 
 
   C:1177H         LINE#         33
@@ -719,7 +719,7 @@ SYMBOL TABLE OF MODULE:  .\Release\Objects\Demo (?C_STARTUP)
   C:0CF1H         LINE#         88
   C:0CF8H         LINE#         89
   C:0CFCH         LINE#         96
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/25/2026  16:34:37  PAGE 13
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/27/2026  15:47:36  PAGE 13
 
 
   C:0CFEH         LINE#         97
@@ -779,7 +779,7 @@ SYMBOL TABLE OF MODULE:  .\Release\Objects\Demo (?C_STARTUP)
   C:0938H         LINE#         169
   C:093AH         LINE#         171
   C:093AH         LINE#         174
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/25/2026  16:34:37  PAGE 14
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/27/2026  15:47:36  PAGE 14
 
 
   C:093AH         LINE#         175
@@ -839,7 +839,7 @@ SYMBOL TABLE OF MODULE:  .\Release\Objects\Demo (?C_STARTUP)
   C:0D5BH         LINE#         237
   C:0D63H         LINE#         238
   C:0D66H         LINE#         244
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/25/2026  16:34:37  PAGE 15
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/27/2026  15:47:36  PAGE 15
 
 
   C:0D6FH         LINE#         245
@@ -899,7 +899,7 @@ SYMBOL TABLE OF MODULE:  .\Release\Objects\Demo (?C_STARTUP)
   C:09C5H         PUBLIC        ADC_IRQHandler
   C:11ACH         SYMBOL        Com0068
   C:11ACH         SYMBOL        L?0105
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/25/2026  16:34:37  PAGE 16
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/27/2026  15:47:36  PAGE 16
 
 
   C:11BEH         SYMBOL        L?0106
@@ -959,7 +959,7 @@ SYMBOL TABLE OF MODULE:  .\Release\Objects\Demo (?C_STARTUP)
   C:11A0H         LINE#         98
   C:11A0H         LINE#         99
   C:11A0H         LINE#         100
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/25/2026  16:34:37  PAGE 17
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/27/2026  15:47:36  PAGE 17
 
 
   C:11A0H         LINE#         101
@@ -1019,7 +1019,7 @@ SYMBOL TABLE OF MODULE:  .\Release\Objects\Demo (?C_STARTUP)
   -------         ENDPROC       _ADC_GET_UPDATE_FLAG
   -------         PROC          _ADC_GET_VAL
   D:0007H         SYMBOL        adc_channel_index
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/25/2026  16:34:37  PAGE 18
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/27/2026  15:47:36  PAGE 18
 
 
   -------         DO            
@@ -1079,7 +1079,7 @@ SYMBOL TABLE OF MODULE:  .\Release\Objects\Demo (?C_STARTUP)
   C:1289H         LINE#         238
   C:1289H         LINE#         239
   -------         ENDPROC       _ADC0_SEL_CHANNEL
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/25/2026  16:34:37  PAGE 19
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/27/2026  15:47:36  PAGE 19
 
 
   -------         PROC          _ADC1_SEL_CHANNEL
@@ -1139,7 +1139,7 @@ SYMBOL TABLE OF MODULE:  .\Release\Objects\Demo (?C_STARTUP)
   C:0AE3H         LINE#         318
   C:0AE6H         LINE#         319
   C:0AE7H         LINE#         320
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/25/2026  16:34:37  PAGE 20
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/27/2026  15:47:36  PAGE 20
 
 
   C:0AEEH         LINE#         321
@@ -1199,7 +1199,7 @@ SYMBOL TABLE OF MODULE:  .\Release\Objects\Demo (?C_STARTUP)
   C:0000H         SYMBOL        _ICE_DUMMY_
   D:00A8H         PUBLIC        IE0
   D:00A9H         PUBLIC        IE1
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/25/2026  16:34:37  PAGE 21
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/27/2026  15:47:36  PAGE 21
 
 
   D:00AAH         PUBLIC        IE2
@@ -1259,7 +1259,7 @@ SYMBOL TABLE OF MODULE:  .\Release\Objects\Demo (?C_STARTUP)
   C:0030H         SYMBOL        L?0014
   C:0031H         SYMBOL        L?0015
   -------         PROC          COM000B
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/25/2026  16:34:37  PAGE 22
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/27/2026  15:47:36  PAGE 22
 
 
   -------         ENDPROC       COM000B
@@ -1319,7 +1319,7 @@ SYMBOL TABLE OF MODULE:  .\Release\Objects\Demo (?C_STARTUP)
   -------         PROC          COM0006
   -------         ENDPROC       COM0006
   -------         PROC          PWM_INIT
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/25/2026  16:34:37  PAGE 23
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/27/2026  15:47:36  PAGE 23
 
 
   C:074DH         LINE#         5
@@ -1379,7 +1379,7 @@ SYMBOL TABLE OF MODULE:  .\Release\Objects\Demo (?C_STARTUP)
   C:081CH         LINE#         91
   C:0822H         LINE#         92
   C:0828H         LINE#         93
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/25/2026  16:34:37  PAGE 24
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/27/2026  15:47:36  PAGE 24
 
 
   C:082EH         LINE#         94
@@ -1439,7 +1439,7 @@ SYMBOL TABLE OF MODULE:  .\Release\Objects\Demo (?C_STARTUP)
   C:11D8H         LINE#         16
   C:11DEH         LINE#         17
   -------         ENDPROC       KEY_INIT
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/25/2026  16:34:37  PAGE 25
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/27/2026  15:47:36  PAGE 25
 
 
   -------         PROC          KEY0_SCAN_HANDLE
@@ -1499,7 +1499,7 @@ SYMBOL TABLE OF MODULE:  .\Release\Objects\Demo (?C_STARTUP)
   D:00A8H         PUBLIC        IE0
   D:00A9H         PUBLIC        IE1
   D:00AAH         PUBLIC        IE2
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/25/2026  16:34:37  PAGE 26
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/27/2026  15:47:36  PAGE 26
 
 
   D:00ABH         PUBLIC        IE3
@@ -1559,7 +1559,7 @@ SYMBOL TABLE OF MODULE:  .\Release\Objects\Demo (?C_STARTUP)
   C:004AH         LINE#         69
   -------         ENDPROC       UART0_RXBUFFER_GET_COUNT
   -------         PROC          UART0_RXBUFFER_GET_BYTE
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/25/2026  16:34:37  PAGE 27
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/27/2026  15:47:36  PAGE 27
 
 
   -------         DO            
@@ -1619,7 +1619,7 @@ SYMBOL TABLE OF MODULE:  .\Release\Objects\Demo (?C_STARTUP)
   C:1324H         SYMBOL        motor_1_forward
   C:132BH         SYMBOL        motor_1_reverse
   C:0FE3H         SYMBOL        motor_1_adc_val_update
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/25/2026  16:34:37  PAGE 28
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/27/2026  15:47:36  PAGE 28
 
 
   C:065FH         SYMBOL        _motor_handle
@@ -1679,7 +1679,7 @@ SYMBOL TABLE OF MODULE:  .\Release\Objects\Demo (?C_STARTUP)
   C:1324H         LINE#         53
   -------         ENDPROC       MOTOR_1_FORWARD
   -------         PROC          MOTOR_1_REVERSE
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/25/2026  16:34:37  PAGE 29
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/27/2026  15:47:36  PAGE 29
 
 
   C:132BH         LINE#         56
@@ -1739,7 +1739,7 @@ SYMBOL TABLE OF MODULE:  .\Release\Objects\Demo (?C_STARTUP)
   C:0DDEH         LINE#         120
   C:0DDEH         LINE#         121
   C:0DE0H         LINE#         123
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/25/2026  16:34:37  PAGE 30
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/27/2026  15:47:36  PAGE 30
 
 
   C:0DE0H         LINE#         129
@@ -1799,7 +1799,7 @@ SYMBOL TABLE OF MODULE:  .\Release\Objects\Demo (?C_STARTUP)
   C:0705H         LINE#         200
   C:070EH         LINE#         201
   C:070EH         LINE#         203
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/25/2026  16:34:37  PAGE 31
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/27/2026  15:47:36  PAGE 31
 
 
   C:0716H         LINE#         204
@@ -1859,7 +1859,7 @@ SYMBOL TABLE OF MODULE:  .\Release\Objects\Demo (?C_STARTUP)
   -------         MODULE        ?C?ILDOPTR
   C:0229H         PUBLIC        ?C?ILDOPTR
   -------         ENDMOD        ?C?ILDOPTR
-BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/25/2026  16:34:37  PAGE 32
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  03/27/2026  15:47:36  PAGE 32
 
 
 
